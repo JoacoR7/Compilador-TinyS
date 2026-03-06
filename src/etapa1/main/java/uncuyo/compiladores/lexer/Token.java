@@ -6,7 +6,7 @@ public class Token {
     private String lexeme;
     private TokenType tokenType;
 
-    public Token(int rowIndex, int columnIndex, String lexeme, TokenType tokenType) {
+    public Token(String lexeme, TokenType tokenType, int rowIndex, int columnIndex) {
         this.rowIndex = rowIndex;
         this.columnIndex = columnIndex;
         this.lexeme = lexeme;
