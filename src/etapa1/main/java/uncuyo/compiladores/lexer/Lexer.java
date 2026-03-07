@@ -30,6 +30,8 @@ public class Lexer {
 
     public Token getNextToken() throws IOException {
 
+        Token token;
+
         while (true) {
 
             //Verifica si hay más datos en la línea actual del archivo.
@@ -48,12 +50,17 @@ public class Lexer {
             }
 
             if (currentChar == '/') {
-                Token token = tokenClasifier.isCommentOrDiv();
+                token = tokenClasifier.isCommentOrDiv();
                 if (token != null) {
                     return token;
                 }
                 continue; // seguir buscando token
             }
+
+            if (Character.isDigit(currentChar)) {
+                return tokenClasifier.isNumber();
+            }
+
 
             // identificadores
             // números
@@ -72,6 +79,10 @@ public class Lexer {
             columnIndex = 0;
         }
         return currentData != null;
+    }
+
+    public char getCurrentChar() {
+        return this.currentData.charAt(this.columnIndex);
     }
 
 

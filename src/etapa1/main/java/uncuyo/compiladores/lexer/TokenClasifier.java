@@ -18,7 +18,6 @@ public class TokenClasifier {
         }
 
         char nextCharacter = lexer.getCurrentData().charAt(lexer.getColumnIndex() + 1);
-
         switch (nextCharacter) {
 
             case '*':
@@ -30,7 +29,7 @@ public class TokenClasifier {
             case '/':
                 lexer.incrementPosition();
                 lexer.incrementPosition();
-                //simpleComment();
+                simpleComment();
                 return null;
 
             default:
@@ -61,6 +60,10 @@ public class TokenClasifier {
             lexer.incrementPosition();
         }
     }
+    public void simpleComment() throws IOException {
+        lexer.loadNextLine();
+        return;
+    }
 
     public Token classifyOperator(){
 
@@ -86,6 +89,25 @@ public class TokenClasifier {
         }
         lexer.incrementPosition();
         return generateToken(operator, tokenType, lexer.getRowIndex(), initialPosition);
+    }
+
+    public Token isNumber() {
+        int initialPosition = lexer.getColumnIndex();
+        StringBuilder digits = new StringBuilder();
+        char currentChar = lexer.getCurrentChar();
+        digits.append(currentChar);
+        lexer.incrementPosition();
+
+        while ((lexer.getColumnIndex() < lexer.getCurrentData().length()) && Character.isDigit(currentChar)) {
+            currentChar = lexer.getCurrentChar();
+
+            if (Character.isDigit(currentChar)) {
+                digits.append(currentChar);
+                lexer.incrementPosition();
+            }
+        }
+
+        return generateToken(digits.toString(), TokenType.INT_CONSTANT, lexer.getRowIndex(), initialPosition);
     }
 
     private Token generateToken(String lexema, TokenType tokenType, int indexRow, int indexColumn){
