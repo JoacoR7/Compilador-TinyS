@@ -4,6 +4,12 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+/**
+ * La clase {@code Lexer} es responsable de analizar y extraer lexemas del archivo de entrada.
+ *
+ * @author Victor Ramirez
+ * @author Joaquin Ruiz
+ */
 public class Lexer {
 
     private String path;
@@ -26,8 +32,11 @@ public class Lexer {
 
         while (true) {
 
+            //Verifica si hay más datos en la línea actual del archivo.
             if (currentData == null || columnIndex >= currentData.length()) {
-                if (!loadNextLine()) return null;
+                if (!loadNextLine()) {
+                    return null;
+                }
                 continue;
             }
 
@@ -57,21 +66,14 @@ public class Lexer {
 
     public boolean loadNextLine() throws IOException {
         currentData = reader.readLine();
-        if (currentData == null) {
-            return false; // End of file
-        }
-        rowIndex++;
-        columnIndex = 0;
-        return true;
-    }
-
-    public void readNextLine() throws IOException {
-        if (reader.ready()){
-            currentData = reader.readLine();
+        // End of file
+        if (currentData != null) {
             rowIndex++;
             columnIndex = 0;
         }
+        return currentData != null;
     }
+
 
     public BufferedReader getReader() {
         return reader;
