@@ -1,6 +1,7 @@
 package uncuyo.compiladores.lexer;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class TokenClasifier {
     private Lexer lexer;
@@ -108,6 +109,67 @@ public class TokenClasifier {
         }
 
         return generateToken(digits.toString(), TokenType.INT_CONSTANT, lexer.getRowIndex(), initialPosition);
+    }
+
+    public Token classifyClassIdentifier(){
+
+        StringBuilder buffer = new StringBuilder();
+        TokenType tokenType = TokenType.IDENTIFIER_CLASS;
+        int initialPosition = lexer.getColumnIndex();
+        char vistazo;
+        do {
+
+            buffer.append(lexer.getCurrentData().charAt(lexer.getColumnIndex()));
+            lexer.incrementPosition();
+
+            if (lexer.getColumnIndex() < lexer.getCurrentData().length()){
+                vistazo = lexer.getCurrentData().charAt(lexer.getColumnIndex());
+            }else {
+                vistazo = ' ';
+            }
+
+        } while (Character.isLetterOrDigit(vistazo) || vistazo == '_');
+
+        return generateToken(buffer.toString(), tokenType, lexer.getRowIndex(), initialPosition);
+    }
+
+    public Token classifyKeywordOrIdentifier(){
+
+        StringBuilder buffer = new StringBuilder();
+        int initialPosition = lexer.getColumnIndex();
+
+        char vistazo;
+        do {
+
+            buffer.append(lexer.getCurrentData().charAt(lexer.getColumnIndex()));
+            lexer.incrementPosition();
+
+            if (lexer.getColumnIndex() < lexer.getCurrentData().length()){
+                vistazo = lexer.getCurrentData().charAt(lexer.getColumnIndex());
+            }else {
+                vistazo = ' ';
+            }
+
+        } while (Character.isLetterOrDigit(vistazo) || vistazo == '_');
+
+        String palabra = buffer.toString();
+
+        Optional<TokenType> tokenType = Optional.ofNullable(tokenDefinitions.getKeywords().get(palabra));
+
+        return generateToken(palabra, tokenType.orElse(TokenType.IDENTIFIER_OBJECT), lexer.getRowIndex(), initialPosition);
+    }
+
+    public Token classifySpecialSymbol() {
+
+        String palabra = String.valueOf(lexer.getCurrentData().charAt(lexer.getColumnIndex()));
+        int initialPosition = lexer.getColumnIndex();
+
+        Optional<TokenType> tokenType = Optional
+                .ofNullable(tokenDefinitions.getSpecialSymbols()
+                        .get(lexer.getCurrentData().charAt(lexer.getColumnIndex()))); // Me fijo si es un simbolo especial
+
+        lexer.incrementPosition();
+        return generateToken(palabra, tokenType.orElse(TokenType.IDENTIFIER_OBJECT), lexer.getRowIndex(), initialPosition);
     }
 
     private Token generateToken(String lexema, TokenType tokenType, int indexRow, int indexColumn){

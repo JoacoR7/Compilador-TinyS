@@ -18,6 +18,7 @@ public class Lexer {
     private TokenClasifier tokenClasifier;
     private BufferedReader reader;
     private String currentData;
+    private TokenDefinitions tokenDefinitions;
 
     public Lexer(String path) throws FileNotFoundException {
         this.path = path;
@@ -25,6 +26,7 @@ public class Lexer {
         this.columnIndex = 0;
         this.tokenClasifier = new TokenClasifier(this);
         this.reader = new BufferedReader(new java.io.FileReader(this.path));
+        this.tokenDefinitions = new TokenDefinitions();
 
     }
 
@@ -61,11 +63,21 @@ public class Lexer {
                 return tokenClasifier.isNumber();
             }
 
+            if (Character.isLetter(currentChar)) {
+                if (Character.isUpperCase(currentChar)) {
+                    return tokenClasifier.classifyClassIdentifier();
+                }
+                return tokenClasifier.classifyKeywordOrIdentifier();
+            }
 
-            // identificadores
-            // números
+            if (tokenDefinitions.getOperators().containsKey(String.valueOf(currentChar))) {
+                return tokenClasifier.classifyOperator();
+            }
+
+            if (tokenDefinitions.getSpecialSymbols().containsKey(currentChar)) {
+                return tokenClasifier.classifySpecialSymbol();
+            }
             // strings
-            // operadores
 
             columnIndex++;
         }
