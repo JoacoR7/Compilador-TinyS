@@ -99,7 +99,7 @@ public class TokenClasifier {
         digits.append(currentChar);
         lexer.incrementPosition();
 
-        while ((lexer.getColumnIndex() < lexer.getCurrentData().length()) && Character.isDigit(currentChar)) {
+        while ((!lexer.isEndOfLine()) && Character.isDigit(currentChar)) {
             currentChar = lexer.getCurrentChar();
 
             if (Character.isDigit(currentChar)) {
@@ -117,12 +117,14 @@ public class TokenClasifier {
         TokenType tokenType = TokenType.IDENTIFIER_CLASS;
         int initialPosition = lexer.getColumnIndex();
         char vistazo;
+
         do {
 
             buffer.append(lexer.getCurrentData().charAt(lexer.getColumnIndex()));
             lexer.incrementPosition();
 
-            if (lexer.getColumnIndex() < lexer.getCurrentData().length()){
+            // Verifico si puedo seguir consumiendo caracteres de la línea actual
+            if (!lexer.isEndOfLine()){
                 vistazo = lexer.getCurrentData().charAt(lexer.getColumnIndex());
             }else {
                 vistazo = ' ';
@@ -137,14 +139,14 @@ public class TokenClasifier {
 
         StringBuilder buffer = new StringBuilder();
         int initialPosition = lexer.getColumnIndex();
-
         char vistazo;
+
         do {
 
             buffer.append(lexer.getCurrentData().charAt(lexer.getColumnIndex()));
             lexer.incrementPosition();
 
-            if (lexer.getColumnIndex() < lexer.getCurrentData().length()){
+            if (!lexer.isEndOfLine()){
                 vistazo = lexer.getCurrentData().charAt(lexer.getColumnIndex());
             }else {
                 vistazo = ' ';
@@ -154,8 +156,10 @@ public class TokenClasifier {
 
         String palabra = buffer.toString();
 
+        // Verifico si la palabra es un keyword, en caso que no sea encontrada en el hashmap, devuelve null
         Optional<TokenType> tokenType = Optional.ofNullable(tokenDefinitions.getKeywords().get(palabra));
 
+        // Si el hashmap devolvió un keyword, el token se definirá como ese tipo de keyword, caso contrario será id object
         return generateToken(palabra, tokenType.orElse(TokenType.IDENTIFIER_OBJECT), lexer.getRowIndex(), initialPosition);
     }
 
@@ -164,12 +168,10 @@ public class TokenClasifier {
         String palabra = String.valueOf(lexer.getCurrentData().charAt(lexer.getColumnIndex()));
         int initialPosition = lexer.getColumnIndex();
 
-        Optional<TokenType> tokenType = Optional
-                .ofNullable(tokenDefinitions.getSpecialSymbols()
-                        .get(lexer.getCurrentData().charAt(lexer.getColumnIndex()))); // Me fijo si es un simbolo especial
+        TokenType tokenType = tokenDefinitions.getSpecialSymbols().get(lexer.getCurrentChar());
 
         lexer.incrementPosition();
-        return generateToken(palabra, tokenType.orElse(TokenType.IDENTIFIER_OBJECT), lexer.getRowIndex(), initialPosition);
+        return generateToken(palabra, tokenType, lexer.getRowIndex(), initialPosition);
     }
 
     private Token generateToken(String lexema, TokenType tokenType, int indexRow, int indexColumn){

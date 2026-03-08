@@ -51,6 +51,7 @@ public class Lexer {
                 continue;
             }
 
+            // Si viene el símbolo "/", debo checkear si es un símbolo de división o el inicio de comentario simple o multilínea
             if (currentChar == '/') {
                 token = tokenClasifier.isCommentOrDiv();
                 if (token != null) {
@@ -63,6 +64,7 @@ public class Lexer {
                 return tokenClasifier.isNumber();
             }
 
+            // Si es una letra, checkeo si es una clase o un keyword
             if (Character.isLetter(currentChar)) {
                 if (Character.isUpperCase(currentChar)) {
                     return tokenClasifier.classifyClassIdentifier();
@@ -79,8 +81,15 @@ public class Lexer {
             }
             // strings
 
+            // REVISAR, CREO QUE NO DEBERÍA AUMENTAR EL COLUMN INDEX, SINO DIRECTAMENTE RETORNAR NULO O ERROR
+            // YA QUE SI LLEGÓ A ESTE PUNTO SIGNIFICA QUE NO RECONOCIÓ EL CARACTER ACTUAL
+            // ESTO PASA POR EJEMPLO CON EL SÍMBOLO "@"
             columnIndex++;
         }
+    }
+
+    public boolean isEndOfLine() {
+        return currentData == null || columnIndex >= currentData.length();
     }
 
     public boolean loadNextLine() throws IOException {
