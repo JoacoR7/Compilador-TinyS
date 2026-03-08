@@ -3,6 +3,8 @@ package uncuyo.compiladores.lexer;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * La clase {@code Lexer} es responsable de analizar y extraer lexemas del archivo de entrada.
@@ -89,6 +91,17 @@ public class Lexer {
             // ESTO PASA POR EJEMPLO CON EL SÍMBOLO "@"
             columnIndex++;
         }
+    }
+
+    public List<Token> getAllTokens() throws IOException {
+        List<Token> tokens = new ArrayList<>();
+        Token token;
+
+        while ((token = getNextToken()) != null) {
+            tokens.add(token);
+        }
+
+        return tokens;
     }
 
     public boolean isEndOfLine() {

@@ -9,7 +9,7 @@ public class Alphabet {
             "abcdefghijklmnopqrstuvwxyz" +
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
             "0123456789" +
-            "+-*/=<>!&|;:,.$#" +
+            "+-*/=<>!&|;:,.$#%@^" +
             "(){}[]" +
             "_";
 
