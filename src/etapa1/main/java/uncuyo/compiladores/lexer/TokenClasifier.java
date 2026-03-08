@@ -24,7 +24,7 @@ public class TokenClasifier {
             case '*':
                 lexer.incrementPosition();
                 lexer.incrementPosition();
-                multiComment();
+                multiComment(lexer.getRowIndex(), lexer.getColumnIndex());
                 return null;
 
             case '/':
@@ -38,13 +38,13 @@ public class TokenClasifier {
         }
     }
 
-    public void multiComment() throws IOException {
+    public void multiComment(int initRowIndex, int initColumnIndex) throws IOException {
         while (true) {
 
             if (lexer.getColumnIndex() + 1 >= lexer.getCurrentData().length()) {
                 if (!lexer.loadNextLine()) {
                     throw new RuntimeException(
-                            "Comentario multilinea no cerrado"
+                            "Comentario multilinea no cerrado, inicio de comentario en línea " + initRowIndex + " columna " + initColumnIndex
                     );
                 }
                 continue;
@@ -120,7 +120,7 @@ public class TokenClasifier {
 
         do {
 
-            buffer.append(lexer.getCurrentData().charAt(lexer.getColumnIndex()));
+            buffer.append(lexer.getCurrentChar());
             lexer.incrementPosition();
 
             // Verifico si puedo seguir consumiendo caracteres de la línea actual
@@ -172,6 +172,49 @@ public class TokenClasifier {
 
         lexer.incrementPosition();
         return generateToken(palabra, tokenType, lexer.getRowIndex(), initialPosition);
+    }
+
+    public Token classifyString() {
+        StringBuilder buffer = new StringBuilder();
+        int initialPosition = lexer.getColumnIndex();
+        char vistazo;
+        boolean isEndOfString = false;
+
+        while (!isEndOfString) {
+            buffer.append(lexer.getCurrentChar());
+            lexer.incrementPosition();
+
+            if(lexer.isEndOfLine()) {
+                throw new RuntimeException(
+                        "String sin cerrar en línea " + lexer.getRowIndex() + ", " + buffer.toString()
+                );
+            }
+
+            vistazo = lexer.getCurrentChar();
+
+            // Se llegó al caracter '"', hay que checkear si es un cierre del literal string o no
+            if(vistazo == '"') {
+                // Si el último caracter no es '\', entonces significa que terminó el string
+                if(buffer.charAt(buffer.length() - 1) != '\\') {
+                    buffer.append(vistazo);
+                    lexer.incrementPosition();
+                    isEndOfString = true;
+                } else {
+                    // Si el último caracter es '\', el caracter ' " ' es parte del string
+                    buffer.deleteCharAt(buffer.length() - 1);
+                }
+            } else {
+                // Si tenemos un caracter que no es parte del alfabeto, y no es '\', rechazamos
+                if(!Alphabet.isValidCharacter(vistazo) && vistazo != '\\') {
+                    throw new RuntimeException(
+                            "String inválido, no se reconoce caracter " + vistazo
+                    );
+                }
+            }
+        }
+
+        return generateToken(buffer.toString(), TokenType.STRING_CONSTANT, lexer.getRowIndex(), initialPosition);
+
     }
 
     private Token generateToken(String lexema, TokenType tokenType, int indexRow, int indexColumn){

@@ -79,7 +79,10 @@ public class Lexer {
             if (tokenDefinitions.getSpecialSymbols().containsKey(currentChar)) {
                 return tokenClasifier.classifySpecialSymbol();
             }
-            // strings
+
+            if(currentChar == '\"') {
+                return tokenClasifier.classifyString();
+            }
 
             // REVISAR, CREO QUE NO DEBERÍA AUMENTAR EL COLUMN INDEX, SINO DIRECTAMENTE RETORNAR NULO O ERROR
             // YA QUE SI LLEGÓ A ESTE PUNTO SIGNIFICA QUE NO RECONOCIÓ EL CARACTER ACTUAL
