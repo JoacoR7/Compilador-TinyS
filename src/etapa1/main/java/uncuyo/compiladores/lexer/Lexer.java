@@ -1,5 +1,7 @@
 package uncuyo.compiladores.lexer;
 
+import uncuyo.compiladores.exceptions.LexicalException;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,7 +34,7 @@ public class Lexer {
 
     }
 
-    public Token getNextToken() throws IOException {
+    public Token getNextToken() throws IOException, LexicalException {
 
         Token token;
 
@@ -93,7 +95,7 @@ public class Lexer {
         }
     }
 
-    public List<Token> getAllTokens() throws IOException {
+    public List<Token> getAllTokens() throws IOException, LexicalException {
         List<Token> tokens = new ArrayList<>();
         Token token;
 

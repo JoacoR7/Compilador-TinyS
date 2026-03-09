@@ -1,5 +1,7 @@
 package uncuyo.compiladores.lexer;
 
+import uncuyo.compiladores.exceptions.LexicalException;
+
 import java.io.IOException;
 import java.util.Optional;
 
@@ -12,7 +14,7 @@ public class TokenClasifier {
         this.tokenDefinitions = new TokenDefinitions();
     }
 
-    public Token isCommentOrDiv() throws IOException {
+    public Token isCommentOrDiv() throws IOException, LexicalException {
 
         if (lexer.getColumnIndex() + 1 >= lexer.getCurrentData().length()){
             return classifyOperator();
@@ -38,13 +40,15 @@ public class TokenClasifier {
         }
     }
 
-    public void multiComment(int initRowIndex, int initColumnIndex) throws IOException {
+    public void multiComment(int initRowIndex, int initColumnIndex) throws IOException, LexicalException {
         while (true) {
 
             if (lexer.getColumnIndex() + 1 >= lexer.getCurrentData().length()) {
                 if (!lexer.loadNextLine()) {
-                    throw new RuntimeException(
-                            "Comentario multilinea no cerrado, inicio de comentario en línea " + initRowIndex + " columna " + initColumnIndex
+                    throw new LexicalException(
+                            initRowIndex,
+                            initColumnIndex,
+                            "COMENTARIO MULTILÍNEA NO CERRADO"
                     );
                 }
                 continue;
@@ -174,7 +178,7 @@ public class TokenClasifier {
         return generateToken(palabra, tokenType, lexer.getRowIndex(), initialPosition);
     }
 
-    public Token classifyString() {
+    public Token classifyString() throws LexicalException {
         StringBuilder buffer = new StringBuilder();
         int initialPosition = lexer.getColumnIndex();
         char vistazo;
@@ -185,8 +189,10 @@ public class TokenClasifier {
             lexer.incrementPosition();
 
             if(lexer.isEndOfLine()) {
-                throw new RuntimeException(
-                        "String sin cerrar en línea " + lexer.getRowIndex() + ", " + buffer.toString()
+                throw new LexicalException(
+                        lexer.getRowIndex(),
+                        initialPosition + 1,
+                        "STRING SIN CERRAR: " + buffer.toString()
                 );
             }
 
@@ -206,7 +212,9 @@ public class TokenClasifier {
             } else {
                 // Si tenemos un caracter que no es parte del alfabeto, y no es '\', rechazamos
                 if(!Alphabet.isValidCharacter(vistazo) && vistazo != '\\') {
-                    throw new RuntimeException(
+                    throw new LexicalException(
+                            lexer.getRowIndex(),
+                            lexer.getColumnIndex(),
                             "String inválido, no se reconoce caracter " + vistazo
                     );
                 }
