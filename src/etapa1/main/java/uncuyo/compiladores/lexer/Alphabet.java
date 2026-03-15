@@ -6,10 +6,10 @@ public class Alphabet {
     static public HashSet<Character> alphabet = new HashSet<>();
     static {
         String chars =
-            "abcdefghijklmnopqrstuvwxyz" +
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+            "abcdefghijklmnñopqrstuvwxyz" +
+            "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ" +
             "0123456789" +
-            "+-*/=<>!&|;:,.$#%@^" +
+            "+-*/=<>!&|;:,.$#%@^%¿?¡!" +
             "(){}[]" +
             "_";
 
