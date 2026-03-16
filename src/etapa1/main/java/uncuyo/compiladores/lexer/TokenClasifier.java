@@ -179,16 +179,17 @@ public class TokenClasifier {
     }
 
     public Token classifyString() throws LexicalException {
+
         StringBuilder buffer = new StringBuilder();
         int initialPosition = lexer.getColumnIndex();
-        char vistazo;
-        boolean isEndOfString = false;
+        boolean endString = false;
 
-        while (!isEndOfString) {
-            buffer.append(lexer.getCurrentChar());
-            lexer.incrementPosition();
+        lexer.incrementPosition(); // saltar comilla inicial
+        buffer.append("\"");
 
-            if(lexer.isEndOfLine()) {
+        while (!endString) {
+
+            if (lexer.isEndOfLine()) {
                 throw new LexicalException(
                         lexer.getRowIndex(),
                         initialPosition + 1,
@@ -196,33 +197,84 @@ public class TokenClasifier {
                 );
             }
 
-            vistazo = lexer.getCurrentChar();
+            char c = lexer.getCurrentChar();
 
-            // Se llegó al caracter '"', hay que checkear si es un cierre del literal string o no
-            if(vistazo == '"') {
-                // Si el último caracter no es '\', entonces significa que terminó el string
-                if(buffer.charAt(buffer.length() - 1) != '\\') {
-                    buffer.append(vistazo);
-                    lexer.incrementPosition();
-                    isEndOfString = true;
-                } else {
-                    // Si el último caracter es '\', el caracter ' " ' es parte del string
-                    buffer.deleteCharAt(buffer.length() - 1);
-                }
-            } else {
-                // Si tenemos un caracter que no es parte del alfabeto, y no es '\', rechazamos
-                if(!Alphabet.isValidCharacter(vistazo) && vistazo != '\\') {
+            if (c == '"') {
+                lexer.incrementPosition();
+                buffer.append("\"");
+                endString = true;
+            }
+            else if (c == '\\') {
+
+                lexer.incrementPosition();
+
+                if (lexer.isEndOfLine()) {
                     throw new LexicalException(
                             lexer.getRowIndex(),
                             lexer.getColumnIndex(),
-                            "String inválido, no se reconoce caracter " + vistazo
+                            "Escape incompleto en string"
                     );
                 }
+
+                char next = lexer.getCurrentChar();
+
+                switch (next) {
+                    case 'n':
+                    case 't':
+                    case 'r':
+                    case '"':
+                    case '\'':
+                    case '\\':
+                        buffer.append('\\');
+                        buffer.append(next);
+                        break;
+
+                    default:
+                        throw new LexicalException(
+                                lexer.getRowIndex(),
+                                lexer.getColumnIndex(),
+                                "Escape inválido: \\" + next
+                        );
+                }
+
+                lexer.incrementPosition();
+            }
+            else {
+
+                if (c == '\0') {
+                    throw new LexicalException(
+                            lexer.getRowIndex(),
+                            lexer.getColumnIndex(),
+                            "String contiene caracter nulo"
+                    );
+                }
+
+                if (!Alphabet.isValidCharacter(c)) {
+                    throw new LexicalException(
+                            lexer.getRowIndex(),
+                            lexer.getColumnIndex(),
+                            "Caracter inválido en string: " + c
+                    );
+                }
+
+                buffer.append(c);
+                lexer.incrementPosition();
+            }
+
+            if (buffer.length() > 1024) {
+                throw new LexicalException(
+                        lexer.getRowIndex(),
+                        initialPosition + 1,
+                        "String excede 1024 caracteres"
+                );
             }
         }
 
-        return generateToken(buffer.toString(), TokenType.STRING_CONSTANT, lexer.getRowIndex(), initialPosition);
-
+        return generateToken(buffer.toString(),
+                TokenType.STRING_CONSTANT,
+                lexer.getRowIndex(),
+                initialPosition
+        );
     }
 
     private Token generateToken(String lexema, TokenType tokenType, int indexRow, int indexColumn){

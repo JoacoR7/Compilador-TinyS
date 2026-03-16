@@ -1,5 +1,7 @@
 package uncuyo.compiladores.lexer;
 
+import java.util.Objects;
+
 public class Token {
     private int rowIndex;
     private int columnIndex;
@@ -53,5 +55,17 @@ public class Token {
                 ", lexeme='" + lexeme + '\'' +
                 ", tokenType=" + tokenType +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Token token = (Token) o;
+        return rowIndex == token.rowIndex && columnIndex == token.columnIndex && Objects.equals(lexeme, token.lexeme) && tokenType == token.tokenType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(rowIndex, columnIndex, lexeme, tokenType);
     }
 }
