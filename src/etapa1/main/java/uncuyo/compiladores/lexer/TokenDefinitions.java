@@ -7,6 +7,7 @@ public class TokenDefinitions {
     private final Map<String, TokenType> keywords = new HashMap<>();
     private final Map<Character, TokenType> specialSymbols = new HashMap<>();
     private final Map<String, TokenType> operators = new HashMap<>();
+    private final Map<Character, TokenType> undefinedSimbols = new HashMap<>();
 
     private void initKeywords() {
         keywords.put("class", TokenType.KW_CLASS);
@@ -69,10 +70,22 @@ public class TokenDefinitions {
 
     }
 
+    private void initUndefinedSymbols(){
+        undefinedSimbols.put('@', TokenType.UNDEFINED);
+        undefinedSimbols.put('$', TokenType.UNDEFINED);
+        undefinedSimbols.put('#', TokenType.UNDEFINED);
+        undefinedSimbols.put('%', TokenType.UNDEFINED);
+        undefinedSimbols.put('?', TokenType.UNDEFINED);
+        undefinedSimbols.put('¿', TokenType.UNDEFINED);
+        undefinedSimbols.put('^', TokenType.UNDEFINED);
+        undefinedSimbols.put('_', TokenType.UNDEFINED);
+    }
+
     public TokenDefinitions() {
         initKeywords();
         initSpecialSymbols();
         initOperators();
+        initUndefinedSymbols();
     }
 
     public Map<String, TokenType> getKeywords() {
@@ -85,5 +98,9 @@ public class TokenDefinitions {
 
     public Map<String, TokenType> getOperators() {
         return operators;
+    }
+
+    public Map<Character, TokenType> getUndefinedSymbols(){
+        return undefinedSimbols;
     }
 }

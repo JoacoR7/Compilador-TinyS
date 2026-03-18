@@ -84,6 +84,14 @@ public class Lexer {
                 return tokenClasifier.classifySpecialSymbol();
             }
 
+            if (tokenDefinitions.getUndefinedSymbols().containsKey(currentChar)) {
+                throw new LexicalException(
+                        getRowIndex(),
+                        getColumnIndex(),
+                        "Simbolo '" + currentChar + "' no reconocido"
+                );
+            }
+
             if(currentChar == '\"') {
                 return tokenClasifier.classifyString();
             }

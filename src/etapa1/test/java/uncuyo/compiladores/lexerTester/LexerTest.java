@@ -49,4 +49,22 @@ public class LexerTest {
         assertEquals(new Token("!", TokenType.OPERATOR_NOT, 1, 39), tokens.get(15));
     }
 
+    @Test
+    public void testSpecialSymbols() throws Exception {
+
+        Lexer lexer = new Lexer("testFiles/lexerFiles/specialSymbols.s");
+        List<Token> tokens = lexer.getAllTokens();
+
+        assertEquals(9, tokens.size());
+
+        assertEquals(new Token("{", TokenType.SPECIAL_SYMBOL_LCB, 1, 1), tokens.get(0));
+        assertEquals(new Token("}", TokenType.SPECIAL_SYMBOL_RCB, 1, 2), tokens.get(1));
+        assertEquals(new Token("(", TokenType.SPECIAL_SYMBOL_PO, 1, 3), tokens.get(2));
+        assertEquals(new Token(")", TokenType.SPECIAL_SYMBOL_PC, 1, 4), tokens.get(3));
+        assertEquals(new Token(";", TokenType.SPECIAL_SYMBOL_S, 1, 5), tokens.get(4));
+        assertEquals(new Token(",", TokenType.SPECIAL_SYMBOL_C, 1, 6), tokens.get(5));
+        assertEquals(new Token(".", TokenType.SPECIAL_SYMBOL_P, 1, 7), tokens.get(6));
+        assertEquals(new Token("[", TokenType.SPECIAL_SYMBOL_LB, 1, 8), tokens.get(7));
+        assertEquals(new Token("]", TokenType.SPECIAL_SYMBOL_RB, 1, 9), tokens.get(8));
+    }
 }

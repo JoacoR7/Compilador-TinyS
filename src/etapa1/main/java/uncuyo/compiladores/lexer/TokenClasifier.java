@@ -67,13 +67,12 @@ public class TokenClasifier {
     }
     public void simpleComment() throws IOException {
         lexer.loadNextLine();
-        return;
     }
 
-    public Token classifyOperator(){
+    public Token classifyOperator() throws LexicalException {
 
         String operator = String.valueOf(lexer.getCurrentData().charAt(lexer.getColumnIndex()));
-        TokenType tokenType = null;
+        TokenType tokenType = TokenType.UNDEFINED;
         int initialPosition = lexer.getColumnIndex(); // Columna donde empieza el token
 
         if (tokenDefinitions.getOperators().containsKey(operator)) {
@@ -92,6 +91,15 @@ public class TokenClasifier {
             }
 
         }
+
+        if (tokenType.equals(TokenType.UNDEFINED)){
+            throw new LexicalException(
+                    lexer.getRowIndex(),
+                    initialPosition + 1,
+                    "Simbolo '" + operator + "' no reconocido"
+            );
+        }
+
         lexer.incrementPosition();
         return generateToken(operator, tokenType, lexer.getRowIndex(), initialPosition);
     }
