@@ -1,0 +1,33 @@
+"Esta es una cadena de \"Ejemplo\""
+"int a = 1;"
+"123"
+"My name is what"
+"Hola"
+"Chau"
+/*asd
+*
+
+// a
+
+/
+
+123 1123 /
+
+11 123123 9 /9/
+
+2/*asdqdlasld
+ la*ssqq*/
+ // Operadores
+ + - / *
+ ++ --
+ == <= >= != > < = Auto
+ //Identificadores de clase
+ Taxi12
+ Ta_chi
+ Audi_123
+ // Palabras reservadas
+ for in class if impl else fn ret while new nil st self pub div for in
+ // Identificadores de objeto
+ foraneo forin ifelse whiletrue
+ // Simbolos especiales
+ {}[](),;.
