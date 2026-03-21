@@ -4,9 +4,7 @@ import uncuyo.compiladores.exceptions.LexicalException;
 import uncuyo.compiladores.lexer.Lexer;
 import uncuyo.compiladores.lexer.Token;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +26,30 @@ public class Etapa1 {
                 for(Token tokenItem : tokenList) {
                     System.out.println("| " + tokenItem.getTokenType().toString() + " | " + tokenItem.getLexeme()
                             + " | " + tokenItem.getRowIndex() + " (" + tokenItem.getColumnIndex() + ") |");
+                }
+            } else if (args.length == 2) {
+                File file = new File(args[1]);
+                try {
+                    if(!file.exists()) {
+                        if(file.createNewFile()) {
+                            System.out.println("Archivo creado: " + file.getAbsolutePath());
+                        } else {
+                            System.out.println("No se pudo crear el archivo");
+                        }
+                    }
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+                    writer.write("CORRECTO: ANALISIS LEXICO");
+                    writer.newLine();
+                    writer.write("| TOKEN | LEXEMA | NÚMERO DE LÍNEA (NÚMERO DE COLUMNA) |");
+                    System.out.println("Archivo modificado: " + file.getAbsolutePath());
+                    for(Token tokenItem : tokenList) {
+                        writer.newLine();
+                        writer.write("| " + tokenItem.getTokenType().toString() + " | " + tokenItem.getLexeme()
+                                + " | " + tokenItem.getRowIndex() + " (" + tokenItem.getColumnIndex() + ") |");
+                    }
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
