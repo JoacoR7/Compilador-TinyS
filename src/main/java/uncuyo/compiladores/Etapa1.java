@@ -3,6 +3,7 @@ package uncuyo.compiladores;
 import uncuyo.compiladores.exceptions.LexicalException;
 import uncuyo.compiladores.lexer.Lexer;
 import uncuyo.compiladores.lexer.Token;
+import uncuyo.compiladores.lexer.TokenType;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -17,9 +18,11 @@ public class Etapa1 {
             Lexer lexer = new Lexer(args[0]);
             List<Token> tokenList = new ArrayList<>();
             Token token;
-            while ((token = lexer.getNextToken()) != null) {
+            do {
+                token = lexer.getNextToken();
                 tokenList.add(token);
-            }
+
+            } while (token.getTokenType() != TokenType.EOF);
             if(args.length == 1) {
                 System.out.println("CORRECTO: ANALISIS LEXICO");
                 System.out.println("| TOKEN | LEXEMA | NÚMERO DE LÍNEA (NÚMERO DE COLUMNA) |");

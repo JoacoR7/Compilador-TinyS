@@ -54,5 +54,6 @@ public enum TokenType {
     OPERATOR_INC, // ++
     OPERATOR_DEC, // --
 
-    UNDEFINED
+    UNDEFINED,
+    EOF
 }

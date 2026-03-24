@@ -25,7 +25,7 @@ public class LexerTest {
         Lexer lexer = new Lexer("testFiles/lexerFiles/operators.s");
         List<Token> tokens = lexer.getAllTokens();
 
-        assertEquals(16, tokens.size());
+        assertEquals(17, tokens.size());
 
         assertEquals(new Token("+", TokenType.OPERATOR_ADD, 1, 1), tokens.get(0));
         assertEquals(new Token("-", TokenType.OPERATOR_SUB, 1, 3), tokens.get(1));
@@ -55,7 +55,7 @@ public class LexerTest {
         Lexer lexer = new Lexer("testFiles/lexerFiles/specialSymbols.s");
         List<Token> tokens = lexer.getAllTokens();
 
-        assertEquals(9, tokens.size());
+        assertEquals(10, tokens.size());
 
         assertEquals(new Token("{", TokenType.SPECIAL_SYMBOL_LCB, 1, 1), tokens.get(0));
         assertEquals(new Token("}", TokenType.SPECIAL_SYMBOL_RCB, 1, 2), tokens.get(1));

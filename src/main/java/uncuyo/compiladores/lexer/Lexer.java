@@ -43,7 +43,7 @@ public class Lexer {
             //Verifica si hay más datos en la línea actual del archivo.
             if (currentData == null || columnIndex >= currentData.length()) {
                 if (!loadNextLine()) {
-                    return null;
+                    return new Token("EOF", TokenType.EOF, rowIndex, columnIndex + 1);
                 }
                 continue;
             }
@@ -106,10 +106,11 @@ public class Lexer {
     public List<Token> getAllTokens() throws IOException, LexicalException {
         List<Token> tokens = new ArrayList<>();
         Token token;
-
-        while ((token = getNextToken()) != null) {
+        do {
+            token = getNextToken();
             tokens.add(token);
-        }
+
+        } while (token.getTokenType() != TokenType.EOF);
 
         return tokens;
     }
