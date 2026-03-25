@@ -121,4 +121,30 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /*
+        ⟨AtributoK⟩ ::= ⟨Atributo⟩ ⟨AtributoK⟩
+            | λ
+     */
+
+    /*
+        ⟨Impl ⟩ ::= impl idclass { ⟨MiembroK⟩ }
+     */
+
+    public void impl() throws Exception {
+        matchLexeme("impl");
+        matchTokenType(TokenType.IDENTIFIER_CLASS);
+        matchLexeme("{");
+        // MiembroK()
+        matchLexeme("}");
+    }
+
+    /*
+        ⟨Herencia⟩ ::= : ⟨Tipo⟩
+     */
+
+    public void herencia() throws Exception {
+        matchLexeme(":");
+        //tipo()
+    }
+
 }
