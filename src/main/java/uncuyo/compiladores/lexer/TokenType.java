@@ -23,8 +23,7 @@ public enum TokenType {
 
     INT_CONSTANT,
     STRING_CONSTANT,
-    BOOLEAN_TRUE,
-    BOOLEAN_FALSE,
+    BOOLEAN_CONSTANT,
 
     SPECIAL_SYMBOL_LCB, //Left curly brace {
     SPECIAL_SYMBOL_RCB, //Right curly brace }

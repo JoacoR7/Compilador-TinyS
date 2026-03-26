@@ -25,6 +25,8 @@ public class TokenDefinitions {
         keywords.put("div", TokenType.KW_DIV);
         keywords.put("for", TokenType.KW_FOR);
         keywords.put("in", TokenType.KW_IN);
+        keywords.put("true", TokenType.BOOLEAN_CONSTANT);
+        keywords.put("false", TokenType.BOOLEAN_CONSTANT);
     }
 
     private void initSpecialSymbols() {

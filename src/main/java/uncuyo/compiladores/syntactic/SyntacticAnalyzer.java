@@ -42,7 +42,7 @@ public class SyntacticAnalyzer {
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba '" + expected + "' pero se encontró '" +
+                    "Se esperaba '" + expected + "' pero se encontro '" +
                             currentToken.getLexeme() + "'");
         }
     }
@@ -54,7 +54,7 @@ public class SyntacticAnalyzer {
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba " + expectedTokenType + " pero se encontró '" +
+                    "Se esperaba " + expectedTokenType + " pero se encontro '" +
                             currentToken.getLexeme() + "'"
             );
         }
@@ -89,7 +89,7 @@ public class SyntacticAnalyzer {
         }else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba 'class', 'impl' o 'start' pero se encontró '" +
+                    "Se esperaba 'class', 'impl' o 'start' pero se encontro '" +
                             currentToken.getLexeme() + "'"
             );
         }
@@ -115,7 +115,7 @@ public class SyntacticAnalyzer {
         }else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba '{' o ':' pero se encontró '" +
+                    "Se esperaba '{' o ':' pero se encontro '" +
                             currentToken.getLexeme() + "'"
             );
         }
