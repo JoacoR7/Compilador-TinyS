@@ -1,5 +1,6 @@
 package uncuyo.compiladores.lexer;
 
+import uncuyo.compiladores.exceptions.LexerFileReadException;
 import uncuyo.compiladores.exceptions.LexicalException;
 
 import java.io.BufferedReader;
@@ -34,7 +35,7 @@ public class Lexer {
 
     }
 
-    public Token getNextToken() throws IOException, LexicalException {
+    public Token getNextToken() throws LexerFileReadException, LexicalException {
 
         Token token;
 
@@ -103,7 +104,7 @@ public class Lexer {
         }
     }
 
-    public List<Token> getAllTokens() throws IOException, LexicalException {
+    public List<Token> getAllTokens() throws LexerFileReadException, LexicalException {
         List<Token> tokens = new ArrayList<>();
         Token token;
         do {
@@ -119,14 +120,18 @@ public class Lexer {
         return currentData == null || columnIndex >= currentData.length();
     }
 
-    public boolean loadNextLine() throws IOException {
-        currentData = reader.readLine();
-        // End of file
-        if (currentData != null) {
-            rowIndex++;
-            columnIndex = 0;
+    public boolean loadNextLine() throws LexerFileReadException {
+        try {
+            currentData = reader.readLine();
+            // End of file
+            if (currentData != null) {
+                rowIndex++;
+                columnIndex = 0;
+            }
+            return currentData != null;
+        } catch (IOException e) {
+            throw new LexerFileReadException(path, "No se pudo leer la siguiente línea", e);
         }
-        return currentData != null;
     }
 
     public char getCurrentChar() {

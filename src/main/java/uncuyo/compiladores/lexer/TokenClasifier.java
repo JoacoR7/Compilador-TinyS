@@ -1,8 +1,8 @@
 package uncuyo.compiladores.lexer;
 
+import uncuyo.compiladores.exceptions.LexerFileReadException;
 import uncuyo.compiladores.exceptions.LexicalException;
 
-import java.io.IOException;
 import java.util.Optional;
 
 public class TokenClasifier {
@@ -14,7 +14,7 @@ public class TokenClasifier {
         this.tokenDefinitions = new TokenDefinitions();
     }
 
-    public Token isCommentOrDiv() throws IOException, LexicalException {
+    public Token isCommentOrDiv() throws LexerFileReadException, LexicalException {
 
         if (lexer.getColumnIndex() + 1 >= lexer.getCurrentData().length()){
             return classifyOperator();
@@ -40,7 +40,7 @@ public class TokenClasifier {
         }
     }
 
-    public void multiComment(int initRowIndex, int initColumnIndex) throws IOException, LexicalException {
+    public void multiComment(int initRowIndex, int initColumnIndex) throws LexerFileReadException, LexicalException {
         while (true) {
 
             if (lexer.getColumnIndex() + 1 >= lexer.getCurrentData().length()) {
@@ -65,7 +65,7 @@ public class TokenClasifier {
             lexer.incrementPosition();
         }
     }
-    public void simpleComment() throws IOException {
+    public void simpleComment() throws LexerFileReadException {
         lexer.loadNextLine();
     }
 
