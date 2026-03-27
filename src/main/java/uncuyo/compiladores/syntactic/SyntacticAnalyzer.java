@@ -147,4 +147,281 @@ public class SyntacticAnalyzer {
         //tipo()
     }
 
+    /*
+    ⟨MiembroK⟩ ::= ⟨Miembro⟩ ⟨MiembroK⟩
+    | λ
+
+    ⟨Miembro⟩ ::= ⟨Método⟩
+    | ⟨Constructor⟩
+
+    ⟨Constructor ⟩ ::= . ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+
+    ⟨Atributo⟩ ::= ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
+    | ⟨Visibilidad⟩ ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
+
+    ⟨Método⟩ ::= fn ⟨MétodoF⟩
+        | ⟨Forma-Método⟩ fn ⟨MétodoF⟩
+
+    ⟨MétodoF⟩ ::= idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+        | ⟨Tipo-Método⟩ idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+
+    ⟨Visibilidad ⟩ ::= pub
+
+    ⟨Forma-Método⟩ ::= st
+
+    ⟨Bloque-Método⟩ ::= { ⟨Decl-Var-LocalesK⟩ ⟨SentenciaK⟩ }
+
+    ⟨Decl-Var-LocalesK⟩ ::= ⟨Decl-Var-Locales⟩ ⟨Decl-Var-LocalesK⟩
+    | λ
+
+    ⟨Decl-Var-Locales⟩ ::= ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
+
+	⟨Lista-Declaración-Variables⟩ ::= idMetAt ⟨Lista-Declaración-VariablesF⟩
+
+	⟨Lista-Declaración-VariablesF⟩ ::= , ⟨Lista-Declaración-Variables⟩
+		| λ
+
+	⟨Argumentos-Formales⟩::= ( ⟨Argumentos-FormalesF⟩
+
+	⟨Argumentos-FormalesF⟩ ::= )
+		| ⟨Lista-Argumentos-Formales⟩ )
+
+	⟨Lista-Argumentos-Formales⟩ ::= ⟨Argumento-Formal ⟩ ⟨Lista-Argumentos-FormalesF⟩
+
+    ⟨Lista-Argumentos-FormalesF⟩ ::=  , ⟨Lista-Argumentos-Formales⟩
+        | λ
+
+    ⟨Argumento-Formal ⟩ ::= ⟨Tipo⟩ idMetAt
+
+    ⟨Tipo-Método⟩ ::= ⟨Tipo⟩
+    | void
+
+    ⟨Tipo⟩ ::= ⟨Tipo-Primitivo⟩
+    | ⟨Tipo-Referencia⟩
+    | ⟨Tipo-Arreglo⟩
+
+    */
+    /*
+    ⟨Tipo-Primitivo⟩ ::= Str
+        | Bool
+        | Int
+    */
+    public void tipoPrimitivo() throws Exception {
+        if(checkLexeme("Str")) {
+            matchLexeme("Str");
+        } else if(checkLexeme("Bool")) {
+            matchLexeme("Bool");
+        } else if (checkLexeme("Int")) {
+            matchLexeme("Int");
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba 'Str', 'Bool' o 'Int', pero se encontró '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+
+    /*
+        ⟨Tipo-Referencia⟩ ::= idclass
+    */
+
+    public void tipoReferencia() throws Exception {
+        matchLexeme("idclass");
+    }
+    /*
+        ⟨Tipo-Arreglo⟩ ::= Array ⟨Tipo-Primitivo⟩
+    */
+
+    public void tipoArreglo() throws Exception {
+        matchLexeme("Array");
+        tipoPrimitivo();
+    }
+
+    /*
+
+    ⟨SentenciaK⟩ ::= ⟨Sentencia⟩ ⟨SentenciaK⟩
+    | λ
+
+    ⟨Sentencia⟩ ::= ;
+    | ⟨Asignación⟩;
+    | ⟨Sentencia-Simple⟩;
+    | while ( ⟨Expresión⟩ ) ⟨Sentencia⟩
+    | for ( ⟨Tipo-Primitivo⟩ idMetAt in idMetAt ) ⟨Sentencia⟩
+    | ⟨Bloque⟩
+    | if (⟨Expresión⟩) ⟨Sentencia⟩ ⟨SentenciaF1⟩
+    | ret ⟨SentenciaF2⟩
+
+	⟨SentenciaF1⟩ ::= else ⟨Sentencia⟩
+		| λ
+
+	⟨SentenciaF2⟩ ::= ;
+		| ⟨Expresión⟩;
+
+    ⟨Bloque⟩ ::= { ⟨SentenciaK⟩ }
+
+    ⟨Asignación⟩ ::= ⟨AccesoVar-Simple⟩ = ⟨Expresión⟩
+    | ⟨AccesoSelf-Simple⟩ = ⟨Expresión⟩
+
+        ⟨AccesoVar-Simple⟩ ::= id ⟨AccesoVar-SimpleF⟩
+
+    ⟨AccesoVar-SimpleF⟩ ::= ⟨Encadenado-SimpleK⟩
+    | [ ⟨Expresión⟩ ]
+
+    ⟨AccesoSelf-Simple⟩ ::= self ⟨Encadenado-SimpleK⟩
+
+    ⟨Encadenado-SimpleK⟩ ::= ⟨Encadenado-Simple⟩ ⟨Encadenado-SimpleK⟩
+    | λ
+
+    ⟨Encadenado-Simple⟩ ::= . id
+
+    ⟨Sentencia-Simple⟩ ::= (⟨Expresión⟩)
+
+    ⟨Expresión⟩ ::= ⟨ExpOr ⟩
+
+	⟨ExpOr ⟩ ::= ⟨ExpAnd⟩ ⟨ExpOrR⟩
+
+    ⟨ExpOrR⟩ ::= || ⟨ExpAnd ⟩ ⟨ExpOrR⟩
+        | λ
+
+	⟨ExpAnd ⟩ ::= ⟨ExpIgual⟩ ⟨ExpAndR⟩
+
+    ⟨ExpAndR⟩ ::= && ⟨ExpIgual ⟩ ⟨ExpAndR⟩
+        | λ
+
+	⟨ExpIgual ⟩ ::= ⟨ExpCompuesta⟩ ⟨ExpIgualR⟩
+
+    ⟨ExpIguaR⟩ ::= ⟨OpIgual ⟩ ⟨ExpCompuesta⟩ ⟨ExpIgualR⟩
+        | λ
+
+	⟨ExpCompuesta⟩ ::= ⟨ExpAd ⟩ ⟨ExpCompuestaF⟩
+
+	⟨ExpCompuestaF⟩ ::= ⟨OpCompuesto⟩ ⟨ExpAd ⟩
+		| λ
+
+    ⟨ExpAd ⟩ ::= ⟨ExpMul ⟩ ⟨ExpAdR⟩
+
+    ⟨ExpAdR⟩ ::= ⟨OpAd ⟩ ⟨ExpMul ⟩ ⟨ExpAdR⟩
+        | λ
+
+    ⟨ExpMul ⟩ ::= ⟨ExpUn⟩ ⟨ExpMulR⟩
+
+    ⟨ExpMulR⟩ ::= ⟨OpMul ⟩ ⟨ExpUn⟩ ⟨ExpMulR⟩
+    | λ
+
+    ⟨ExpUn⟩ ::= ⟨OpUnario⟩ ⟨ExpUn⟩
+    | ⟨Operando⟩
+
+    ⟨OpIgual ⟩ ::= ==
+    | !=
+
+    ⟨OpCompuesto⟩ ::= <
+    | >
+    | <=
+    | >=
+
+    ⟨OpAd ⟩ ::= +
+    | -
+
+    ⟨OpUnario⟩ ::= 	+
+    | -
+    | !
+    | ++
+    | --
+
+    ⟨OpMul ⟩ ::= *
+    | /
+
+        ⟨Operando⟩ ::= ⟨Literal ⟩
+    | ⟨Primario⟩
+
+    ⟨Literal ⟩ ::= nil
+    | true
+    | false
+    | intLiteral
+    | StrLiteral
+
+    ⟨Primario⟩ ::= ⟨ExpresionParentizada⟩  -> (
+    | ⟨AccesoSelf ⟩  -> self
+    | ⟨AccesoVar ⟩  -> id
+    | ⟨Llamada-Método⟩  -> id
+    | ⟨Llamada-Método-Estático⟩ -> idclass
+    | ⟨Llamada-Conclassor⟩ -> new
+
+    ⟨Primario⟩ ::= ⟨ExpresionParentizada⟩
+    | ⟨AccesoSelf ⟩
+    | ⟨Llamada-Método-Estático⟩
+    | ⟨Llamada-Conclassor⟩
+    | id ⟨VarOMetodo⟩
+
+	⟨VarOMetodo⟩ ::= ⟨AccesoVar ⟩
+		| ⟨Llamada-Método⟩
+
+
+	⟨ExpresionParentizada⟩ ::= ( ⟨Expresión⟩ ) ⟨ExpresionParentizadaF⟩
+
+	⟨ExpresionParentizadaF⟩ ::=  λ
+		| ⟨Encadenado⟩
+
+	⟨AccesoSelf ⟩ ::= self ⟨AccesoSelfF⟩
+
+    ⟨AccesoSelfF⟩::= λ
+        | ⟨Encadenado⟩
+
+    ⟨AccesoVar ⟩ ::= id
+    | id ⟨Encadenado⟩
+    | id [ ⟨Expresión⟩ ]
+    | id [ ⟨Expresión⟩ ] ⟨Encadenado⟩
+
+        ⟨AccesoVar ⟩ ::= λ
+    | ⟨Encadenado⟩
+    | [ ⟨Expresión⟩ ]
+    | [ ⟨Expresión⟩ ] ⟨Encadenado⟩
+
+        ⟨AccesoVar ⟩ ::= λ
+    | ⟨Encadenado⟩
+    | [ ⟨Expresión⟩ ] ⟨AccesoVarF⟩
+
+        ⟨AccesoVarF⟩ ::= λ
+            | ⟨Encadenado⟩
+
+    ⟨Llamada-Método⟩ ::= id ⟨Argumentos-Actuales⟩
+    | id ⟨Argumentos-Actuales⟩ ⟨Encadenado⟩
+
+    ⟨Llamada-Método⟩ ::= ⟨Argumentos-Actuales⟩
+    | ⟨Argumentos-Actuales⟩ ⟨Encadenado⟩
+
+    ⟨Llamada-Método⟩ ::= ⟨Argumentos-Actuales⟩ ⟨Llamada-MétodoF⟩
+
+    ⟨Llamada-MétodoF⟩ ::= λ
+    | ⟨Encadenado⟩
+
+    ⟨Llamada-Método-Estático⟩ ::= idclass . ⟨Llamada-Método⟩ ⟨Llamada-Método-EstáticoF⟩
+
+    ⟨Llamada-Método-EstáticoF⟩ ::= λ
+    | ⟨Encadenado⟩
+
+        ⟨Llamada-Conclassor⟩ ::= new idclass ⟨Argumentos-Actuales⟩ ⟨Llamada-ConclassorF⟩
+            | new ⟨Tipo-Primitivo⟩ [ ⟨Expresión⟩ ] ⟨Llamada-ConclassorF⟩
+
+    ⟨Llamada-ConclassorF⟩ ::= λ
+        | ⟨Encadenado⟩
+
+	⟨Argumentos-Actuales⟩ ::= ( ⟨Argumentos-ActualesF⟩
+
+	⟨Argumentos-ActualesF⟩ ::= )
+		| ⟨Lista-Expresiones⟩ )
+
+	⟨Lista-Expresiones⟩ ::= ⟨Expresión⟩ ⟨Lista-ExpresionesF⟩
+
+	⟨Lista-ExpresionesF⟩ ::= λ
+		| , ⟨Lista-Expresiones⟩
+
+	⟨Encadenado⟩ ::= . ⟨EncadenadoF⟩
+
+	⟨EncadenadoF⟩ ::= ⟨Llamada-Método⟩
+		| ⟨AccesoVar ⟩
+
+     */
+
 }
