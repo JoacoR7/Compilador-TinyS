@@ -1,5 +1,6 @@
 package uncuyo.compiladores.syntactic;
 
+import uncuyo.compiladores.exceptions.LexerFileReadException;
 import uncuyo.compiladores.exceptions.LexicalException;
 import uncuyo.compiladores.exceptions.SyntacticException;
 import uncuyo.compiladores.lexer.Lexer;
@@ -14,7 +15,7 @@ public class SyntacticAnalyzer {
     private Lexer lexer;
     private Token currentToken;
 
-    private void nextToken() throws LexicalException, IOException {
+    private void nextToken() throws LexerFileReadException, LexicalException {
         currentToken = lexer.getNextToken();
     }
 
@@ -36,7 +37,7 @@ public class SyntacticAnalyzer {
         return false;
     }
 
-    private void matchLexeme(String expected) throws Exception {
+    private void matchLexeme(String expected) throws LexerFileReadException, LexicalException, SyntacticException {
         if (currentToken.getLexeme().equals(expected)) {
             nextToken();
         } else {
@@ -47,7 +48,7 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void matchTokenType(TokenType expectedTokenType) throws Exception {
+    private void matchTokenType(TokenType expectedTokenType) throws LexerFileReadException, LexicalException, SyntacticException {
 
         if (currentToken.getTokenType().equals(expectedTokenType)){
             nextToken();
@@ -62,13 +63,13 @@ public class SyntacticAnalyzer {
     }
 
     /* ⟨program⟩ ::= ⟨Lista-Definiciones⟩ ⟨Start⟩ */
-    public void program(){
-        //listaDefiniciones();
+    public void program() throws SyntacticException {
+        listaDefiniciones();
         //start();
     }
 
     /* ⟨Start⟩ ::= start ⟨Bloque-Método⟩ */
-    public void start() throws Exception {
+    public void start() throws LexerFileReadException, LexicalException, SyntacticException {
         matchLexeme("start");
         //bloqueMetodo();
     }
@@ -131,11 +132,11 @@ public class SyntacticAnalyzer {
      */
 
     public void impl() throws Exception {
-        matchLexeme("impl");
+        matchTokenType(TokenType.KW_IMPL);
         matchTokenType(TokenType.IDENTIFIER_CLASS);
-        matchLexeme("{");
+        matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
         // MiembroK()
-        matchLexeme("}");
+        matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
     }
 
     /*
@@ -143,8 +144,8 @@ public class SyntacticAnalyzer {
      */
 
     public void herencia() throws Exception {
-        matchLexeme(":");
-        //tipo()
+        matchTokenType(TokenType.SPECIAL_SYMBOL_CL);
+        tipo();
     }
 
     /*
@@ -165,7 +166,14 @@ public class SyntacticAnalyzer {
     ⟨MétodoF⟩ ::= idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
         | ⟨Tipo-Método⟩ idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
 
-    ⟨Visibilidad ⟩ ::= pub
+    */
+    /*
+        ⟨Visibilidad ⟩ ::= pub
+    */
+    public void visibilidad() throws Exception {
+        matchLexeme("pub");
+    }
+    /*
 
     ⟨Forma-Método⟩ ::= st
 

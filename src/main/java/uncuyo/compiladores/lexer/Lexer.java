@@ -138,7 +138,6 @@ public class Lexer {
         return this.currentData.charAt(this.columnIndex);
     }
 
-
     public BufferedReader getReader() {
         return reader;
     }

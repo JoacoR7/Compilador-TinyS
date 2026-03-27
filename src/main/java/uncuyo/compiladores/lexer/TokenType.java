@@ -30,7 +30,8 @@ public enum TokenType {
     SPECIAL_SYMBOL_PO, //Parenthesis open (
     SPECIAL_SYMBOL_PC, //Parenthesis close )
     SPECIAL_SYMBOL_S, //Semicolon ;
-    SPECIAL_SYMBOL_C, //Comma ,
+    SPECIAL_SYMBOL_CM, //Comma ,
+    SPECIAL_SYMBOL_CL, // :
     SPECIAL_SYMBOL_P, //Punto .
     SPECIAL_SYMBOL_LB, // LEFT BRACKET [
     SPECIAL_SYMBOL_RB, // RIGHT BRACKT ]

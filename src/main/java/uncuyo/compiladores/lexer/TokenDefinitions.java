@@ -35,7 +35,7 @@ public class TokenDefinitions {
         specialSymbols.put('(', TokenType.SPECIAL_SYMBOL_PO);
         specialSymbols.put(')', TokenType.SPECIAL_SYMBOL_PC);
         specialSymbols.put(';', TokenType.SPECIAL_SYMBOL_S);
-        specialSymbols.put(',', TokenType.SPECIAL_SYMBOL_C);
+        specialSymbols.put(',', TokenType.SPECIAL_SYMBOL_CM);
         specialSymbols.put('.', TokenType.SPECIAL_SYMBOL_P);
         specialSymbols.put('[', TokenType.SPECIAL_SYMBOL_LB);
         specialSymbols.put(']', TokenType.SPECIAL_SYMBOL_RB);
