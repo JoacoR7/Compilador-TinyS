@@ -196,15 +196,32 @@ public class SyntacticAnalyzer {
     ⟨Tipo-Método⟩ ::= ⟨Tipo⟩
     | void
 
-    ⟨Tipo⟩ ::= ⟨Tipo-Primitivo⟩
-    | ⟨Tipo-Referencia⟩
-    | ⟨Tipo-Arreglo⟩
-
     */
+
     /*
-    ⟨Tipo-Primitivo⟩ ::= Str
-        | Bool
-        | Int
+        ⟨Tipo⟩ ::= ⟨Tipo-Primitivo⟩
+            | ⟨Tipo-Referencia⟩
+            | ⟨Tipo-Arreglo⟩
+    */
+    public void tipo() throws Exception {
+        if(checkLexeme("Str", "Bool", "Int")) {
+            tipoPrimitivo();
+        } else if (checkType(TokenType.IDENTIFIER_CLASS)) {
+            tipoReferencia();
+        } else if (checkLexeme("Array")) {
+            tipoArreglo();
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba 'Str', 'Bool', 'Int', identificador de clase o 'Array' pero se encontró '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+    /*
+        ⟨Tipo-Primitivo⟩ ::= Str
+            | Bool
+            | Int
     */
     public void tipoPrimitivo() throws Exception {
         if(checkLexeme("Str")) {
@@ -227,7 +244,7 @@ public class SyntacticAnalyzer {
     */
 
     public void tipoReferencia() throws Exception {
-        matchLexeme("idclass");
+        matchTokenType(TokenType.IDENTIFIER_CLASS);
     }
     /*
         ⟨Tipo-Arreglo⟩ ::= Array ⟨Tipo-Primitivo⟩
