@@ -63,14 +63,17 @@ public class SyntacticAnalyzer {
     }
 
     /* ⟨program⟩ ::= ⟨Lista-Definiciones⟩ ⟨Start⟩ */
-    public void program() throws SyntacticException {
+    public void program() throws Exception {
         listaDefiniciones();
-        //start();
+        start();
+        matchTokenType(TokenType.EOF);
+        System.out.println("CORRECTO: ANALISIS SINTACTICO");
     }
 
     /* ⟨Start⟩ ::= start ⟨Bloque-Método⟩ */
     public void start() throws LexerFileReadException, LexicalException, SyntacticException {
-        matchLexeme("start");
+        matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
+        //DUDA CON START
         //bloqueMetodo();
     }
 
@@ -78,14 +81,15 @@ public class SyntacticAnalyzer {
             | ⟨Impl⟩ ⟨Lista-Definiciones⟩
             | λ
     */
-    public void listaDefiniciones() throws SyntacticException {
-        if (checkLexeme("class")){
-            // class();
-            // listaDefiniciones();
-        } else if (checkLexeme("impl")) {
-            // impl()
-            // listaDefiniciones();
-        }else if (checkLexeme("start")){
+    public void listaDefiniciones() throws Exception {
+        if (checkType(TokenType.KW_CLASS)){
+            class_();
+            listaDefiniciones();
+        } else if (checkType(TokenType.KW_IMPL)) {
+            impl();
+            listaDefiniciones();
+        } else if (checkType(TokenType.IDENTIFIER_VAR_METHOD)){
+            //DUDA CON START
             // Caso de lambda
         }else {
             throw new SyntacticException(currentToken.getRowIndex(),
@@ -97,22 +101,25 @@ public class SyntacticAnalyzer {
     }
 
     /* 	⟨class⟩ ::= class idclass ⟨classF⟩ */
-    public void class1() throws Exception {
-        matchLexeme("class");
+    public void class_() throws Exception {
+        matchTokenType(TokenType.KW_CLASS);
         matchTokenType(TokenType.IDENTIFIER_CLASS);
-        //classF();
+        classF();
     }
 
     /* 	⟨classF⟩ ::= { ⟨AtributoK⟩ }
             | ⟨Herencia⟩ { ⟨AtributoK⟩ }
     */
     public void classF() throws Exception {
-        if (checkLexeme("{")){
-            matchLexeme("{");
-            // atributoK();
-            matchLexeme("}");
-        } else if (checkLexeme(":")) {
-            // herencia();
+        if(checkType(TokenType.SPECIAL_SYMBOL_LCB)) {
+            matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
+            //atributoK();
+            matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
+        } else if (checkType(TokenType.SPECIAL_SYMBOL_CL)) {
+            herencia();
+            matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
+            //atributoK();
+            matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
         }else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
@@ -131,7 +138,7 @@ public class SyntacticAnalyzer {
         ⟨Impl ⟩ ::= impl idclass { ⟨MiembroK⟩ }
      */
 
-    public void impl() throws Exception {
+    public void impl() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.KW_IMPL);
         matchTokenType(TokenType.IDENTIFIER_CLASS);
         matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
@@ -142,7 +149,6 @@ public class SyntacticAnalyzer {
     /*
         ⟨Herencia⟩ ::= : ⟨Tipo⟩
      */
-
     public void herencia() throws Exception {
         matchTokenType(TokenType.SPECIAL_SYMBOL_CL);
         tipo();
@@ -170,12 +176,18 @@ public class SyntacticAnalyzer {
     /*
         ⟨Visibilidad ⟩ ::= pub
     */
-    public void visibilidad() throws Exception {
-        matchLexeme("pub");
+    public void visibilidad() throws LexicalException, SyntacticException {
+        matchTokenType(TokenType.KW_PUB);
     }
-    /*
 
-    ⟨Forma-Método⟩ ::= st
+    /*
+        ⟨Forma-Método⟩ ::= st
+     */
+    public void formaMetodo() throws LexicalException, SyntacticException {
+        matchTokenType(TokenType.KW_ST);
+    }
+
+    /*
 
     ⟨Bloque-Método⟩ ::= { ⟨Decl-Var-LocalesK⟩ ⟨SentenciaK⟩ }
 
@@ -200,11 +212,29 @@ public class SyntacticAnalyzer {
         | λ
 
     ⟨Argumento-Formal ⟩ ::= ⟨Tipo⟩ idMetAt
-
-    ⟨Tipo-Método⟩ ::= ⟨Tipo⟩
-    | void
-
     */
+
+    /*
+    ⟨Tipo-Método⟩ ::= ⟨Tipo⟩
+        | void
+    */
+
+    public void tipoMetodo() throws Exception {
+        //DUDA: CÓMO HACEMOS CON ARRAY? ya que puede venir idclass o Array, Array tmb sería un idclass
+        if(checkType(TokenType.STRING_CONSTANT, TokenType.BOOLEAN_CONSTANT,
+                TokenType.INT_CONSTANT, TokenType.IDENTIFIER_CLASS)) {
+            tipo();
+        } else if (checkType(TokenType.KW_VOID)) {
+            matchTokenType(TokenType.KW_VOID);
+        }else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba 'Str', 'Bool', 'Int', 'void' o un identificador de clase, pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+
 
     /*
         ⟨Tipo⟩ ::= ⟨Tipo-Primitivo⟩
@@ -212,16 +242,17 @@ public class SyntacticAnalyzer {
             | ⟨Tipo-Arreglo⟩
     */
     public void tipo() throws Exception {
-        if(checkLexeme("Str", "Bool", "Int")) {
+        if(checkType(TokenType.STRING_CONSTANT, TokenType.BOOLEAN_CONSTANT, TokenType.INT_CONSTANT)) {
             tipoPrimitivo();
         } else if (checkType(TokenType.IDENTIFIER_CLASS)) {
             tipoReferencia();
+            //DUDA: QUE HACEMOS CON ARRAY SI ES IDCLASS
         } else if (checkLexeme("Array")) {
             tipoArreglo();
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba 'Str', 'Bool', 'Int', identificador de clase o 'Array' pero se encontró '" +
+                    "Se esperaba 'Str', 'Bool', 'Int', identificador de clase o 'Array' pero se encontro '" +
                             currentToken.getLexeme() + "'"
             );
         }
@@ -232,16 +263,17 @@ public class SyntacticAnalyzer {
             | Int
     */
     public void tipoPrimitivo() throws Exception {
-        if(checkLexeme("Str")) {
-            matchLexeme("Str");
-        } else if(checkLexeme("Bool")) {
-            matchLexeme("Bool");
-        } else if (checkLexeme("Int")) {
-            matchLexeme("Int");
+        //DUDA: SERIA IDCLASS? O COMPARAMOS EL LEXEMA
+        if(checkType(TokenType.STRING_CONSTANT)) {
+            matchTokenType(TokenType.STRING_CONSTANT);
+        } else if(checkType(TokenType.BOOLEAN_CONSTANT)) {
+            matchTokenType(TokenType.BOOLEAN_CONSTANT);
+        } else if (checkType(TokenType.INT_CONSTANT)) {
+            matchTokenType(TokenType.INT_CONSTANT);
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba 'Str', 'Bool' o 'Int', pero se encontró '" +
+                    "Se esperaba 'Str', 'Bool' o 'Int', pero se encontro '" +
                             currentToken.getLexeme() + "'"
             );
         }
@@ -266,16 +298,16 @@ public class SyntacticAnalyzer {
     /*
 
     ⟨SentenciaK⟩ ::= ⟨Sentencia⟩ ⟨SentenciaK⟩
-    | λ
+        | λ
 
     ⟨Sentencia⟩ ::= ;
-    | ⟨Asignación⟩;
-    | ⟨Sentencia-Simple⟩;
-    | while ( ⟨Expresión⟩ ) ⟨Sentencia⟩
-    | for ( ⟨Tipo-Primitivo⟩ idMetAt in idMetAt ) ⟨Sentencia⟩
-    | ⟨Bloque⟩
-    | if (⟨Expresión⟩) ⟨Sentencia⟩ ⟨SentenciaF1⟩
-    | ret ⟨SentenciaF2⟩
+        | ⟨Asignación⟩;
+        | ⟨Sentencia-Simple⟩;
+        | while ( ⟨Expresión⟩ ) ⟨Sentencia⟩
+        | for ( ⟨Tipo-Primitivo⟩ idMetAt in idMetAt ) ⟨Sentencia⟩
+        | ⟨Bloque⟩
+        | if (⟨Expresión⟩) ⟨Sentencia⟩ ⟨SentenciaF1⟩
+        | ret ⟨SentenciaF2⟩
 
 	⟨SentenciaF1⟩ ::= else ⟨Sentencia⟩
 		| λ
@@ -286,150 +318,162 @@ public class SyntacticAnalyzer {
     ⟨Bloque⟩ ::= { ⟨SentenciaK⟩ }
 
     ⟨Asignación⟩ ::= ⟨AccesoVar-Simple⟩ = ⟨Expresión⟩
-    | ⟨AccesoSelf-Simple⟩ = ⟨Expresión⟩
+        | ⟨AccesoSelf-Simple⟩ = ⟨Expresión⟩
 
-        ⟨AccesoVar-Simple⟩ ::= id ⟨AccesoVar-SimpleF⟩
+	⟨AccesoVar-Simple⟩ ::= id ⟨AccesoVar-SimpleF⟩
 
     ⟨AccesoVar-SimpleF⟩ ::= ⟨Encadenado-SimpleK⟩
-    | [ ⟨Expresión⟩ ]
+        | [ ⟨Expresión⟩ ]
 
     ⟨AccesoSelf-Simple⟩ ::= self ⟨Encadenado-SimpleK⟩
 
     ⟨Encadenado-SimpleK⟩ ::= ⟨Encadenado-Simple⟩ ⟨Encadenado-SimpleK⟩
-    | λ
+        | λ
 
     ⟨Encadenado-Simple⟩ ::= . id
 
     ⟨Sentencia-Simple⟩ ::= (⟨Expresión⟩)
 
-    ⟨Expresión⟩ ::= ⟨ExpOr ⟩
+    ⟨Expresión⟩ ::= ⟨ExpOr⟩
 
-	⟨ExpOr ⟩ ::= ⟨ExpAnd⟩ ⟨ExpOrR⟩
+	⟨ExpOr⟩ ::= ⟨ExpAnd⟩ ⟨ExpOrR⟩
 
-    ⟨ExpOrR⟩ ::= || ⟨ExpAnd ⟩ ⟨ExpOrR⟩
+    ⟨ExpOrR⟩ ::= || ⟨ExpAnd⟩ ⟨ExpOrR⟩
         | λ
 
-	⟨ExpAnd ⟩ ::= ⟨ExpIgual⟩ ⟨ExpAndR⟩
+	⟨ExpAnd⟩ ::= ⟨ExpIgual⟩ ⟨ExpAndR⟩
 
     ⟨ExpAndR⟩ ::= && ⟨ExpIgual ⟩ ⟨ExpAndR⟩
         | λ
 
 	⟨ExpIgual ⟩ ::= ⟨ExpCompuesta⟩ ⟨ExpIgualR⟩
 
-    ⟨ExpIguaR⟩ ::= ⟨OpIgual ⟩ ⟨ExpCompuesta⟩ ⟨ExpIgualR⟩
+    ⟨ExpIgualR⟩ ::= ⟨OpIgual⟩ ⟨ExpCompuesta⟩ ⟨ExpIgualR⟩
         | λ
 
-	⟨ExpCompuesta⟩ ::= ⟨ExpAd ⟩ ⟨ExpCompuestaF⟩
+	⟨ExpCompuesta⟩ ::= ⟨ExpAd⟩ ⟨ExpCompuestaF⟩
 
-	⟨ExpCompuestaF⟩ ::= ⟨OpCompuesto⟩ ⟨ExpAd ⟩
+	⟨ExpCompuestaF⟩ ::= ⟨OpCompuesto⟩ ⟨ExpAd⟩
 		| λ
 
-    ⟨ExpAd ⟩ ::= ⟨ExpMul ⟩ ⟨ExpAdR⟩
+    ⟨ExpAd ⟩ ::= ⟨ExpMul⟩ ⟨ExpAdR⟩
 
-    ⟨ExpAdR⟩ ::= ⟨OpAd ⟩ ⟨ExpMul ⟩ ⟨ExpAdR⟩
+    ⟨ExpAdR⟩ ::= ⟨OpAd⟩ ⟨ExpMul⟩ ⟨ExpAdR⟩
         | λ
 
-    ⟨ExpMul ⟩ ::= ⟨ExpUn⟩ ⟨ExpMulR⟩
+    ⟨ExpMul⟩ ::= ⟨ExpUn⟩ ⟨ExpMulR⟩
 
-    ⟨ExpMulR⟩ ::= ⟨OpMul ⟩ ⟨ExpUn⟩ ⟨ExpMulR⟩
-    | λ
+    ⟨ExpMulR⟩ ::= ⟨OpMul⟩ ⟨ExpUn⟩ ⟨ExpMulR⟩
+        | λ
 
     ⟨ExpUn⟩ ::= ⟨OpUnario⟩ ⟨ExpUn⟩
-    | ⟨Operando⟩
+        | ⟨Operando⟩
 
+    */
+    /*
     ⟨OpIgual ⟩ ::= ==
-    | !=
-
+        | !=
+    */
+    public void opIgual() throws LexicalException, SyntacticException {
+        if(checkType(TokenType.OPERATOR_EQ)) {
+            matchTokenType(TokenType.OPERATOR_EQ);
+        } else if (checkType(TokenType.OPERATOR_NEQ)) {
+            matchTokenType(TokenType.OPERATOR_NEQ);
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '==' o '!=', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+    /*
     ⟨OpCompuesto⟩ ::= <
-    | >
-    | <=
-    | >=
-
+        | >
+        | <=
+        | >=
+    */
+    public void opCompuesto() throws LexicalException, SyntacticException {
+        if(checkType(TokenType.OPERATOR_LT)) {
+            matchTokenType(TokenType.OPERATOR_LT);
+        } else if (checkType(TokenType.OPERATOR_GT)) {
+            matchTokenType(TokenType.OPERATOR_GT);
+        } else if (checkType(TokenType.OPERATOR_LTE)) {
+            matchTokenType(TokenType.OPERATOR_LTE);
+        } else if (checkType(TokenType.OPERATOR_GTE)) {
+            matchTokenType(TokenType.OPERATOR_GTE);
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '<', '>', '<=' o '>=' pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+    /*
     ⟨OpAd ⟩ ::= +
-    | -
+        | -
 
     ⟨OpUnario⟩ ::= 	+
-    | -
-    | !
-    | ++
-    | --
+        | -
+        | !
+        | ++
+        | --
 
     ⟨OpMul ⟩ ::= *
-    | /
+        | /
 
-        ⟨Operando⟩ ::= ⟨Literal ⟩
-    | ⟨Primario⟩
+ 	⟨Operando⟩ ::= ⟨Literal⟩
+        | ⟨Primario⟩
 
-    ⟨Literal ⟩ ::= nil
-    | true
-    | false
-    | intLiteral
-    | StrLiteral
-
-    ⟨Primario⟩ ::= ⟨ExpresionParentizada⟩  -> (
-    | ⟨AccesoSelf ⟩  -> self
-    | ⟨AccesoVar ⟩  -> id
-    | ⟨Llamada-Método⟩  -> id
-    | ⟨Llamada-Método-Estático⟩ -> idclass
-    | ⟨Llamada-Conclassor⟩ -> new
+    ⟨Literal⟩ ::= nil
+        | true
+        | false
+        | intLiteral
+        | StrLiteral
 
     ⟨Primario⟩ ::= ⟨ExpresionParentizada⟩
-    | ⟨AccesoSelf ⟩
-    | ⟨Llamada-Método-Estático⟩
-    | ⟨Llamada-Conclassor⟩
-    | id ⟨VarOMetodo⟩
+        | ⟨AccesoSelf⟩
+        | ⟨Llamada-Método-Estático⟩
+        | ⟨Llamada-Conclassor⟩
+        | id ⟨VarOMetodo⟩
 
-	⟨VarOMetodo⟩ ::= ⟨AccesoVar ⟩
+	⟨VarOMetodo⟩ ::= ⟨AccesoVar⟩
 		| ⟨Llamada-Método⟩
-
 
 	⟨ExpresionParentizada⟩ ::= ( ⟨Expresión⟩ ) ⟨ExpresionParentizadaF⟩
 
 	⟨ExpresionParentizadaF⟩ ::=  λ
-		| ⟨Encadenado⟩
-
-	⟨AccesoSelf ⟩ ::= self ⟨AccesoSelfF⟩
-
-    ⟨AccesoSelfF⟩::= λ
         | ⟨Encadenado⟩
 
-    ⟨AccesoVar ⟩ ::= id
-    | id ⟨Encadenado⟩
-    | id [ ⟨Expresión⟩ ]
-    | id [ ⟨Expresión⟩ ] ⟨Encadenado⟩
+	⟨AccesoSelf⟩ ::= self ⟨AccesoSelfF⟩
 
-        ⟨AccesoVar ⟩ ::= λ
-    | ⟨Encadenado⟩
-    | [ ⟨Expresión⟩ ]
-    | [ ⟨Expresión⟩ ] ⟨Encadenado⟩
+	⟨AccesoSelfF⟩::= λ
+        | ⟨Encadenado⟩
 
-        ⟨AccesoVar ⟩ ::= λ
-    | ⟨Encadenado⟩
-    | [ ⟨Expresión⟩ ] ⟨AccesoVarF⟩
+	⟨AccesoVar⟩ ::= λ
+        | ⟨Encadenado⟩
+        | [ ⟨Expresión⟩ ] ⟨AccesoVarF⟩
 
-        ⟨AccesoVarF⟩ ::= λ
-            | ⟨Encadenado⟩
-
-    ⟨Llamada-Método⟩ ::= id ⟨Argumentos-Actuales⟩
-    | id ⟨Argumentos-Actuales⟩ ⟨Encadenado⟩
-
-    ⟨Llamada-Método⟩ ::= ⟨Argumentos-Actuales⟩
-    | ⟨Argumentos-Actuales⟩ ⟨Encadenado⟩
+    ⟨AccesoVarF⟩ ::= λ
+        | ⟨Encadenado⟩
 
     ⟨Llamada-Método⟩ ::= ⟨Argumentos-Actuales⟩ ⟨Llamada-MétodoF⟩
 
     ⟨Llamada-MétodoF⟩ ::= λ
-    | ⟨Encadenado⟩
+        | ⟨Encadenado⟩
 
     ⟨Llamada-Método-Estático⟩ ::= idclass . ⟨Llamada-Método⟩ ⟨Llamada-Método-EstáticoF⟩
 
     ⟨Llamada-Método-EstáticoF⟩ ::= λ
-    | ⟨Encadenado⟩
+        | ⟨Encadenado⟩
 
-        ⟨Llamada-Conclassor⟩ ::= new idclass ⟨Argumentos-Actuales⟩ ⟨Llamada-ConclassorF⟩
-            | new ⟨Tipo-Primitivo⟩ [ ⟨Expresión⟩ ] ⟨Llamada-ConclassorF⟩
+    ⟨Llamada-Conclassor⟩ ::= new ⟨Llamada-ConclassorF1⟩
 
-    ⟨Llamada-ConclassorF⟩ ::= λ
+    ⟨Llamada-ConclassorF1⟩ ::= idclass ⟨Argumentos-Actuales⟩ ⟨Llamada-ConclassorF2⟩
+        | ⟨Tipo-Primitivo⟩ [ ⟨Expresión⟩ ] ⟨Llamada-ConclassorF2⟩
+
+    ⟨Llamada-ConclassorF2⟩ ::= λ
         | ⟨Encadenado⟩
 
 	⟨Argumentos-Actuales⟩ ::= ( ⟨Argumentos-ActualesF⟩
@@ -445,7 +489,7 @@ public class SyntacticAnalyzer {
 	⟨Encadenado⟩ ::= . ⟨EncadenadoF⟩
 
 	⟨EncadenadoF⟩ ::= ⟨Llamada-Método⟩
-		| ⟨AccesoVar ⟩
+		| ⟨AccesoVar⟩
 
      */
 

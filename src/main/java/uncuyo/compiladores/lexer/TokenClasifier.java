@@ -172,7 +172,7 @@ public class TokenClasifier {
         Optional<TokenType> tokenType = Optional.ofNullable(tokenDefinitions.getKeywords().get(palabra));
 
         // Si el hashmap devolvió un keyword, el token se definirá como ese tipo de keyword, caso contrario será id object
-        return generateToken(palabra, tokenType.orElse(TokenType.IDENTIFIER_OBJECT), lexer.getRowIndex(), initialPosition);
+        return generateToken(palabra, tokenType.orElse(TokenType.IDENTIFIER_VAR_METHOD), lexer.getRowIndex(), initialPosition);
     }
 
     public Token classifySpecialSymbol() {

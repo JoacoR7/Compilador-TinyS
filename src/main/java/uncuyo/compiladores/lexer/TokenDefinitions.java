@@ -27,6 +27,7 @@ public class TokenDefinitions {
         keywords.put("in", TokenType.KW_IN);
         keywords.put("true", TokenType.BOOLEAN_CONSTANT);
         keywords.put("false", TokenType.BOOLEAN_CONSTANT);
+        keywords.put("void", TokenType.KW_VOID);
     }
 
     private void initSpecialSymbols() {
@@ -39,6 +40,7 @@ public class TokenDefinitions {
         specialSymbols.put('.', TokenType.SPECIAL_SYMBOL_P);
         specialSymbols.put('[', TokenType.SPECIAL_SYMBOL_LB);
         specialSymbols.put(']', TokenType.SPECIAL_SYMBOL_RB);
+        specialSymbols.put(':', TokenType.SPECIAL_SYMBOL_CL);
     }
 
     private void initOperators() {
