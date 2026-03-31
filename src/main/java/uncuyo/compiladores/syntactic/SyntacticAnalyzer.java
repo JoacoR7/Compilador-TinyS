@@ -338,13 +338,10 @@ public class SyntacticAnalyzer {
         } else if (checkType(TokenType.KW_RET)) {
             matchTokenType(TokenType.KW_RET);
             sentenciaF2();
-        } else if (checkType(TokenType.SPECIAL_SYMBOL_PO, TokenType.IDENTIFIER_VAR_METHOD,
-                TokenType.KW_SELF, TokenType.SPECIAL_SYMBOL_RCB, TokenType.KW_ELSE)) {
-            // Siguientes de sentencia, cierro
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba ';' , 'while', 'for', 'if', 'ret', '(' , '{' , 'id', 'self' , '}', 'else', pero se encontro '" +
+                    "Se esperaba ';' , 'while', 'for', 'if', 'ret' , '{', pero se encontro '" +
                             currentToken.getLexeme() + "'"
             );
         }
