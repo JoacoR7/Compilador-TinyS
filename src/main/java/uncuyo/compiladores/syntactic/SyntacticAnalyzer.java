@@ -259,7 +259,7 @@ public class SyntacticAnalyzer {
             | Bool
             | Int
     */
-    public void tipoPrimitivo() throws Exception {
+    public void tipoPrimitivo() throws LexicalException, SyntacticException {
         //DUDA: SERIA IDCLASS? O COMPARAMOS EL LEXEMA
         if(checkType(TokenType.STRING_CONSTANT)) {
             matchTokenType(TokenType.STRING_CONSTANT);
@@ -295,7 +295,9 @@ public class SyntacticAnalyzer {
 
     ⟨SentenciaK⟩ ::= ⟨Sentencia⟩ ⟨SentenciaK⟩
         | λ
+    */
 
+    /*
     ⟨Sentencia⟩ ::= ;
         | ⟨Asignación⟩;
         | ⟨Sentencia-Simple⟩;
@@ -304,13 +306,80 @@ public class SyntacticAnalyzer {
         | ⟨Bloque⟩
         | if (⟨Expresión⟩) ⟨Sentencia⟩ ⟨SentenciaF1⟩
         | ret ⟨SentenciaF2⟩
-
+    */
+    public void sentencia() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.SPECIAL_SYMBOL_S)) {
+            matchTokenType(TokenType.SPECIAL_SYMBOL_S);
+        } else if(checkType(TokenType.SPECIAL_SYMBOL_PO)) {
+            matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
+        } else if (checkType(TokenType.KW_WHILE)) {
+            matchTokenType(TokenType.KW_WHILE);
+            matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
+            expresion();
+            matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
+            sentencia();
+        } else if (checkType(TokenType.KW_FOR)) {
+            matchTokenType(TokenType.KW_FOR);
+            matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
+            tipoPrimitivo();
+            matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
+            matchTokenType(TokenType.KW_IN);
+            matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
+            matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
+            sentencia();
+        } else if (checkType(TokenType.SPECIAL_SYMBOL_LCB)) {
+            bloque();
+        } else if (checkType(TokenType.KW_IF)) {
+            matchTokenType(TokenType.KW_IF);
+            matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
+            expresion();
+            sentencia();
+        }
+    }
+    /*
 	⟨SentenciaF1⟩ ::= else ⟨Sentencia⟩
 		| λ
+    */
+    public void sentenciaF1() throws LexicalException, SyntacticException {
+        // DUDA: AMBIGUEDAD? CON ELSE PODEMOS IR A 2 CAMINOS DISTINTOS
+        if (checkType(TokenType.KW_ELSE)) {
+            matchTokenType(TokenType.KW_ELSE);
+            sentencia();
+        } else if (checkType(TokenType.SPECIAL_SYMBOL_S, TokenType.KW_WHILE, TokenType.KW_FOR,
+                TokenType.KW_IF, TokenType.KW_RET, TokenType.SPECIAL_SYMBOL_PO, TokenType.SPECIAL_SYMBOL_LCB,
+                TokenType.IDENTIFIER_VAR_METHOD, TokenType.KW_SELF, TokenType.SPECIAL_SYMBOL_RCB)) {
+            // Siguientes de sentenciaF1, cierro
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba ';' , 'while', 'for', 'if', 'ret', '(' , '{' , 'id', 'self' , '}', 'else', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
 
+    /*
 	⟨SentenciaF2⟩ ::= ;
 		| ⟨Expresión⟩;
     */
+    public void sentenciaF2() throws LexicalException, SyntacticException {
+        if(checkType(TokenType.SPECIAL_SYMBOL_S)) {
+            matchTokenType(TokenType.SPECIAL_SYMBOL_S);
+        } else if (checkType(TokenType.OPERATOR_ADD, TokenType.OPERATOR_SUB, TokenType.OPERATOR_NOT,
+            TokenType.OPERATOR_INC, TokenType.OPERATOR_DEC, TokenType.KW_NIL, TokenType.BOOLEAN_CONSTANT,
+                    TokenType.INT_CONSTANT, TokenType.STRING_CONSTANT, TokenType.SPECIAL_SYMBOL_PO,
+                    TokenType.KW_SELF, TokenType.IDENTIFIER_CLASS, TokenType.KW_NEW, TokenType.IDENTIFIER_VAR_METHOD)) {
+            expresion();
+            matchTokenType(TokenType.SPECIAL_SYMBOL_S);
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba ';' '+', '-', '!', '++', '--', 'nil', 'true', 'false', entero, string, '(', 'self', identificador de clase, 'new' " +
+                            "o identificador de variable o metodo, pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
     /*
     ⟨Bloque⟩ ::= { ⟨SentenciaK⟩ }
     */
