@@ -257,6 +257,7 @@ public class SyntacticAnalyzer {
             );
         }
     }
+
     /*
         ⟨Tipo-Primitivo⟩ ::= Str
             | Bool
@@ -387,6 +388,7 @@ public class SyntacticAnalyzer {
             );
         }
     }
+
     /*
     ⟨OpCompuesto⟩ ::= <
         | >
@@ -410,27 +412,105 @@ public class SyntacticAnalyzer {
             );
         }
     }
+
     /*
     ⟨OpAd ⟩ ::= +
         | -
 
+    */
+    public void opAd() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.OPERATOR_ADD)) {
+            matchTokenType(TokenType.OPERATOR_ADD);
+        } else if (checkType(TokenType.OPERATOR_SUB)) {
+            matchTokenType(TokenType.OPERATOR_SUB);
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '+' o '-' pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+
+    /*
     ⟨OpUnario⟩ ::= 	+
         | -
         | !
         | ++
         | --
+    */
 
+    public void opUnario() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.OPERATOR_ADD)) {
+            matchTokenType(TokenType.OPERATOR_ADD);
+        } else if (checkType(TokenType.OPERATOR_SUB)) {
+            matchTokenType(TokenType.OPERATOR_SUB);
+        } else if (checkType(TokenType.OPERATOR_NOT)) {
+            matchTokenType(TokenType.OPERATOR_NOT);
+        } else if (checkType(TokenType.OPERATOR_INC)) {
+            matchTokenType(TokenType.OPERATOR_INC);
+        } else if (checkType(TokenType.OPERATOR_DEC)) {
+            matchTokenType(TokenType.OPERATOR_DEC);
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '+', '-', '!', '++' o '--' pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+
+    /*
     ⟨OpMul ⟩ ::= *
         | /
+    */
 
+    public void opMul() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.OPERATOR_MUL)) {
+            matchTokenType(TokenType.OPERATOR_MUL);
+        } else if (checkType(TokenType.OPERATOR_DIV)) {
+            matchTokenType(TokenType.OPERATOR_DIV);
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '*' o '/' pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+
+    /*
  	⟨Operando⟩ ::= ⟨Literal⟩
         | ⟨Primario⟩
 
+    */
+
+    /*
     ⟨Literal⟩ ::= nil
         | true
         | false
         | intLiteral
         | StrLiteral
+    */
+    public void literal() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.KW_NIL)){
+            matchTokenType(TokenType.KW_NIL);
+        } else if (checkType(TokenType.BOOLEAN_CONSTANT)) {
+            matchTokenType(TokenType.BOOLEAN_CONSTANT);
+        } else if (checkType(TokenType.INT_CONSTANT)) {
+            matchTokenType(TokenType.INT_CONSTANT);
+        } else if (checkType(TokenType.STRING_CONSTANT)) {
+            matchTokenType(TokenType.STRING_CONSTANT);
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba 'nil', 'true', 'false', un entero o un string, pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+
+    /*
 
     ⟨Primario⟩ ::= ⟨ExpresionParentizada⟩
         | ⟨AccesoSelf⟩
