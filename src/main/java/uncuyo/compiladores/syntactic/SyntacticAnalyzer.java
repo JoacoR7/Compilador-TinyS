@@ -43,7 +43,7 @@ public class SyntacticAnalyzer {
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba '" + expected + "' pero se encontro '" +
+                    "Se esperaba '" + expected + "', pero se encontro '" +
                             currentToken.getLexeme() + "'");
         }
     }
@@ -55,7 +55,7 @@ public class SyntacticAnalyzer {
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba " + expectedTokenType + " pero se encontro '" +
+                    "Se esperaba " + expectedTokenType + ", pero se encontro '" +
                             currentToken.getLexeme() + "'"
             );
         }
@@ -94,7 +94,7 @@ public class SyntacticAnalyzer {
         }else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba 'class', 'impl' o 'start' pero se encontro '" +
+                    "Se esperaba 'class', 'impl' o 'start', pero se encontro '" +
                             currentToken.getLexeme() + "'"
             );
         }
@@ -123,7 +123,7 @@ public class SyntacticAnalyzer {
         }else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba '{' o ':' pero se encontro '" +
+                    "Se esperaba '{' o ':', pero se encontro '" +
                             currentToken.getLexeme() + "'"
             );
         }
@@ -137,7 +137,6 @@ public class SyntacticAnalyzer {
     /*
         ⟨Impl ⟩ ::= impl idclass { ⟨MiembroK⟩ }
      */
-
     public void impl() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.KW_IMPL);
         matchTokenType(TokenType.IDENTIFIER_CLASS);
@@ -188,7 +187,6 @@ public class SyntacticAnalyzer {
     }
 
     /*
-
     ⟨Bloque-Método⟩ ::= { ⟨Decl-Var-LocalesK⟩ ⟨SentenciaK⟩ }
 
     ⟨Decl-Var-LocalesK⟩ ::= ⟨Decl-Var-Locales⟩ ⟨Decl-Var-LocalesK⟩
@@ -218,7 +216,6 @@ public class SyntacticAnalyzer {
     ⟨Tipo-Método⟩ ::= ⟨Tipo⟩
         | void
     */
-
     public void tipoMetodo() throws Exception {
         //DUDA: CÓMO HACEMOS CON ARRAY? ya que puede venir idclass o Array, Array tmb sería un idclass
         if(checkType(TokenType.STRING_CONSTANT, TokenType.BOOLEAN_CONSTANT,
@@ -234,7 +231,6 @@ public class SyntacticAnalyzer {
             );
         }
     }
-
 
     /*
         ⟨Tipo⟩ ::= ⟨Tipo-Primitivo⟩
@@ -252,7 +248,7 @@ public class SyntacticAnalyzer {
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba 'Str', 'Bool', 'Int', identificador de clase o 'Array' pero se encontro '" +
+                    "Se esperaba 'Str', 'Bool', 'Int', identificador de clase o 'Array', pero se encontro '" +
                             currentToken.getLexeme() + "'"
             );
         }
@@ -283,15 +279,14 @@ public class SyntacticAnalyzer {
     /*
         ⟨Tipo-Referencia⟩ ::= idclass
     */
-
     public void tipoReferencia() throws Exception {
         matchTokenType(TokenType.IDENTIFIER_CLASS);
     }
     /*
         ⟨Tipo-Arreglo⟩ ::= Array ⟨Tipo-Primitivo⟩
     */
-
     public void tipoArreglo() throws Exception {
+        // DUDA: MATCHEO CON LEXEMA O IDCLASS?
         matchLexeme("Array");
         tipoPrimitivo();
     }
@@ -315,62 +310,311 @@ public class SyntacticAnalyzer {
 
 	⟨SentenciaF2⟩ ::= ;
 		| ⟨Expresión⟩;
-
+    */
+    /*
     ⟨Bloque⟩ ::= { ⟨SentenciaK⟩ }
+    */
+    public void bloque() throws LexicalException, SyntacticException {
+        matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
+        // sentenciaK();
+        matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
+    }
 
+    /*
     ⟨Asignación⟩ ::= ⟨AccesoVar-Simple⟩ = ⟨Expresión⟩
         | ⟨AccesoSelf-Simple⟩ = ⟨Expresión⟩
+    */
+    public void asignacion() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.IDENTIFIER_VAR_METHOD)) {
+            accesoVarSimple();
+            matchTokenType(TokenType.OPERATOR_ASSIGN);
+            expresion();
+        } else if (checkType(TokenType.KW_SELF)) {
+            accesoSelfSimple();
+            matchTokenType(TokenType.OPERATOR_ASSIGN);
+            expresion();
+        }
+    }
 
+     /*
 	⟨AccesoVar-Simple⟩ ::= id ⟨AccesoVar-SimpleF⟩
+     */
+    public void accesoVarSimple() throws LexicalException, SyntacticException {
+        matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
+        accesoVarSimpleF();
+    }
 
+    /*
     ⟨AccesoVar-SimpleF⟩ ::= ⟨Encadenado-SimpleK⟩
         | [ ⟨Expresión⟩ ]
+     */
+    public void accesoVarSimpleF() throws LexicalException, SyntacticException {
+        if(checkType(TokenType.SPECIAL_SYMBOL_P)) {
+            encadenadoSimpleK();
+        } else if (checkType(TokenType.SPECIAL_SYMBOL_LB)) {
+            matchTokenType(TokenType.SPECIAL_SYMBOL_LB);
+            expresion();
+            matchTokenType(TokenType.SPECIAL_SYMBOL_RB);
+        } else if (checkType(TokenType.OPERATOR_ASSIGN)) {
+            // Siguientes de accesoVarSimpleF, cierro
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '=', '.', '[' pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
 
+    /*
     ⟨AccesoSelf-Simple⟩ ::= self ⟨Encadenado-SimpleK⟩
+    */
+    public void accesoSelfSimple() throws LexicalException, SyntacticException {
+        matchTokenType(TokenType.KW_SELF);
+        encadenadoSimpleK();
+    }
 
+    /*
     ⟨Encadenado-SimpleK⟩ ::= ⟨Encadenado-Simple⟩ ⟨Encadenado-SimpleK⟩
         | λ
+    */
+    public void encadenadoSimpleK() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.SPECIAL_SYMBOL_P)) {
+            encadenadoSimple();
+            encadenadoSimpleK();
+        } else if (checkType(TokenType.OPERATOR_ASSIGN)) {
+            // Siguientes de encadenadoSimpleK, cierro
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '=', '.', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
 
+    /*
     ⟨Encadenado-Simple⟩ ::= . id
+    */
+    public void encadenadoSimple() throws LexicalException, SyntacticException {
+        matchTokenType(TokenType.SPECIAL_SYMBOL_P);
+        matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
+    }
 
+    /*
     ⟨Sentencia-Simple⟩ ::= (⟨Expresión⟩)
+    */
+    public void sentenciaSimple() throws LexicalException, SyntacticException {
+        matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
+        expresion();
+        matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
+    }
 
+    /*
     ⟨Expresión⟩ ::= ⟨ExpOr⟩
-
+    */
+    public void expresion() throws LexicalException, SyntacticException {
+        expOrR();
+    }
+    /*
 	⟨ExpOr⟩ ::= ⟨ExpAnd⟩ ⟨ExpOrR⟩
+    */
+    public void expOr() throws LexicalException, SyntacticException {
+        expAnd();
+        expOrR();
+    }
 
+    /*
     ⟨ExpOrR⟩ ::= || ⟨ExpAnd⟩ ⟨ExpOrR⟩
         | λ
+    */
+    public void expOrR() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.OPERATOR_OR)) {
+            matchTokenType(TokenType.OPERATOR_OR);
+            expAnd();
+            expOrR();
+        } else if (checkType(TokenType.SPECIAL_SYMBOL_PC,TokenType.SPECIAL_SYMBOL_S,
+                TokenType.SPECIAL_SYMBOL_RB, TokenType.SPECIAL_SYMBOL_CM)) {
+            // Siguientes de expOrR, cierro
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '||', ')' , ';' , ']', ',', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
 
+    /*
 	⟨ExpAnd⟩ ::= ⟨ExpIgual⟩ ⟨ExpAndR⟩
+    */
+    public void expAnd() throws LexicalException, SyntacticException {
+        expIgual();
+        expAndR();
+    }
 
+    /*
     ⟨ExpAndR⟩ ::= && ⟨ExpIgual ⟩ ⟨ExpAndR⟩
         | λ
+    */
+    public void expAndR() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.OPERATOR_AND)) {
+            matchTokenType(TokenType.OPERATOR_AND);
+            expIgual();
+            expAndR();
+        } else if (checkType(TokenType.OPERATOR_OR, TokenType.SPECIAL_SYMBOL_PC,
+                TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB, TokenType.SPECIAL_SYMBOL_CM)) {
+            // Siguientes de expAndR, cierro
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '&&', '||', ')' , ';' , ']', ',', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
 
+    /*
 	⟨ExpIgual ⟩ ::= ⟨ExpCompuesta⟩ ⟨ExpIgualR⟩
+    */
+    public void expIgual() throws LexicalException, SyntacticException {
+        expCompuesta();
+        expIgualR();
+    }
 
+    /*
     ⟨ExpIgualR⟩ ::= ⟨OpIgual⟩ ⟨ExpCompuesta⟩ ⟨ExpIgualR⟩
         | λ
+    */
+    public void expIgualR() throws LexicalException, SyntacticException {
+        if(checkType(TokenType.OPERATOR_EQ, TokenType.OPERATOR_NEQ)) {
+            opIgual();
+            expCompuesta();
+            expIgualR();
+        } else if (checkType(TokenType.OPERATOR_AND, TokenType.OPERATOR_OR, TokenType.SPECIAL_SYMBOL_PC,
+                TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB, TokenType.SPECIAL_SYMBOL_CM)) {
+            // Siguientes de expIgualR, cierro
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '==', '!=', '&&', '||', ')' , ';' , ']', ',', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
 
+    /*
 	⟨ExpCompuesta⟩ ::= ⟨ExpAd⟩ ⟨ExpCompuestaF⟩
+    */
+    public void expCompuesta() throws LexicalException, SyntacticException {
+        expAd();
+        expCompuestaF();
+    }
 
+    /*
 	⟨ExpCompuestaF⟩ ::= ⟨OpCompuesto⟩ ⟨ExpAd⟩
 		| λ
+    */
+    public void expCompuestaF() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.OPERATOR_GT, TokenType.OPERATOR_LT, TokenType.OPERATOR_GTE, TokenType.OPERATOR_LTE)) {
+            opCompuesto();
+            expAd();
+        } else if (checkType(TokenType.OPERATOR_EQ, TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND,
+                TokenType.OPERATOR_OR, TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
+                TokenType.SPECIAL_SYMBOL_CM)) {
+            // Siguientes de expCompuestaF, cierro
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '<', '>', '<=', '>=', '==', '!=', '&&', '||', ')' , ';' , ']', ',', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
 
+    /*
     ⟨ExpAd ⟩ ::= ⟨ExpMul⟩ ⟨ExpAdR⟩
+    */
+    public void expAd() throws LexicalException, SyntacticException {
+        expMul();
+        expAdR();
+    }
 
+    /*
     ⟨ExpAdR⟩ ::= ⟨OpAd⟩ ⟨ExpMul⟩ ⟨ExpAdR⟩
         | λ
-
+    */
+    public void expAdR() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.OPERATOR_ADD, TokenType.OPERATOR_SUB)) {
+            opAd();
+            expMul();
+            expAdR();
+        } else if (checkType(TokenType.OPERATOR_LT, TokenType.OPERATOR_GT, TokenType.OPERATOR_LTE,
+                TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ, TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND,
+                TokenType.OPERATOR_OR, TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
+                TokenType.SPECIAL_SYMBOL_CM)) {
+            // Siguientes de expAdR, cierro
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '+', '-', '<', '>', '<=', '>=', '==', '!=', '&&', '||', ')' , ';' , ']', ',', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+    /*
     ⟨ExpMul⟩ ::= ⟨ExpUn⟩ ⟨ExpMulR⟩
+    */
+    public void expMul() throws LexicalException, SyntacticException {
+        expUn();
+        expMulR();
+    }
 
+    /*
     ⟨ExpMulR⟩ ::= ⟨OpMul⟩ ⟨ExpUn⟩ ⟨ExpMulR⟩
         | λ
+    */
+    public void expMulR() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV)) {
+            opMul();
+            expUn();
+            expMulR();
+        } else if (checkType(TokenType.OPERATOR_ADD, TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT,
+            TokenType.OPERATOR_GT, TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
+                TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR, TokenType.SPECIAL_SYMBOL_PC,
+                TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB, TokenType.SPECIAL_SYMBOL_CM)) {
+            // Siguientes de expMulR, cierro
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '*', '/', '+', '-', '<', '>', '<=', '>=', '==', '!=', '&&', '||', ')' , ';' , ']', ',', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
 
+    /*
     ⟨ExpUn⟩ ::= ⟨OpUnario⟩ ⟨ExpUn⟩
         | ⟨Operando⟩
-
     */
+    public void expUn() throws LexicalException, SyntacticException {
+        if(checkType(TokenType.OPERATOR_ADD, TokenType.OPERATOR_SUB, TokenType.OPERATOR_NOT,
+                TokenType.OPERATOR_INC, TokenType.OPERATOR_DEC)) {
+            opUnario();
+            expUn();
+        } else if (checkType(TokenType.KW_NIL, TokenType.BOOLEAN_CONSTANT, TokenType.INT_CONSTANT, TokenType.STRING_CONSTANT,
+                    TokenType.SPECIAL_SYMBOL_PO, TokenType.KW_SELF, TokenType.IDENTIFIER_CLASS,
+                    TokenType.KW_NEW, TokenType.IDENTIFIER_VAR_METHOD)) {
+            operando();
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '+', '-', '!', '++', '--', 'nil', 'true', 'false', entero, string, '(', 'self', identificador de clase, 'new' " +
+                            "o identificador de variable o metodo, pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
     /*
     ⟨OpIgual ⟩ ::= ==
         | !=
@@ -407,7 +651,7 @@ public class SyntacticAnalyzer {
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba '<', '>', '<=' o '>=' pero se encontro '" +
+                    "Se esperaba '<', '>', '<=' o '>=', pero se encontro '" +
                             currentToken.getLexeme() + "'"
             );
         }
@@ -426,7 +670,7 @@ public class SyntacticAnalyzer {
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba '+' o '-' pero se encontro '" +
+                    "Se esperaba '+' o '-', pero se encontro '" +
                             currentToken.getLexeme() + "'"
             );
         }
@@ -439,7 +683,6 @@ public class SyntacticAnalyzer {
         | ++
         | --
     */
-
     public void opUnario() throws LexicalException, SyntacticException {
         if (checkType(TokenType.OPERATOR_ADD)) {
             matchTokenType(TokenType.OPERATOR_ADD);
@@ -454,7 +697,7 @@ public class SyntacticAnalyzer {
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba '+', '-', '!', '++' o '--' pero se encontro '" +
+                    "Se esperaba '+', '-', '!', '++' o '--', pero se encontro '" +
                             currentToken.getLexeme() + "'"
             );
         }
@@ -464,7 +707,6 @@ public class SyntacticAnalyzer {
     ⟨OpMul ⟩ ::= *
         | /
     */
-
     public void opMul() throws LexicalException, SyntacticException {
         if (checkType(TokenType.OPERATOR_MUL)) {
             matchTokenType(TokenType.OPERATOR_MUL);
@@ -473,7 +715,7 @@ public class SyntacticAnalyzer {
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba '*' o '/' pero se encontro '" +
+                    "Se esperaba '*' o '/', pero se encontro '" +
                             currentToken.getLexeme() + "'"
             );
         }
@@ -482,8 +724,22 @@ public class SyntacticAnalyzer {
     /*
  	⟨Operando⟩ ::= ⟨Literal⟩
         | ⟨Primario⟩
-
     */
+    public void operando() throws LexicalException, SyntacticException {
+        if(checkType(TokenType.KW_NIL, TokenType.BOOLEAN_CONSTANT, TokenType.INT_CONSTANT, TokenType.STRING_CONSTANT)) {
+            literal();
+        } else if (checkType(TokenType.SPECIAL_SYMBOL_PO, TokenType.KW_SELF, TokenType.IDENTIFIER_CLASS,
+                TokenType.KW_NEW, TokenType.IDENTIFIER_VAR_METHOD)) {
+            //primario();
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba 'nil', 'true', 'false', entero, string, '(', 'self', identificador de clase, 'new' " +
+                            "o identificador de variable o metodo, pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
 
     /*
     ⟨Literal⟩ ::= nil
