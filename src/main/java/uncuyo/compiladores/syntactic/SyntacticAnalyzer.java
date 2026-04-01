@@ -168,12 +168,41 @@ public class SyntacticAnalyzer {
 
     ⟨Miembro⟩ ::= ⟨Método⟩
     | ⟨Constructor⟩
+    */
+    /*
+        ⟨Constructor ⟩ ::= . ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+    */
+    public void constructor() throws LexicalException, SyntacticException {
+        matchTokenType(TokenType.SPECIAL_SYMBOL_P);
+        argumentosFormales();
+        bloqueMetodo();
+    }
 
-    ⟨Constructor ⟩ ::= . ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+    /*
+        ⟨Atributo⟩ ::= ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
+            | ⟨Visibilidad⟩ ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
+    */
+    public void atributo() throws LexicalException, SyntacticException {
+        // DUDA: Sería entonces para Str, Int, etc idclass?
+        if (checkType(TokenType.IDENTIFIER_CLASS)) {
+            tipo();
+            listaDeclaracionVariables();
+            matchTokenType(TokenType.SPECIAL_SYMBOL_S);
+        } else if (checkType(TokenType.KW_PUB)) {
+            visibilidad();
+            tipo();
+            listaDeclaracionVariables();
+            matchTokenType(TokenType.SPECIAL_SYMBOL_S);
+        }else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba un identificador de clase o 'pub', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
 
-    ⟨Atributo⟩ ::= ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
-    | ⟨Visibilidad⟩ ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
-
+    /*
     ⟨Método⟩ ::= fn ⟨MétodoF⟩
         | ⟨Forma-Método⟩ fn ⟨MétodoF⟩
 
@@ -196,14 +225,48 @@ public class SyntacticAnalyzer {
     }
 
     /*
-    ⟨Bloque-Método⟩ ::= { ⟨Decl-Var-LocalesK⟩ ⟨SentenciaK⟩ }
-
-    ⟨Decl-Var-LocalesK⟩ ::= ⟨Decl-Var-Locales⟩ ⟨Decl-Var-LocalesK⟩
-    | λ
-
-    ⟨Decl-Var-Locales⟩ ::= ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
-    
+        ⟨Bloque-Método⟩ ::= { ⟨Decl-Var-LocalesK⟩ ⟨SentenciaK⟩ }
     */
+    public void bloqueMetodo() throws LexicalException, SyntacticException {
+        matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
+        declVarLocalesK();
+        sentenciaK();
+        matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
+    }
+
+    /*
+        ⟨Decl-Var-LocalesK⟩ ::= ⟨Decl-Var-Locales⟩ ⟨Decl-Var-LocalesK⟩
+            | λ
+    */
+    public void declVarLocalesK() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.STRING_CONSTANT, TokenType.BOOLEAN_CONSTANT, TokenType.INT_CONSTANT,
+                TokenType.IDENTIFIER_CLASS)) {
+            declVarLocales();
+            declVarLocalesK();
+        } else if (checkType(TokenType.SPECIAL_SYMBOL_S, TokenType.KW_WHILE, TokenType.KW_FOR,
+                TokenType.KW_IF, TokenType.KW_RET, TokenType.SPECIAL_SYMBOL_PO, TokenType.SPECIAL_SYMBOL_LCB,
+                TokenType.IDENTIFIER_VAR_METHOD, TokenType.KW_SELF, TokenType.SPECIAL_SYMBOL_RCB)) {
+            // Siguientes de declVarLocalesK, cierro
+        }else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba string, booleano, entero, un identificador de clase, ';' , " +
+                            "'while', 'for', 'if', 'ret', '(' , '{' , identificador de variable o método, " +
+                            "'self' o '}', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+
+    /*
+        ⟨Decl-Var-Locales⟩ ::= ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
+    */
+    public void declVarLocales() throws LexicalException, SyntacticException {
+        tipo();
+        listaDeclaracionVariables();
+        matchTokenType(TokenType.SPECIAL_SYMBOL_S);
+    }
+
     /*
         ⟨Lista-Declaración-Variables⟩ ::= idMetAt ⟨Lista-Declaración-VariablesF⟩
     */
@@ -379,10 +442,26 @@ public class SyntacticAnalyzer {
     }
 
     /*
-
-    ⟨SentenciaK⟩ ::= ⟨Sentencia⟩ ⟨SentenciaK⟩
-        | λ
+        ⟨SentenciaK⟩ ::= ⟨Sentencia⟩ ⟨SentenciaK⟩
+            | λ
     */
+    public void sentenciaK() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.SPECIAL_SYMBOL_S, TokenType.KW_WHILE, TokenType.KW_FOR,
+                TokenType.KW_IF, TokenType.KW_RET, TokenType.SPECIAL_SYMBOL_PO, TokenType.SPECIAL_SYMBOL_LCB,
+                TokenType.IDENTIFIER_VAR_METHOD, TokenType.KW_SELF)) {
+            sentencia();
+            sentenciaK();
+        } else if (checkType(TokenType.SPECIAL_SYMBOL_RCB)) {
+            // Siguientes de sentenciaK, cierro
+        }else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba ',', 'while', 'for', 'if', 'ret', '(' , '{' , identificador de variable o método, " +
+                            "'self' o '}', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
 
     /*
     ⟨Sentencia⟩ ::= ;
@@ -479,11 +558,10 @@ public class SyntacticAnalyzer {
     }
     /*
         ⟨Bloque⟩ ::= { ⟨SentenciaK⟩ }
-    INCOMPLETO
     */
     public void bloque() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
-        // sentenciaK();
+        sentenciaK();
         matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
     }
 
