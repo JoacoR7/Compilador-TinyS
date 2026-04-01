@@ -70,7 +70,10 @@ public class SyntacticAnalyzer {
         System.out.println("CORRECTO: ANALISIS SINTACTICO");
     }
 
-    /* ⟨Start⟩ ::= start ⟨Bloque-Método⟩ */
+    /*
+        ⟨Start⟩ ::= start ⟨Bloque-Método⟩
+    INCOMPLETO
+    */
     public void start() throws LexerFileReadException, LexicalException, SyntacticException {
         matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
         //DUDA CON START
@@ -80,6 +83,7 @@ public class SyntacticAnalyzer {
     /* ⟨Lista-Definiciones⟩ ::= ⟨class⟩ ⟨Lista-Definiciones⟩
             | ⟨Impl⟩ ⟨Lista-Definiciones⟩
             | λ
+    INCOMPLETO
     */
     public void listaDefiniciones() throws Exception {
         if (checkType(TokenType.KW_CLASS)){
@@ -91,6 +95,7 @@ public class SyntacticAnalyzer {
         } else if (checkType(TokenType.IDENTIFIER_VAR_METHOD)){
             //DUDA CON START
             // Caso de lambda
+            // Siguientes de listaDefiniciones, cierro
         }else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
@@ -100,7 +105,9 @@ public class SyntacticAnalyzer {
         }
     }
 
-    /* 	⟨class⟩ ::= class idclass ⟨classF⟩ */
+    /*
+        ⟨class⟩ ::= class idclass ⟨classF⟩
+    */
     public void class_() throws Exception {
         matchTokenType(TokenType.KW_CLASS);
         matchTokenType(TokenType.IDENTIFIER_CLASS);
@@ -109,6 +116,7 @@ public class SyntacticAnalyzer {
 
     /* 	⟨classF⟩ ::= { ⟨AtributoK⟩ }
             | ⟨Herencia⟩ { ⟨AtributoK⟩ }
+    INCOMPLETO
     */
     public void classF() throws Exception {
         if(checkType(TokenType.SPECIAL_SYMBOL_LCB)) {
@@ -136,6 +144,7 @@ public class SyntacticAnalyzer {
 
     /*
         ⟨Impl ⟩ ::= impl idclass { ⟨MiembroK⟩ }
+    INCOMPLETO
      */
     public void impl() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.KW_IMPL);
@@ -193,30 +202,87 @@ public class SyntacticAnalyzer {
     | λ
 
     ⟨Decl-Var-Locales⟩ ::= ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
-
-	⟨Lista-Declaración-Variables⟩ ::= idMetAt ⟨Lista-Declaración-VariablesF⟩
-
-	⟨Lista-Declaración-VariablesF⟩ ::= , ⟨Lista-Declaración-Variables⟩
-		| λ
-
+    
+    */
+    /*
+        ⟨Lista-Declaración-Variables⟩ ::= idMetAt ⟨Lista-Declaración-VariablesF⟩
+    */
+    public void listaDeclaracionVariables() throws LexicalException, SyntacticException {
+        matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
+        listaDeclaracionVariablesF();
+    }
+    
+    /*
+        ⟨Lista-Declaración-VariablesF⟩ ::= , ⟨Lista-Declaración-Variables⟩
+            | λ
+    */
+    public void listaDeclaracionVariablesF() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.SPECIAL_SYMBOL_CM)) {
+            matchTokenType(TokenType.SPECIAL_SYMBOL_CM);
+            listaDeclaracionVariables();
+        } else if (checkType(TokenType.STRING_CONSTANT, TokenType.BOOLEAN_CONSTANT, TokenType.INT_CONSTANT,
+                TokenType.IDENTIFIER_CLASS, TokenType.SPECIAL_SYMBOL_S, TokenType.KW_WHILE, TokenType.KW_FOR,
+                TokenType.KW_IF, TokenType.KW_RET, TokenType.SPECIAL_SYMBOL_PO, TokenType.SPECIAL_SYMBOL_LCB
+                TokenType.IDENTIFIER_VAR_METHOD, TokenType.KW_SELF, TokenType.SPECIAL_SYMBOL_RCB)) {
+            // Siguientes de listaDeclaracionVariablesF, cierro
+        }else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba ',', string, booleano, entero, un identificador de clase, ';' , " +
+                            "'while', 'for', 'if', 'ret', '(' , '{' , identificador de variable o método, " +
+                            "'self' o '}', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+    
+    /*
 	⟨Argumentos-Formales⟩::= ( ⟨Argumentos-FormalesF⟩
 
 	⟨Argumentos-FormalesF⟩ ::= )
 		| ⟨Lista-Argumentos-Formales⟩ )
 
-	⟨Lista-Argumentos-Formales⟩ ::= ⟨Argumento-Formal ⟩ ⟨Lista-Argumentos-FormalesF⟩
-
-    ⟨Lista-Argumentos-FormalesF⟩ ::=  , ⟨Lista-Argumentos-Formales⟩
-        | λ
-
-    ⟨Argumento-Formal ⟩ ::= ⟨Tipo⟩ idMetAt
     */
+    /*
+        ⟨Lista-Argumentos-Formales⟩ ::= ⟨Argumento-Formal ⟩ ⟨Lista-Argumentos-FormalesF⟩
+    */
+    public void listaArgumentosFormales() throws LexicalException, SyntacticException {
+        argumentoFormal();
+        listaArgumentosFormalesF();
+    }
+    
+    /*
+        ⟨Lista-Argumentos-FormalesF⟩ ::=  , ⟨Lista-Argumentos-Formales⟩
+            | λ
+    */
+    public void listaArgumentosFormalesF() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.SPECIAL_SYMBOL_CM)) {
+            matchTokenType(TokenType.SPECIAL_SYMBOL_CM);
+            listaArgumentosFormales();
+        } else if (checkType(TokenType.SPECIAL_SYMBOL_PC)) {
+            // Siguientes de listaArgumentosFormalesF, cierro
+        }else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba ',' o ')', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+    
+    /*
+        ⟨Argumento-Formal ⟩ ::= ⟨Tipo⟩ idMetAt
+    */
+    public void argumentoFormal() throws LexicalException, SyntacticException {
+        tipo();
+        matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
+    }
 
     /*
-    ⟨Tipo-Método⟩ ::= ⟨Tipo⟩
-        | void
+        ⟨Tipo-Método⟩ ::= ⟨Tipo⟩
+            | void
     */
-    public void tipoMetodo() throws Exception {
+    public void tipoMetodo() throws LexicalException, SyntacticException {
         //DUDA: CÓMO HACEMOS CON ARRAY? ya que puede venir idclass o Array, Array tmb sería un idclass
         if(checkType(TokenType.STRING_CONSTANT, TokenType.BOOLEAN_CONSTANT,
                 TokenType.INT_CONSTANT, TokenType.IDENTIFIER_CLASS)) {
@@ -237,7 +303,7 @@ public class SyntacticAnalyzer {
             | ⟨Tipo-Referencia⟩
             | ⟨Tipo-Arreglo⟩
     */
-    public void tipo() throws Exception {
+    public void tipo() throws LexicalException, SyntacticException {
         if(checkType(TokenType.STRING_CONSTANT, TokenType.BOOLEAN_CONSTANT, TokenType.INT_CONSTANT)) {
             tipoPrimitivo();
         } else if (checkType(TokenType.IDENTIFIER_CLASS)) {
@@ -279,13 +345,13 @@ public class SyntacticAnalyzer {
     /*
         ⟨Tipo-Referencia⟩ ::= idclass
     */
-    public void tipoReferencia() throws Exception {
+    public void tipoReferencia() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.IDENTIFIER_CLASS);
     }
     /*
         ⟨Tipo-Arreglo⟩ ::= Array ⟨Tipo-Primitivo⟩
     */
-    public void tipoArreglo() throws Exception {
+    public void tipoArreglo() throws LexicalException, SyntacticException {
         // DUDA: MATCHEO CON LEXEMA O IDCLASS?
         matchLexeme("Array");
         tipoPrimitivo();
@@ -391,7 +457,8 @@ public class SyntacticAnalyzer {
         }
     }
     /*
-    ⟨Bloque⟩ ::= { ⟨SentenciaK⟩ }
+        ⟨Bloque⟩ ::= { ⟨SentenciaK⟩ }
+    INCOMPLETO
     */
     public void bloque() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
@@ -435,6 +502,7 @@ public class SyntacticAnalyzer {
             expresion();
             matchTokenType(TokenType.SPECIAL_SYMBOL_RB);
         } else if (checkType(TokenType.OPERATOR_ASSIGN)) {
+            // Primeros(⟨Encadenado-SimpleK⟩) contiene λ, por lo tanto checkeo siguientes
             // Siguientes de accesoVarSimpleF, cierro
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
@@ -801,8 +869,9 @@ public class SyntacticAnalyzer {
     }
 
     /*
- 	⟨Operando⟩ ::= ⟨Literal⟩
-        | ⟨Primario⟩
+        ⟨Operando⟩ ::= ⟨Literal⟩
+            | ⟨Primario⟩
+    INCOMPLETO
     */
     public void operando() throws LexicalException, SyntacticException {
         if(checkType(TokenType.KW_NIL, TokenType.BOOLEAN_CONSTANT, TokenType.INT_CONSTANT, TokenType.STRING_CONSTANT)) {
