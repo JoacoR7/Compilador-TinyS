@@ -63,7 +63,7 @@ public class SyntacticAnalyzer {
     }
 
     /* ⟨program⟩ ::= ⟨Lista-Definiciones⟩ ⟨Start⟩ */
-    public void program() throws Exception {
+    public void program() throws LexicalException, SyntacticException {
         listaDefiniciones();
         start();
         matchTokenType(TokenType.EOF);
@@ -85,7 +85,7 @@ public class SyntacticAnalyzer {
             | λ
     INCOMPLETO
     */
-    public void listaDefiniciones() throws Exception {
+    public void listaDefiniciones() throws LexicalException, SyntacticException {
         if (checkType(TokenType.KW_CLASS)){
             class_();
             listaDefiniciones();
@@ -108,7 +108,7 @@ public class SyntacticAnalyzer {
     /*
         ⟨class⟩ ::= class idclass ⟨classF⟩
     */
-    public void class_() throws Exception {
+    public void class_() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.KW_CLASS);
         matchTokenType(TokenType.IDENTIFIER_CLASS);
         classF();
@@ -118,7 +118,7 @@ public class SyntacticAnalyzer {
             | ⟨Herencia⟩ { ⟨AtributoK⟩ }
     INCOMPLETO
     */
-    public void classF() throws Exception {
+    public void classF() throws LexicalException, SyntacticException {
         if(checkType(TokenType.SPECIAL_SYMBOL_LCB)) {
             matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
             //atributoK();
@@ -157,7 +157,7 @@ public class SyntacticAnalyzer {
     /*
         ⟨Herencia⟩ ::= : ⟨Tipo⟩
      */
-    public void herencia() throws Exception {
+    public void herencia() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.SPECIAL_SYMBOL_CL);
         tipo();
     }
@@ -222,7 +222,7 @@ public class SyntacticAnalyzer {
             listaDeclaracionVariables();
         } else if (checkType(TokenType.STRING_CONSTANT, TokenType.BOOLEAN_CONSTANT, TokenType.INT_CONSTANT,
                 TokenType.IDENTIFIER_CLASS, TokenType.SPECIAL_SYMBOL_S, TokenType.KW_WHILE, TokenType.KW_FOR,
-                TokenType.KW_IF, TokenType.KW_RET, TokenType.SPECIAL_SYMBOL_PO, TokenType.SPECIAL_SYMBOL_LCB
+                TokenType.KW_IF, TokenType.KW_RET, TokenType.SPECIAL_SYMBOL_PO, TokenType.SPECIAL_SYMBOL_LCB,
                 TokenType.IDENTIFIER_VAR_METHOD, TokenType.KW_SELF, TokenType.SPECIAL_SYMBOL_RCB)) {
             // Siguientes de listaDeclaracionVariablesF, cierro
         }else {
@@ -238,11 +238,32 @@ public class SyntacticAnalyzer {
     
     /*
 	⟨Argumentos-Formales⟩::= ( ⟨Argumentos-FormalesF⟩
+	*/
+    public void argumentosFormales() throws LexicalException, SyntacticException {
+        matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
+        argumentosFormalesF();
+    }
 
+    /*
 	⟨Argumentos-FormalesF⟩ ::= )
 		| ⟨Lista-Argumentos-Formales⟩ )
-
     */
+    public void argumentosFormalesF() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.SPECIAL_SYMBOL_PC)) {
+            matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
+        } else if (checkType(TokenType.STRING_CONSTANT, TokenType.BOOLEAN_CONSTANT, TokenType.INT_CONSTANT,
+                TokenType.IDENTIFIER_CLASS)) {
+                listaArgumentosFormales();
+                matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
+        }else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba ')', string, boolean, entero o identificador de clase, pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+
     /*
         ⟨Lista-Argumentos-Formales⟩ ::= ⟨Argumento-Formal ⟩ ⟨Lista-Argumentos-FormalesF⟩
     */
