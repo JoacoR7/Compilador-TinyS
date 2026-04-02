@@ -126,7 +126,6 @@ public class TokenClasifier {
     public Token classifyClassIdentifier(){
 
         StringBuilder buffer = new StringBuilder();
-        TokenType tokenType = TokenType.IDENTIFIER_CLASS;
         int initialPosition = lexer.getColumnIndex();
         char vistazo;
 
@@ -144,7 +143,13 @@ public class TokenClasifier {
 
         } while (Character.isLetterOrDigit(vistazo) || vistazo == '_');
 
-        return generateToken(buffer.toString(), tokenType, lexer.getRowIndex(), initialPosition);
+        String lexeme = buffer.toString();
+        TokenType tokenType = tokenDefinitions.getPrimitiveTypes().get(lexeme);
+        if (tokenType == null){
+            tokenType = TokenType.IDENTIFIER_CLASS;
+        }
+
+        return generateToken(lexeme, tokenType, lexer.getRowIndex(), initialPosition);
     }
 
     public Token classifyKeywordOrIdentifier(){

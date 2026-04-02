@@ -38,6 +38,15 @@ public enum TokenType {
     IDENTIFIER_CLASS,
     /** Variable or method identifier **/
     IDENTIFIER_VAR_METHOD,
+    /**  **/
+    /** Primitive class: integer type */
+    INT_CLASS,
+    /** Primitive class: boolean type */
+    BOOL_CLASS,
+    /** Primitive class: string type */
+    STR_CLASS,
+    /** Primitive class: array type */
+    ARRAY_CLASS,
 
     /** Integer constant **/
     INT_CONSTANT,

@@ -8,6 +8,8 @@ public class TokenDefinitions {
     private final Map<Character, TokenType> specialSymbols = new HashMap<>();
     private final Map<String, TokenType> operators = new HashMap<>();
     private final Map<Character, TokenType> undefinedSimbols = new HashMap<>();
+    private final Map<String, TokenType> primitiveTypes = new HashMap<>();
+
 
     private void initKeywords() {
         keywords.put("class", TokenType.KW_CLASS);
@@ -85,11 +87,19 @@ public class TokenDefinitions {
         undefinedSimbols.put('_', TokenType.UNDEFINED);
     }
 
+    private void initPrimitiveTypes(){
+        primitiveTypes.put("Str", TokenType.STR_CLASS);
+        primitiveTypes.put("Bool", TokenType.BOOL_CLASS);
+        primitiveTypes.put("Int", TokenType.INT_CLASS);
+        primitiveTypes.put("Array", TokenType.ARRAY_CLASS);
+    }
+
     public TokenDefinitions() {
         initKeywords();
         initSpecialSymbols();
         initOperators();
         initUndefinedSymbols();
+        initPrimitiveTypes();
     }
 
     public Map<String, TokenType> getKeywords() {
@@ -107,4 +117,6 @@ public class TokenDefinitions {
     public Map<Character, TokenType> getUndefinedSymbols(){
         return undefinedSimbols;
     }
+
+    public Map<String, TokenType> getPrimitiveTypes() {return primitiveTypes;}
 }

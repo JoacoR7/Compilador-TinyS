@@ -205,11 +205,50 @@ public class SyntacticAnalyzer {
     /*
     ⟨Método⟩ ::= fn ⟨MétodoF⟩
         | ⟨Forma-Método⟩ fn ⟨MétodoF⟩
+    */
 
+    public void metodo() throws LexicalException, SyntacticException {
+        if(checkType(TokenType.KW_FN)){
+            matchTokenType(TokenType.KW_FN);
+            //metofoF();
+        }else if (checkType(TokenType.KW_ST)){
+            formaMetodo();
+            matchTokenType(TokenType.KW_FN);
+            //metofoF();
+        }else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba 'fn' o 'st', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+
+    /*
     ⟨MétodoF⟩ ::= idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
         | ⟨Tipo-Método⟩ idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
 
     */
+    public void metodoF() throws LexicalException, SyntacticException {
+        if(checkType(TokenType.IDENTIFIER_VAR_METHOD)){
+            matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
+            argumentosFormales();
+            bloqueMetodo();
+        }else if (checkType(TokenType.KW_VOID, TokenType.IDENTIFIER_CLASS,
+                TokenType.INT_CLASS, TokenType.BOOL_CLASS, TokenType.STR_CLASS, TokenType.ARRAY_CLASS)){
+            tipoMetodo();
+            matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
+            argumentosFormales();
+            bloqueMetodo();
+        }else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba 'Str', 'Bool', 'Int', 'Array', 'void', una clase, variable o un metodo , pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+
     /*
         ⟨Visibilidad ⟩ ::= pub
     */
