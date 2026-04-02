@@ -1059,51 +1059,310 @@ public class SyntacticAnalyzer {
         | ⟨Llamada-Método-Estático⟩
         | ⟨Llamada-Conclassor⟩
         | id ⟨VarOMetodo⟩
+    */
 
+    /*
 	⟨VarOMetodo⟩ ::= ⟨AccesoVar⟩
 		| ⟨Llamada-Método⟩
+    */
 
-	⟨ExpresionParentizada⟩ ::= ( ⟨Expresión⟩ ) ⟨ExpresionParentizadaF⟩
+    public void varOMetodo() throws SyntacticException, LexicalException {
+        if (checkType(TokenType.SPECIAL_SYMBOL_LB, TokenType.SPECIAL_SYMBOL_P)){
+            accesoVar();
+        }else if (checkType(TokenType.SPECIAL_SYMBOL_PO)){
+            llamadaMetodo();
+        } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
+                TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT, TokenType.OPERATOR_GT,
+                TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
+                TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR,
+                TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
+                TokenType.SPECIAL_SYMBOL_CM)) {
 
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '[','.','(','*', '/', '+', '-', '<', '>', '<=', '>=', '==', '!=', '&&', '||', ')' , ';' , ']', ',', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+
+        }
+    }
+
+    /*
+    ⟨ExpresionParentizada⟩ ::= ( ⟨Expresión⟩ ) ⟨ExpresionParentizadaF⟩
+    */
+    public void expresionParentizada() throws LexicalException, SyntacticException {
+        matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
+        expresion();
+        matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
+        expresionParentizadaF();
+    }
+
+    /*
 	⟨ExpresionParentizadaF⟩ ::=  λ
         | ⟨Encadenado⟩
+    */
+    public void expresionParentizadaF() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.SPECIAL_SYMBOL_P)){
+            //encadenado();
+        } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
+                TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT, TokenType.OPERATOR_GT,
+                TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
+                TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR,
+                TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
+                TokenType.SPECIAL_SYMBOL_CM)) {
 
-	⟨AccesoSelf⟩ ::= self ⟨AccesoSelfF⟩
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '.', '*', '/', '+', '-', '<', '>', '<=', '>=', '==', '!=', '&&', '||', ')' , ';' , ']', ',', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
 
+    /*
+    ⟨AccesoSelf⟩ ::= self ⟨AccesoSelfF⟩
+    */
+    public void accesoSelf() throws LexicalException, SyntacticException {
+        matchTokenType(TokenType.KW_SELF);
+        accesoSelfF();
+    }
+
+    /*
 	⟨AccesoSelfF⟩::= λ
         | ⟨Encadenado⟩
+    */
+    public void accesoSelfF() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.SPECIAL_SYMBOL_P)){
+            //encadenado();
+        } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
+                TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT, TokenType.OPERATOR_GT,
+                TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
+                TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR,
+                TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
+                TokenType.SPECIAL_SYMBOL_CM)) {
 
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '.', '*', '/', '+', '-', '<', '>', '<=', '>=', '==', '!=', '&&', '||', ')' , ';' , ']', ',', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+
+    /*
 	⟨AccesoVar⟩ ::= λ
         | ⟨Encadenado⟩
         | [ ⟨Expresión⟩ ] ⟨AccesoVarF⟩
+    */
 
+    public void accesoVar() throws SyntacticException, LexicalException {
+        if (checkType(TokenType.SPECIAL_SYMBOL_P)) {
+            //encadenado();
+        } else if (checkType(TokenType.SPECIAL_SYMBOL_LB)) {
+            matchTokenType(TokenType.SPECIAL_SYMBOL_LB);
+            expresion();
+            matchTokenType(TokenType.SPECIAL_SYMBOL_RB);
+            accesoVarF();
+        } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
+                TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT, TokenType.OPERATOR_GT,
+                TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
+                TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR,
+                TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
+                TokenType.SPECIAL_SYMBOL_CM)) {
+
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '.', '*', '/', '+', '-', '<', '>', '<=', '>=', '==', '!=', '&&', '||', ')' , ';' , ']', ',', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+
+    /*
     ⟨AccesoVarF⟩ ::= λ
         | ⟨Encadenado⟩
+    */
+     public void accesoVarF() throws SyntacticException {
+         // REVISAR AMBIGUEDAD CON TokenType.SPECIAL_SYMBOL_P
+         if (checkType(TokenType.SPECIAL_SYMBOL_P)) {
+             //encadenado();
+         } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
+                 TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT, TokenType.OPERATOR_GT,
+                 TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
+                 TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR,
+                 TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
+                 TokenType.SPECIAL_SYMBOL_CM, TokenType.SPECIAL_SYMBOL_P)) {
 
+             throw new SyntacticException(currentToken.getRowIndex(),
+                     currentToken.getColumnIndex(),
+                     "Se esperaba '*', '/', '+', '-', '<', '>', '<=', '>=', '==', '!=', '&&', '||', ')' , ';' , ']', ',', '.', pero se encontro '" +
+                             currentToken.getLexeme() + "'"
+             );
+         }
+     }
+
+     /*
     ⟨Llamada-Método⟩ ::= ⟨Argumentos-Actuales⟩ ⟨Llamada-MétodoF⟩
+    */
+    public void llamadaMetodo() throws LexicalException, SyntacticException {
+        argumentosActuales();
+        llamadaMetodoF();
+    }
 
+    /*
     ⟨Llamada-MétodoF⟩ ::= λ
         | ⟨Encadenado⟩
+    */
+    public void llamadaMetodoF() throws SyntacticException {
+        // REVISAR AMBIGUEDAD CON TokenType.SPECIAL_SYMBOL_P
+        if (checkType(TokenType.SPECIAL_SYMBOL_P)) {
+            //encadenado();
+        } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
+                TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT, TokenType.OPERATOR_GT,
+                TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
+                TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR,
+                TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
+                TokenType.SPECIAL_SYMBOL_CM, TokenType.SPECIAL_SYMBOL_P)) {
 
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '*', '/', '+', '-', '<', '>', '<=', '>=', '==', '!=', '&&', '||', ')' , ';' , ']', ',', '.', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+
+    /*
     ⟨Llamada-Método-Estático⟩ ::= idclass . ⟨Llamada-Método⟩ ⟨Llamada-Método-EstáticoF⟩
+    */
+    public void llamadaMetodoEstatico() throws LexicalException, SyntacticException {
+        matchTokenType(TokenType.IDENTIFIER_CLASS);
+        matchTokenType(TokenType.SPECIAL_SYMBOL_P);
+        llamadaMetodo();
+        llamadaMetodoEstaticoF();
+    }
 
+    /*
     ⟨Llamada-Método-EstáticoF⟩ ::= λ
         | ⟨Encadenado⟩
+    */
+    public void llamadaMetodoEstaticoF() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.SPECIAL_SYMBOL_P)){
+            //encadenado();
+        } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
+                TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT, TokenType.OPERATOR_GT,
+                TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
+                TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR,
+                TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
+                TokenType.SPECIAL_SYMBOL_CM)) {
 
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '.', '*', '/', '+', '-', '<', '>', '<=', '>=', '==', '!=', '&&', '||', ')' , ';' , ']', ',', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+    
+    /*
     ⟨Llamada-Conclassor⟩ ::= new ⟨Llamada-ConclassorF1⟩
-
+    */
+    public void llamadaConclassor() throws LexicalException, SyntacticException {
+        matchTokenType(TokenType.KW_NEW);
+        llamadaConclassorF1();
+    }
+    
+    /*
     ⟨Llamada-ConclassorF1⟩ ::= idclass ⟨Argumentos-Actuales⟩ ⟨Llamada-ConclassorF2⟩
         | ⟨Tipo-Primitivo⟩ [ ⟨Expresión⟩ ] ⟨Llamada-ConclassorF2⟩
+    */
+    
+    public void llamadaConclassorF1() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.IDENTIFIER_CLASS)){
+            matchTokenType(TokenType.IDENTIFIER_CLASS);
+            argumentosActuales();
+            llamadaConclassorF2();
+        } else if (checkType(TokenType.INT_CLASS, TokenType.BOOL_CLASS, TokenType.STR_CLASS)) {
+            tipoPrimitivo();
+            matchTokenType(TokenType.SPECIAL_SYMBOL_LB);
+            expresion();
+            matchTokenType(TokenType.SPECIAL_SYMBOL_RB);
+            llamadaConclassorF2();
+        }else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba 'Str', 'Bool', 'Int' o un identificador de clase, pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
 
+    /*
     ⟨Llamada-ConclassorF2⟩ ::= λ
         | ⟨Encadenado⟩
+    */
 
+    public void llamadaConclassorF2() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.SPECIAL_SYMBOL_P)){
+            //encadenado();
+        } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
+                TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT, TokenType.OPERATOR_GT,
+                TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
+                TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR,
+                TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
+                TokenType.SPECIAL_SYMBOL_CM)) {
+
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '.', '*', '/', '+', '-', '<', '>', '<=', '>=', '==', '!=', '&&', '||', ')' , ';' , ']', ',', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+    
+    /*
 	⟨Argumentos-Actuales⟩ ::= ( ⟨Argumentos-ActualesF⟩
-
+    */
+    public void argumentosActuales() throws SyntacticException, LexicalException {
+        matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
+        argumentosActualesF();
+    }
+    
+    /*
 	⟨Argumentos-ActualesF⟩ ::= )
 		| ⟨Lista-Expresiones⟩ )
+    */
 
+    public void argumentosActualesF() throws SyntacticException, LexicalException {
+        if(checkType(TokenType.SPECIAL_SYMBOL_PC)){
+            matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
+        } else if (checkType(TokenType.OPERATOR_ADD, TokenType.OPERATOR_SUB,
+                TokenType.OPERATOR_NOT, TokenType.OPERATOR_INC, TokenType.OPERATOR_DEC,
+                TokenType.KW_NIL, TokenType.BOOLEAN_CONSTANT, TokenType.INT_CONSTANT,
+                TokenType.STRING_CONSTANT, TokenType.SPECIAL_SYMBOL_PO, TokenType.KW_SELF,
+                TokenType.IDENTIFIER_CLASS, TokenType.KW_NEW, TokenType.IDENTIFIER_VAR_METHOD)) {
+
+            listaExpresiones();
+            matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
+        }else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba ')', '+', '-', '!', '++', '--', 'nil', '(', 'self', 'new', booleano, entero, string, una variable o una clase, pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+
+    /*
 	⟨Lista-Expresiones⟩ ::= ⟨Expresión⟩ ⟨Lista-ExpresionesF⟩
+    */
+
+    public void listaExpresiones() throws SyntacticException, LexicalException {
+        expresion();
+        //listaExpresionesF();
+    }
+
+    /*
 
 	⟨Lista-ExpresionesF⟩ ::= λ
 		| , ⟨Lista-Expresiones⟩
