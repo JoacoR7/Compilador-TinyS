@@ -1065,7 +1065,6 @@ public class SyntacticAnalyzer {
 	⟨VarOMetodo⟩ ::= ⟨AccesoVar⟩
 		| ⟨Llamada-Método⟩
     */
-
     public void varOMetodo() throws SyntacticException, LexicalException {
         if (checkType(TokenType.SPECIAL_SYMBOL_LB, TokenType.SPECIAL_SYMBOL_P)){
             accesoVar();
@@ -1100,6 +1099,7 @@ public class SyntacticAnalyzer {
     /*
 	⟨ExpresionParentizadaF⟩ ::=  λ
         | ⟨Encadenado⟩
+    INCOMPLETO
     */
     public void expresionParentizadaF() throws LexicalException, SyntacticException {
         if (checkType(TokenType.SPECIAL_SYMBOL_P)){
@@ -1129,7 +1129,8 @@ public class SyntacticAnalyzer {
 
     /*
 	⟨AccesoSelfF⟩::= λ
-        | ⟨Encadenado⟩
+        | ⟨Encadenado⟩}
+    INCOMPLETO
     */
     public void accesoSelfF() throws LexicalException, SyntacticException {
         if (checkType(TokenType.SPECIAL_SYMBOL_P)){
@@ -1154,7 +1155,6 @@ public class SyntacticAnalyzer {
         | ⟨Encadenado⟩
         | [ ⟨Expresión⟩ ] ⟨AccesoVarF⟩
     */
-
     public void accesoVar() throws SyntacticException, LexicalException {
         if (checkType(TokenType.SPECIAL_SYMBOL_P)) {
             //encadenado();
@@ -1181,6 +1181,7 @@ public class SyntacticAnalyzer {
     /*
     ⟨AccesoVarF⟩ ::= λ
         | ⟨Encadenado⟩
+    INCOMPLETO
     */
      public void accesoVarF() throws SyntacticException {
          // REVISAR AMBIGUEDAD CON TokenType.SPECIAL_SYMBOL_P
@@ -1212,6 +1213,7 @@ public class SyntacticAnalyzer {
     /*
     ⟨Llamada-MétodoF⟩ ::= λ
         | ⟨Encadenado⟩
+    INCOMPLETO
     */
     public void llamadaMetodoF() throws SyntacticException {
         // REVISAR AMBIGUEDAD CON TokenType.SPECIAL_SYMBOL_P
@@ -1276,7 +1278,6 @@ public class SyntacticAnalyzer {
     ⟨Llamada-ConclassorF1⟩ ::= idclass ⟨Argumentos-Actuales⟩ ⟨Llamada-ConclassorF2⟩
         | ⟨Tipo-Primitivo⟩ [ ⟨Expresión⟩ ] ⟨Llamada-ConclassorF2⟩
     */
-    
     public void llamadaConclassorF1() throws LexicalException, SyntacticException {
         if (checkType(TokenType.IDENTIFIER_CLASS)){
             matchTokenType(TokenType.IDENTIFIER_CLASS);
@@ -1301,7 +1302,6 @@ public class SyntacticAnalyzer {
     ⟨Llamada-ConclassorF2⟩ ::= λ
         | ⟨Encadenado⟩
     */
-
     public void llamadaConclassorF2() throws LexicalException, SyntacticException {
         if (checkType(TokenType.SPECIAL_SYMBOL_P)){
             //encadenado();
@@ -1332,7 +1332,6 @@ public class SyntacticAnalyzer {
 	⟨Argumentos-ActualesF⟩ ::= )
 		| ⟨Lista-Expresiones⟩ )
     */
-
     public void argumentosActualesF() throws SyntacticException, LexicalException {
         if(checkType(TokenType.SPECIAL_SYMBOL_PC)){
             matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
@@ -1344,7 +1343,7 @@ public class SyntacticAnalyzer {
 
             listaExpresiones();
             matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
-        }else {
+        } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
                     "Se esperaba ')', '+', '-', '!', '++', '--', 'nil', '(', 'self', 'new', booleano, entero, string, una variable o una clase, pero se encontro '" +
@@ -1359,19 +1358,32 @@ public class SyntacticAnalyzer {
 
     public void listaExpresiones() throws SyntacticException, LexicalException {
         expresion();
-        //listaExpresionesF();
+        listaExpresionesF();
     }
 
     /*
-
 	⟨Lista-ExpresionesF⟩ ::= λ
 		| , ⟨Lista-Expresiones⟩
-
+    */
+    public void listaExpresionesF() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.SPECIAL_SYMBOL_CM)) {
+            matchTokenType(TokenType.SPECIAL_SYMBOL_CM);
+            listaExpresiones();
+        } else if (checkType(TokenType.SPECIAL_SYMBOL_PC)) {
+            // Siguientes de listaExpresionesF, cierro
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba ',' o ')', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+    
+    /*
 	⟨Encadenado⟩ ::= . ⟨EncadenadoF⟩
-
 	⟨EncadenadoF⟩ ::= ⟨Llamada-Método⟩
 		| ⟨AccesoVar⟩
-
      */
 
 }
