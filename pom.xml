@@ -40,7 +40,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>uncuyo.compiladores.Etapa1</mainClass>
+                            <mainClass>uncuyo.compiladores.Etapa2</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

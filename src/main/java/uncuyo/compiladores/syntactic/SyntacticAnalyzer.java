@@ -15,6 +15,11 @@ public class SyntacticAnalyzer {
     private Lexer lexer;
     private Token currentToken;
 
+    public SyntacticAnalyzer(Lexer lexer, Token token) {
+        this.lexer = lexer;
+        this.currentToken = token;
+    }
+
     private void nextToken() throws LexerFileReadException, LexicalException {
         currentToken = lexer.getNextToken();
     }
