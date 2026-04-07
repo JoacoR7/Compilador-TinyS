@@ -25,7 +25,6 @@ public class Etapa2 {
             SyntacticAnalyzer syntacticAnalyzer = new SyntacticAnalyzer(lexer, lexer.getNextToken());
             try {
                 syntacticAnalyzer.program();
-                System.out.println("CORRECTO: ANALISIS SINTÁCTICO");
             } catch (SyntacticException e) {
                 System.out.println(e.getMessage());
                 e.printStackTrace();
