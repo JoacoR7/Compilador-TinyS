@@ -28,6 +28,7 @@ public class Etapa2 {
                 System.out.println("CORRECTO: ANALISIS SINTÁCTICO");
             } catch (SyntacticException e) {
                 System.out.println(e.getMessage());
+                e.printStackTrace();
             } catch (LexicalException e) {
                 System.out.println("ERROR: LEXICO \n" + e.getMessage() );
             }

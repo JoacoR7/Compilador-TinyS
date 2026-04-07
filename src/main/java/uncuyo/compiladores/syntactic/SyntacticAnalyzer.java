@@ -225,7 +225,8 @@ public class SyntacticAnalyzer {
     */
     public void atributo() throws LexicalException, SyntacticException {
         // DUDA: Sería entonces para Str, Int, etc idclass?
-        if (checkType(TokenType.IDENTIFIER_CLASS)) {
+        if (checkType(TokenType.IDENTIFIER_CLASS, TokenType.STR_CLASS, TokenType.BOOL_CLASS,
+                TokenType.INT_CLASS, TokenType.ARRAY_CLASS)) {
             tipo();
             listaDeclaracionVariables();
             matchTokenType(TokenType.SPECIAL_SYMBOL_S);
@@ -466,7 +467,7 @@ public class SyntacticAnalyzer {
             | ⟨Tipo-Arreglo⟩
     */
     public void tipo() throws LexicalException, SyntacticException {
-        if(checkType(TokenType.STRING_CONSTANT, TokenType.BOOLEAN_CONSTANT, TokenType.INT_CONSTANT)) {
+        if(checkType(TokenType.STR_CLASS, TokenType.BOOLEAN_CONSTANT, TokenType.INT_CONSTANT)) {
             tipoPrimitivo();
         } else if (checkType(TokenType.IDENTIFIER_CLASS)) {
             tipoReferencia();
@@ -488,8 +489,8 @@ public class SyntacticAnalyzer {
             | Int
     */
     public void tipoPrimitivo() throws LexicalException, SyntacticException {
-        if(checkType(TokenType.STRING_CONSTANT)) {
-            matchTokenType(TokenType.STRING_CONSTANT);
+        if(checkType(TokenType.STR_CLASS)) {
+            matchTokenType(TokenType.STR_CLASS);
         } else if(checkType(TokenType.BOOLEAN_CONSTANT)) {
             matchTokenType(TokenType.BOOLEAN_CONSTANT);
         } else if (checkType(TokenType.INT_CONSTANT)) {
