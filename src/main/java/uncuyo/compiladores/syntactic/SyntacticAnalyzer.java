@@ -72,18 +72,15 @@ public class SyntacticAnalyzer {
 
     /*
         ⟨Start⟩ ::= start ⟨Bloque-Método⟩
-    INCOMPLETO
     */
     public void start() throws LexerFileReadException, LexicalException, SyntacticException {
         matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
-        //DUDA CON START
-        //bloqueMetodo();
+        bloqueMetodo();
     }
 
     /* ⟨Lista-Definiciones⟩ ::= ⟨class⟩ ⟨Lista-Definiciones⟩
             | ⟨Impl⟩ ⟨Lista-Definiciones⟩
             | λ
-    INCOMPLETO
     */
     public void listaDefiniciones() throws LexicalException, SyntacticException {
         if (checkType(TokenType.KW_CLASS)){
@@ -93,8 +90,6 @@ public class SyntacticAnalyzer {
             impl();
             listaDefiniciones();
         } else if (checkType(TokenType.IDENTIFIER_VAR_METHOD)){
-            //DUDA CON START
-            // Caso de lambda
             // Siguientes de listaDefiniciones, cierro
         }else {
             throw new SyntacticException(currentToken.getRowIndex(),
@@ -116,19 +111,18 @@ public class SyntacticAnalyzer {
 
     /* 	⟨classF⟩ ::= { ⟨AtributoK⟩ }
             | ⟨Herencia⟩ { ⟨AtributoK⟩ }
-    INCOMPLETO
     */
     public void classF() throws LexicalException, SyntacticException {
         if(checkType(TokenType.SPECIAL_SYMBOL_LCB)) {
             matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
-            //atributoK();
+            atributoK();
             matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
         } else if (checkType(TokenType.SPECIAL_SYMBOL_CL)) {
             herencia();
             matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
-            //atributoK();
+            atributoK();
             matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
-        }else {
+        } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
                     "Se esperaba '{' o ':', pero se encontro '" +
@@ -141,16 +135,30 @@ public class SyntacticAnalyzer {
         ⟨AtributoK⟩ ::= ⟨Atributo⟩ ⟨AtributoK⟩
             | λ
      */
+    public void atributoK() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.STR_CLASS, TokenType.BOOL_CLASS, TokenType.INT_CLASS,
+                TokenType.IDENTIFIER_CLASS, TokenType.ARRAY_CLASS, TokenType.KW_PUB)) {
+            atributo();
+            atributoK();
+        } else if (checkType(TokenType.SPECIAL_SYMBOL_RCB)) {
+            // Siguientes atributoK, cierro
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba 'pub', '}' 'Str', 'Bool', 'Int', 'Array' u otros identificadores de clase, pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
 
     /*
         ⟨Impl ⟩ ::= impl idclass { ⟨MiembroK⟩ }
-    INCOMPLETO
      */
     public void impl() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.KW_IMPL);
         matchTokenType(TokenType.IDENTIFIER_CLASS);
         matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
-        // MiembroK()
+        miembroK();
         matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
     }
 
@@ -163,12 +171,40 @@ public class SyntacticAnalyzer {
     }
 
     /*
-    ⟨MiembroK⟩ ::= ⟨Miembro⟩ ⟨MiembroK⟩
-    | λ
-
-    ⟨Miembro⟩ ::= ⟨Método⟩
-    | ⟨Constructor⟩
+        ⟨MiembroK⟩ ::= ⟨Miembro⟩ ⟨MiembroK⟩
+            | λ
     */
+    public void miembroK() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.SPECIAL_SYMBOL_P, TokenType.KW_ST, TokenType.KW_FN)) {
+            miembro();
+            miembroK();
+        } else if (checkType(TokenType.SPECIAL_SYMBOL_RCB)) {
+            // Siguientes de miembroK, cierro
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba 'st', 'fn', '.' o '}', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
+    /*
+        ⟨Miembro⟩ ::= ⟨Método⟩
+            | ⟨Constructor⟩
+    */
+    public void miembro() throws LexicalException, SyntacticException {
+        if (checkType(TokenType.KW_ST, TokenType.KW_FN)) {
+            metodo();
+        } else if (checkType(TokenType.SPECIAL_SYMBOL_P)) {
+            constructor();
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba 'st', 'fn', o '.', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
     /*
         ⟨Constructor ⟩ ::= . ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
     */
@@ -193,7 +229,7 @@ public class SyntacticAnalyzer {
             tipo();
             listaDeclaracionVariables();
             matchTokenType(TokenType.SPECIAL_SYMBOL_S);
-        }else {
+        } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
                     "Se esperaba un identificador de clase o 'pub', pero se encontro '" +
@@ -206,15 +242,14 @@ public class SyntacticAnalyzer {
     ⟨Método⟩ ::= fn ⟨MétodoF⟩
         | ⟨Forma-Método⟩ fn ⟨MétodoF⟩
     */
-
     public void metodo() throws LexicalException, SyntacticException {
         if(checkType(TokenType.KW_FN)){
             matchTokenType(TokenType.KW_FN);
-            //metofoF();
+            metodoF();
         }else if (checkType(TokenType.KW_ST)){
             formaMetodo();
             matchTokenType(TokenType.KW_FN);
-            //metofoF();
+            metodoF();
         }else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
@@ -225,9 +260,8 @@ public class SyntacticAnalyzer {
     }
 
     /*
-    ⟨MétodoF⟩ ::= idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
-        | ⟨Tipo-Método⟩ idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
-
+        ⟨MétodoF⟩ ::= idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+            | ⟨Tipo-Método⟩ idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
     */
     public void metodoF() throws LexicalException, SyntacticException {
         if(checkType(TokenType.IDENTIFIER_VAR_METHOD)){
@@ -449,7 +483,6 @@ public class SyntacticAnalyzer {
             | Int
     */
     public void tipoPrimitivo() throws LexicalException, SyntacticException {
-        //DUDA: SERIA IDCLASS? O COMPARAMOS EL LEXEMA
         if(checkType(TokenType.STRING_CONSTANT)) {
             matchTokenType(TokenType.STRING_CONSTANT);
         } else if(checkType(TokenType.BOOLEAN_CONSTANT)) {
@@ -475,7 +508,6 @@ public class SyntacticAnalyzer {
         ⟨Tipo-Arreglo⟩ ::= Array ⟨Tipo-Primitivo⟩
     */
     public void tipoArreglo() throws LexicalException, SyntacticException {
-        // DUDA: MATCHEO CON LEXEMA O IDCLASS?
         matchLexeme("Array");
         tipoPrimitivo();
     }
@@ -1103,7 +1135,7 @@ public class SyntacticAnalyzer {
     */
     public void expresionParentizadaF() throws LexicalException, SyntacticException {
         if (checkType(TokenType.SPECIAL_SYMBOL_P)){
-            //encadenado();
+            encadenado();
         } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
                 TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT, TokenType.OPERATOR_GT,
                 TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
@@ -1134,7 +1166,7 @@ public class SyntacticAnalyzer {
     */
     public void accesoSelfF() throws LexicalException, SyntacticException {
         if (checkType(TokenType.SPECIAL_SYMBOL_P)){
-            //encadenado();
+            encadenado();
         } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
                 TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT, TokenType.OPERATOR_GT,
                 TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
@@ -1157,7 +1189,7 @@ public class SyntacticAnalyzer {
     */
     public void accesoVar() throws SyntacticException, LexicalException {
         if (checkType(TokenType.SPECIAL_SYMBOL_P)) {
-            //encadenado();
+            encadenado();
         } else if (checkType(TokenType.SPECIAL_SYMBOL_LB)) {
             matchTokenType(TokenType.SPECIAL_SYMBOL_LB);
             expresion();
@@ -1183,10 +1215,10 @@ public class SyntacticAnalyzer {
         | ⟨Encadenado⟩
     INCOMPLETO
     */
-     public void accesoVarF() throws SyntacticException {
+     public void accesoVarF() throws SyntacticException, LexicalException {
          // REVISAR AMBIGUEDAD CON TokenType.SPECIAL_SYMBOL_P
          if (checkType(TokenType.SPECIAL_SYMBOL_P)) {
-             //encadenado();
+             encadenado();
          } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
                  TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT, TokenType.OPERATOR_GT,
                  TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
@@ -1215,10 +1247,10 @@ public class SyntacticAnalyzer {
         | ⟨Encadenado⟩
     INCOMPLETO
     */
-    public void llamadaMetodoF() throws SyntacticException {
+    public void llamadaMetodoF() throws SyntacticException, LexicalException {
         // REVISAR AMBIGUEDAD CON TokenType.SPECIAL_SYMBOL_P
         if (checkType(TokenType.SPECIAL_SYMBOL_P)) {
-            //encadenado();
+            encadenado();
         } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
                 TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT, TokenType.OPERATOR_GT,
                 TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
@@ -1250,13 +1282,14 @@ public class SyntacticAnalyzer {
     */
     public void llamadaMetodoEstaticoF() throws LexicalException, SyntacticException {
         if (checkType(TokenType.SPECIAL_SYMBOL_P)){
-            //encadenado();
+            encadenado();
         } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
                 TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT, TokenType.OPERATOR_GT,
                 TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
                 TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR,
                 TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
                 TokenType.SPECIAL_SYMBOL_CM)) {
+            // Siguientes de llamadaMetodoEstaticoF, cierro
 
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
@@ -1267,7 +1300,7 @@ public class SyntacticAnalyzer {
     }
     
     /*
-    ⟨Llamada-Conclassor⟩ ::= new ⟨Llamada-ConclassorF1⟩
+        ⟨Llamada-Conclassor⟩ ::= new ⟨Llamada-ConclassorF1⟩
     */
     public void llamadaConclassor() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.KW_NEW);
@@ -1304,7 +1337,7 @@ public class SyntacticAnalyzer {
     */
     public void llamadaConclassorF2() throws LexicalException, SyntacticException {
         if (checkType(TokenType.SPECIAL_SYMBOL_P)){
-            //encadenado();
+            encadenado();
         } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
                 TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT, TokenType.OPERATOR_GT,
                 TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
@@ -1355,7 +1388,6 @@ public class SyntacticAnalyzer {
     /*
 	⟨Lista-Expresiones⟩ ::= ⟨Expresión⟩ ⟨Lista-ExpresionesF⟩
     */
-
     public void listaExpresiones() throws SyntacticException, LexicalException {
         expresion();
         listaExpresionesF();
@@ -1381,9 +1413,34 @@ public class SyntacticAnalyzer {
     }
     
     /*
-	⟨Encadenado⟩ ::= . ⟨EncadenadoF⟩
-	⟨EncadenadoF⟩ ::= ⟨Llamada-Método⟩
-		| ⟨AccesoVar⟩
+        ⟨Encadenado⟩ ::= . ⟨EncadenadoF⟩
+	*/
+    public void encadenado() throws LexicalException, SyntacticException {
+        matchTokenType(TokenType.SPECIAL_SYMBOL_P);
+        encadenadoF();
+    }
+    /*
+        ⟨EncadenadoF⟩ ::= ⟨Llamada-Método⟩
+            | ⟨AccesoVar⟩
      */
+    public void encadenadoF() throws LexicalException, SyntacticException {
+        // DUDA, AMBIGUEDAD CON '.'
+        if (checkType(TokenType.SPECIAL_SYMBOL_PO)) {
+            llamadaMetodo();
+        } else if (checkType(TokenType.SPECIAL_SYMBOL_LB, TokenType.SPECIAL_SYMBOL_P)) {
+            accesoVar();
+        } else if (checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD, TokenType.OPERATOR_SUB,
+                TokenType.OPERATOR_LT, TokenType.OPERATOR_GT, TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
+                TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR, TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S,
+                TokenType.SPECIAL_SYMBOL_RB, TokenType.SPECIAL_SYMBOL_CM, TokenType.SPECIAL_SYMBOL_P)) {
+            // Siguientes de encadenadoF, cierro
+        } else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba '(', '[', '*', '/', '+', '-', '<', '>', '<=', '>=', '==', '!=', '&&', '||', ')', ';', ']', ',', o '.', pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
+        }
+    }
 
 }
