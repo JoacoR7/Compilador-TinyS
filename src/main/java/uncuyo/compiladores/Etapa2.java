@@ -24,10 +24,10 @@ public class Etapa2 {
             Lexer lexer = new Lexer(args[0]);
             SyntacticAnalyzer syntacticAnalyzer = new SyntacticAnalyzer(lexer, lexer.getNextToken());
             try {
-                syntacticAnalyzer.start();
+                syntacticAnalyzer.program();
                 System.out.println("CORRECTO: ANALISIS SINTÁCTICO");
             } catch (SyntacticException e) {
-                System.out.println("ERROR: SINTACTICO \n" + e.getMessage() );
+                System.out.println(e.getMessage());
             } catch (LexicalException e) {
                 System.out.println("ERROR: LEXICO \n" + e.getMessage() );
             }
