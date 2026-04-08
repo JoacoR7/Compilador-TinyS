@@ -26,7 +26,6 @@ public class Etapa2 {
             try {
                 syntacticAnalyzer.program();
             } catch (SyntacticException e) {
-                System.out.println(e.getMessage());
                 e.printStackTrace();
             } catch (LexicalException e) {
                 System.out.println("ERROR: LEXICO \n" + e.getMessage() );

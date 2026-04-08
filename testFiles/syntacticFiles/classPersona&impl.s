@@ -10,6 +10,7 @@ impl Persona {
 }
 
 start {
-    Persona persona = new Persona();
-    persona.saludar();
+    Persona persona;
+    persona = new Persona();
+    (persona.saludar());
 }
