@@ -393,14 +393,14 @@ public class SyntacticAnalyzer {
     public void argumentosFormalesF() throws LexicalException, SyntacticException {
         if (checkType(TokenType.SPECIAL_SYMBOL_PC)) {
             matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
-        } else if (checkType(TokenType.STRING_CONSTANT, TokenType.BOOLEAN_CONSTANT, TokenType.INT_CONSTANT,
+        } else if (checkType(TokenType.STR_CLASS, TokenType.BOOL_CLASS, TokenType.INT_CLASS, TokenType.ARRAY_CLASS,
                 TokenType.IDENTIFIER_CLASS)) {
                 listaArgumentosFormales();
                 matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
         }else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba ')', string, boolean, entero o identificador de clase, pero se encontro '" +
+                    "Se esperaba ')', o un identificador de clase, pero se encontro '" +
                             currentToken.getLexeme() + "'"
             );
         }
@@ -446,9 +446,8 @@ public class SyntacticAnalyzer {
             | void
     */
     public void tipoMetodo() throws LexicalException, SyntacticException {
-        //DUDA: CÓMO HACEMOS CON ARRAY? ya que puede venir idclass o Array, Array tmb sería un idclass
-        if(checkType(TokenType.STRING_CONSTANT, TokenType.BOOLEAN_CONSTANT,
-                TokenType.INT_CONSTANT, TokenType.IDENTIFIER_CLASS)) {
+        if(checkType(TokenType.STR_CLASS, TokenType.BOOL_CLASS,
+                TokenType.INT_CLASS, TokenType.IDENTIFIER_CLASS)) {
             tipo();
         } else if (checkType(TokenType.KW_VOID)) {
             matchTokenType(TokenType.KW_VOID);
@@ -467,12 +466,11 @@ public class SyntacticAnalyzer {
             | ⟨Tipo-Arreglo⟩
     */
     public void tipo() throws LexicalException, SyntacticException {
-        if(checkType(TokenType.STR_CLASS, TokenType.BOOLEAN_CONSTANT, TokenType.INT_CONSTANT)) {
+        if(checkType(TokenType.STR_CLASS, TokenType.BOOL_CLASS, TokenType.INT_CLASS)) {
             tipoPrimitivo();
         } else if (checkType(TokenType.IDENTIFIER_CLASS)) {
             tipoReferencia();
-            //DUDA: QUE HACEMOS CON ARRAY SI ES IDCLASS
-        } else if (checkLexeme("Array")) {
+        } else if (checkType(TokenType.ARRAY_CLASS)) {
             tipoArreglo();
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
@@ -514,7 +512,7 @@ public class SyntacticAnalyzer {
         ⟨Tipo-Arreglo⟩ ::= Array ⟨Tipo-Primitivo⟩
     */
     public void tipoArreglo() throws LexicalException, SyntacticException {
-        matchLexeme("Array");
+        matchTokenType(TokenType.ARRAY_CLASS);
         tipoPrimitivo();
     }
 
@@ -580,6 +578,7 @@ public class SyntacticAnalyzer {
             matchTokenType(TokenType.KW_IF);
             matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
             expresion();
+            matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
             sentencia();
             sentenciaF1();
         } else if (checkType(TokenType.KW_RET)) {
