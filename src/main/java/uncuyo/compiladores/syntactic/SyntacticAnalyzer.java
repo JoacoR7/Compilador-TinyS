@@ -318,7 +318,7 @@ public class SyntacticAnalyzer {
             | λ
     */
     public void declVarLocalesK() throws LexicalException, SyntacticException {
-        if (checkType(TokenType.STRING_CONSTANT, TokenType.BOOLEAN_CONSTANT, TokenType.INT_CONSTANT,
+        if (checkType(TokenType.STR_CLASS, TokenType.BOOL_CLASS, TokenType.INT_CLASS, TokenType.ARRAY_CLASS,
                 TokenType.IDENTIFIER_CLASS)) {
             declVarLocales();
             declVarLocalesK();
@@ -491,10 +491,10 @@ public class SyntacticAnalyzer {
     public void tipoPrimitivo() throws LexicalException, SyntacticException {
         if(checkType(TokenType.STR_CLASS)) {
             matchTokenType(TokenType.STR_CLASS);
-        } else if(checkType(TokenType.BOOLEAN_CONSTANT)) {
-            matchTokenType(TokenType.BOOLEAN_CONSTANT);
-        } else if (checkType(TokenType.INT_CONSTANT)) {
-            matchTokenType(TokenType.INT_CONSTANT);
+        } else if(checkType(TokenType.BOOL_CLASS)) {
+            matchTokenType(TokenType.BOOL_CLASS);
+        } else if (checkType(TokenType.INT_CLASS)) {
+            matchTokenType(TokenType.INT_CLASS);
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
