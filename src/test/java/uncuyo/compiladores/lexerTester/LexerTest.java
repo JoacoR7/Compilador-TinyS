@@ -15,14 +15,14 @@ public class LexerTest {
 
     @Test
     public void testString() throws FileNotFoundException {
-        Lexer lexer = new Lexer("testFiles/lexerFiles/strings.s");
+        Lexer lexer = new Lexer("testFiles/lexerFiles/success/strings.s");
         assertDoesNotThrow(lexer::getAllTokens);
     }
 
     @Test
     public void testOperators() throws Exception {
 
-        Lexer lexer = new Lexer("testFiles/lexerFiles/operators.s");
+        Lexer lexer = new Lexer("testFiles/lexerFiles/success/operators.s");
         List<Token> tokens = lexer.getAllTokens();
 
         assertEquals(17, tokens.size());
@@ -52,7 +52,7 @@ public class LexerTest {
     @Test
     public void testSpecialSymbols() throws Exception {
 
-        Lexer lexer = new Lexer("testFiles/lexerFiles/specialSymbols.s");
+        Lexer lexer = new Lexer("testFiles/lexerFiles/success/specialSymbols.s");
         List<Token> tokens = lexer.getAllTokens();
 
         assertEquals(10, tokens.size());
