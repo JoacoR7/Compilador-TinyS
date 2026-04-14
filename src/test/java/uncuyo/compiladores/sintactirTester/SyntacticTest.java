@@ -80,8 +80,6 @@ public class SyntacticTest {
     /*********************************************
                     Casos de éxito
      *********************************************/
-
-
     @Test
     public void successCases() throws FileNotFoundException, LexicalException {
         fileUtils = new FileUtils("testFiles/syntacticFiles/success/");
