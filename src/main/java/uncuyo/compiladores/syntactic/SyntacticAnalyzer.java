@@ -72,7 +72,6 @@ public class SyntacticAnalyzer {
         listaDefiniciones();
         start();
         matchTokenType(TokenType.EOF);
-        System.out.println("CORRECTO: ANALISIS SINTACTICO");
     }
 
     /*
