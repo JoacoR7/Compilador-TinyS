@@ -39,6 +39,8 @@ public enum TokenType {
     /** Variable or method identifier **/
     IDENTIFIER_VAR_METHOD,
     /**  **/
+    /** Object class */
+    OBJECT_CLASS,
     /** Primitive class: integer type */
     INT_CLASS,
     /** Primitive class: boolean type */

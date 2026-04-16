@@ -1,4 +1,4 @@
-package uncuyo.compiladores.lexerTester;
+package uncuyo.compiladores;
 
 
 import org.junit.jupiter.api.Test;

@@ -1,10 +1,13 @@
 package uncuyo.compiladores.semantic;
 
+import uncuyo.compiladores.lexer.Token;
+
 import java.util.Hashtable;
 import java.util.List;
 
 public class Class {
 
+    private Token token;
     private Hashtable<String, Atribute> atributes;
     private Hashtable<String, Method> methods;
     private Constructor constructor;
@@ -13,7 +16,8 @@ public class Class {
     public Class() {
     }
 
-    public Class(Hashtable<String, Atribute> atributes, Hashtable<String, Method> methods, Constructor constructor, Class parent) {
+    public Class(Token token, Hashtable<String, Atribute> atributes, Hashtable<String, Method> methods, Constructor constructor, Class parent) {
+        this.token = token;
         this.atributes = atributes;
         this.methods = methods;
         this.constructor = constructor;
@@ -50,5 +54,13 @@ public class Class {
 
     public void setParent(Class parent) {
         this.parent = parent;
+    }
+
+    public Token getToken() {
+        return token;
+    }
+
+    public void setToken(Token token) {
+        this.token = token;
     }
 }

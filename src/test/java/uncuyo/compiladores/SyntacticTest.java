@@ -1,7 +1,6 @@
-package uncuyo.compiladores.sintactirTester;
+package uncuyo.compiladores;
 
 import org.junit.jupiter.api.Test;
-import uncuyo.compiladores.FileUtils;
 import uncuyo.compiladores.exceptions.LexicalException;
 import uncuyo.compiladores.exceptions.SyntacticException;
 import uncuyo.compiladores.lexer.Lexer;
