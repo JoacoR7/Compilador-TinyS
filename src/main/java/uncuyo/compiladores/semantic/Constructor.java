@@ -1,17 +1,16 @@
 package uncuyo.compiladores.semantic;
 
 import java.util.Hashtable;
-import java.util.List;
 
 public class Constructor {
 
     private Hashtable<String, Parameter> parameters;
-    private Hashtable<String, Atribute> atributes;
+    private Hashtable<String, Attribute> atributes;
 
     public Constructor() {
     }
 
-    public Constructor(Hashtable<String, Parameter> parameters, Hashtable<String, Atribute> atributes) {
+    public Constructor(Hashtable<String, Parameter> parameters, Hashtable<String, Attribute> atributes) {
         this.parameters = parameters;
         this.atributes = atributes;
     }
@@ -24,11 +23,11 @@ public class Constructor {
         this.parameters = parameters;
     }
 
-    public Hashtable<String, Atribute> getAtributes() {
+    public Hashtable<String, Attribute> getAtributes() {
         return atributes;
     }
 
-    public void setAtributes(Hashtable<String, Atribute> atributes) {
+    public void setAtributes(Hashtable<String, Attribute> atributes) {
         this.atributes = atributes;
     }
 }

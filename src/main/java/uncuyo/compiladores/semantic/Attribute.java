@@ -1,16 +1,16 @@
 package uncuyo.compiladores.semantic;
 
-public class Atribute {
+public class Attribute {
 
     private Type type;
     private String lexeme;
     private int position;
     private boolean isPrivate;
 
-    public Atribute() {
+    public Attribute() {
     }
 
-    public Atribute(String lexeme, Type type, boolean isPrivate, int position) {
+    public Attribute(String lexeme, Type type, boolean isPrivate, int position) {
         this.lexeme = lexeme;
         this.type = type;
         this.isPrivate = isPrivate;

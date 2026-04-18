@@ -2,6 +2,7 @@ package uncuyo.compiladores.semantic;
 
 import uncuyo.compiladores.exceptions.LexerFileReadException;
 import uncuyo.compiladores.exceptions.LexicalException;
+import uncuyo.compiladores.exceptions.SemanticException;
 import uncuyo.compiladores.exceptions.SyntacticException;
 import uncuyo.compiladores.lexer.Lexer;
 import uncuyo.compiladores.lexer.Token;
@@ -233,20 +234,21 @@ public class SemanticAnalyzer {
     }
 
     /*
-        ⟨Atributo⟩ ::= ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
-            | ⟨Visibilidad⟩ ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
+
+    ⟨Atributo⟩ ::= ⟨Tipo⟩ {ListaDeclaracionVariables.tipo = Tipo.tipo, ListaDeclaracionVariables.privado = true } ⟨Lista-Declaración-Variables⟩ ;
+        | ⟨Visibilidad⟩ ⟨Tipo⟩ {ListaDeclaracionVariables.tipo = Tipo.tipo, ListaDeclaracionVariables.privado = false}  ⟨Lista-Declaración-Variables⟩ ;
     */
     public void atributo() throws LexicalException, SyntacticException {
-        // DUDA: Sería entonces para Str, Int, etc idclass?
+        Type type = null;
         if (checkType(TokenType.IDENTIFIER_CLASS, TokenType.STR_CLASS, TokenType.BOOL_CLASS,
                 TokenType.INT_CLASS, TokenType.ARRAY_CLASS)) {
-            tipo();
-            listaDeclaracionVariables();
+            type = tipo();
+            listaDeclaracionVariables(type , true);
             matchTokenType(TokenType.SPECIAL_SYMBOL_S);
         } else if (checkType(TokenType.KW_PUB)) {
             visibilidad();
-            tipo();
-            listaDeclaracionVariables();
+            type = tipo();
+            listaDeclaracionVariables(type , false);
             matchTokenType(TokenType.SPECIAL_SYMBOL_S);
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
@@ -355,26 +357,37 @@ public class SemanticAnalyzer {
     */
     public void declVarLocales() throws LexicalException, SyntacticException {
         tipo();
-        listaDeclaracionVariables();
+        listaDeclaracionVariables(null , false); // INCOMPLETO
         matchTokenType(TokenType.SPECIAL_SYMBOL_S);
     }
 
     /*
-        ⟨Lista-Declaración-Variables⟩ ::= idMetAt ⟨Lista-Declaración-VariablesF⟩
-    */
-    public void listaDeclaracionVariables() throws LexicalException, SyntacticException {
+        ⟨Lista-Declaración-Variables⟩ ::= idMetAt {if(TS.yaExiste(ClaseActual, idMetAt.lex)) then Error
+         else TS.guardar(ClaseActual, idMetAt.lex, ListaDeclaracionVariables.tipo) }
+         {ListaDeclaracionVariablesF.tipo = ListaDeclaracionVariables.tipo, ListaDeclaracionVariablesF.privado = ListaDeclaracionVariables.privado} ⟨Lista-Declaración-VariablesF⟩    */
+    public void listaDeclaracionVariables(Type type , boolean isPrivate) throws LexicalException, SyntacticException {
+        Token auxToken = Token.copy(currentToken);
+
         matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
-        listaDeclaracionVariablesF();
+
+        if (symbolTable.attributeAlreadyExistsInCurrentClass(auxToken.getLexeme())){
+            throw new SemanticException(auxToken.getRowIndex(),
+                    auxToken.getColumnIndex(),
+                    "El atributo '"+ auxToken.getLexeme() + "' ya ha sido definido dentro de la clase '" +
+                            symbolTable.getCurrentClass().getToken().getLexeme() + "'");
+        }
+        symbolTable.saveClassAttribute(auxToken.getLexeme(), type, isPrivate);
+        listaDeclaracionVariablesF(type, isPrivate);
     }
     
     /*
-        ⟨Lista-Declaración-VariablesF⟩ ::= , ⟨Lista-Declaración-Variables⟩
+        ⟨Lista-Declaración-VariablesF⟩ ::= , {ListaDeclaracionVariables.tipo = ListaDeclaracionVariablesF.tipo, ListaDeclaracionVariables.privado = ListaDeclaracionVariablesF.privado } ⟨Lista-Declaración-Variables⟩
             | λ
     */
-    public void listaDeclaracionVariablesF() throws LexicalException, SyntacticException {
+    public void listaDeclaracionVariablesF(Type type, boolean isPrivate) throws LexicalException, SyntacticException {
         if (checkType(TokenType.SPECIAL_SYMBOL_CM)) {
             matchTokenType(TokenType.SPECIAL_SYMBOL_CM);
-            listaDeclaracionVariables();
+            listaDeclaracionVariables(type , isPrivate);
         } else if (checkType(TokenType.STRING_CONSTANT, TokenType.BOOLEAN_CONSTANT, TokenType.INT_CONSTANT,
                 TokenType.IDENTIFIER_CLASS, TokenType.SPECIAL_SYMBOL_S, TokenType.KW_WHILE, TokenType.KW_FOR,
                 TokenType.KW_IF, TokenType.KW_RET, TokenType.SPECIAL_SYMBOL_PO, TokenType.SPECIAL_SYMBOL_LCB,

@@ -85,9 +85,9 @@ public class SymbolTable {
     }
 
     private void mergeAttributes(Class auxClass, Class newClass) {
-        for (Map.Entry<String, Atribute> entry : newClass.getAtributes().entrySet()) {
+        for (Map.Entry<String, Attribute> entry : newClass.getAttributes().entrySet()) {
 
-            if (auxClass.getAtributes().containsKey(entry.getKey())) {
+            if (auxClass.getAttributes().containsKey(entry.getKey())) {
                 throw new SemanticException(
                         newClass.getToken().getRowIndex(),
                         newClass.getToken().getColumnIndex(),
@@ -95,7 +95,7 @@ public class SymbolTable {
                 );
             }
 
-            auxClass.getAtributes().put(entry.getKey(), entry.getValue());
+            auxClass.getAttributes().put(entry.getKey(), entry.getValue());
         }
     }
 
@@ -135,4 +135,13 @@ public class SymbolTable {
             auxClass.setParent(newClass.getParent());
         }
     }
+
+    public boolean attributeAlreadyExistsInCurrentClass(String attributeName){
+        return this.currentClass.searchAttribute(attributeName) != null;
+    }
+
+    public void saveClassAttribute(String attributeName, Type type, boolean isPrivate){
+        this.currentClass.saveAttribute(attributeName,type,isPrivate);
+    }
+
 }

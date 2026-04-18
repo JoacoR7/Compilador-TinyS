@@ -1,15 +1,13 @@
 package uncuyo.compiladores.semantic;
 
 import uncuyo.compiladores.lexer.Token;
-import uncuyo.compiladores.lexer.TokenType;
 
 import java.util.Hashtable;
-import java.util.List;
 
 public class Class {
 
     private Token token;
-    private Hashtable<String, Atribute> atributes = new Hashtable<>();
+    private Hashtable<String, Attribute> attributes = new Hashtable<>();
     private Hashtable<String, Method> methods = new Hashtable<>();
     private Constructor constructor = new Constructor();
     private String parent = "Object";
@@ -21,20 +19,20 @@ public class Class {
         this.token = token;
     }
 
-    public Class(Token token, Hashtable<String, Atribute> atributes, Hashtable<String, Method> methods, Constructor constructor, String parent) {
+    public Class(Token token, Hashtable<String, Attribute> attributes, Hashtable<String, Method> methods, Constructor constructor, String parent) {
         this.token = token;
-        this.atributes = atributes;
+        this.attributes = attributes;
         this.methods = methods;
         this.constructor = constructor;
         this.parent = parent;
     }
 
-    public Hashtable<String, Atribute> getAtributes() {
-        return atributes;
+    public Hashtable<String, Attribute> getAttributes() {
+        return attributes;
     }
 
-    public void setAtributes(Hashtable<String, Atribute> atributes) {
-        this.atributes = atributes;
+    public void setAttributes(Hashtable<String, Attribute> attributes) {
+        this.attributes = attributes;
     }
 
     public Hashtable<String, Method> getMethods() {
@@ -67,5 +65,14 @@ public class Class {
 
     public void setToken(Token token) {
         this.token = token;
+    }
+
+    public Attribute searchAttribute(String attributeName){
+        return attributes.getOrDefault(attributeName, null);
+    }
+
+    public void saveAttribute(String attributeName, Type type , boolean isPrivate){
+        Attribute attribute = new Attribute(attributeName, type, isPrivate, this.attributes.size());
+        this.attributes.put(attributeName, attribute);
     }
 }

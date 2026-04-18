@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public class Pruebas {
     public static void main(String[] args) throws IOException, LexicalException, SyntacticException {
-        Lexer lexer = new Lexer("C:\\Users\\victo\\IdeaProjects\\Compilador\\testFiles\\semanticFiles\\success\\merge_class.s");
+        Lexer lexer = new Lexer("C:\\Users\\victo\\IdeaProjects\\Compilador\\testFiles\\semanticFiles\\error\\duplicatedAttribute.s");
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(lexer, lexer.getNextToken());
         semanticAnalyzer.program();
     }
