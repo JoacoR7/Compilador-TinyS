@@ -10,9 +10,9 @@ import uncuyo.compiladores.lexer.TokenType;
 
 public class SemanticAnalyzer {
 
-    private Lexer lexer;
+    private final Lexer lexer;
     private Token currentToken;
-    private SymbolTable symbolTable;
+    private final SymbolTable symbolTable = new SymbolTable();
 
     public SemanticAnalyzer(Lexer lexer, Token token) {
         this.lexer = lexer;
@@ -107,20 +107,26 @@ public class SemanticAnalyzer {
         ⟨class⟩ ::= class idclass
             {if(TS.yaExiste(HTClass, idclass.lex)) then Error
             else TS.guardar(HTClass , idclass.lex)} ⟨classF⟩ {idclass.padre = classF.tipo}
+            INCOMPLETO FALTA AGREGAR ACCIONES SEMÁNTICAS
 	    */
     public void class_() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.KW_CLASS);
-        String idclass = currentToken.getLexeme();
+
+        Token auxToken = Token.copy(currentToken);
         matchTokenType(TokenType.IDENTIFIER_CLASS);
 
-        classF();
+        Class currentClass = symbolTable.saveClass(new Class(auxToken));
+        symbolTable.setCurrentClass(currentClass);
+
+        Type type = classF();
+        currentClass.setParent(type.getLexeme());
     }
 
     /*
         ⟨classF⟩ ::= {classF.tipo = Object} { ⟨AtributoK⟩ }
             | ⟨Herencia⟩ {classF.tipo = Herencia.tipo} { ⟨AtributoK⟩ }
     */
-    public void classF() throws LexicalException, SyntacticException {
+    public Type classF() throws LexicalException, SyntacticException {
         Type type = null;
 
         if(checkType(TokenType.SPECIAL_SYMBOL_LCB)) {
@@ -140,6 +146,7 @@ public class SemanticAnalyzer {
                             currentToken.getLexeme() + "'"
             );
         }
+        return type;
     }
 
     /*

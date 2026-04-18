@@ -13,6 +13,10 @@ public class SymbolTable {
     private Method start;
 
     public SymbolTable() {
+        this.classes = new Hashtable<>();
+        this.currentClass = null;
+        this.currentMethod = null;
+        this.start = null;
     }
 
     public SymbolTable(Hashtable<String, Class> classes, Class currentClass, Method currentMethod, Method start) {
@@ -58,14 +62,16 @@ public class SymbolTable {
         return classes.getOrDefault(idclass, null);
     }
 
-    public void saveClass(Class newClass) {
+    public Class saveClass(Class newClass) {
         Class auxClass = searchClass(newClass.getToken().getLexeme());
 
         if (auxClass == null) {
             insertNewClass(newClass);
+            auxClass = newClass;
         } else {
             mergeClass(auxClass, newClass);
         }
+        return auxClass;
     }
 
     private void insertNewClass(Class newClass) {
@@ -109,8 +115,8 @@ public class SymbolTable {
     }
 
     private void validateAndSetParent(Class auxClass, Class newClass) {
-        String auxParent = auxClass.getParent().getToken().getLexeme();
-        String newParent = newClass.getParent().getToken().getLexeme();
+        String auxParent = auxClass.getParent();
+        String newParent = newClass.getParent();
 
         boolean differentParents = !auxParent.equals(newParent);
         boolean noneIsObject = !auxParent.equals("Object") && !newParent.equals("Object");
