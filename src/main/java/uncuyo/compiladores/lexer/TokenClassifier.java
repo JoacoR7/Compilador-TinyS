@@ -5,11 +5,11 @@ import uncuyo.compiladores.exceptions.LexicalException;
 
 import java.util.Optional;
 
-public class TokenClasifier {
+public class TokenClassifier {
     private Lexer lexer;
     private TokenDefinitions tokenDefinitions;
 
-    public TokenClasifier(Lexer lexer) {
+    public TokenClassifier(Lexer lexer) {
         this.lexer = lexer;
         this.tokenDefinitions = new TokenDefinitions();
     }

@@ -20,7 +20,7 @@ public class Lexer {
     private String path;
     private int rowIndex;
     private int columnIndex;
-    private TokenClasifier tokenClasifier;
+    private TokenClassifier tokenClassifier;
     private BufferedReader reader;
     private String currentData;
     private TokenDefinitions tokenDefinitions;
@@ -36,7 +36,7 @@ public class Lexer {
         this.path = path;
         this.rowIndex = 0;
         this.columnIndex = 0;
-        this.tokenClasifier = new TokenClasifier(this);
+        this.tokenClassifier = new TokenClassifier(this);
         this.reader = new BufferedReader(new java.io.FileReader(this.path));
         this.tokenDefinitions = new TokenDefinitions();
     }
@@ -72,7 +72,7 @@ public class Lexer {
 
             // Si viene el símbolo "/", debo checkear si es un símbolo de división o el inicio de comentario simple o multilínea
             if (currentChar == '/') {
-                token = tokenClasifier.isCommentOrDiv();
+                token = tokenClassifier.isCommentOrDiv();
                 if (token != null) {
                     return token;
                 }
@@ -80,23 +80,23 @@ public class Lexer {
             }
 
             if (Character.isDigit(currentChar)) {
-                return tokenClasifier.isNumber();
+                return tokenClassifier.isNumber();
             }
 
             // Si es una letra, checkeo si es una clase o un keyword
             if (Character.isLetter(currentChar)) {
                 if (Character.isUpperCase(currentChar)) {
-                    return tokenClasifier.classifyClassIdentifier();
+                    return tokenClassifier.classifyClassIdentifier();
                 }
-                return tokenClasifier.classifyKeywordOrIdentifier();
+                return tokenClassifier.classifyKeywordOrIdentifier();
             }
 
             if (tokenDefinitions.getOperators().containsKey(String.valueOf(currentChar))) {
-                return tokenClasifier.classifyOperator();
+                return tokenClassifier.classifyOperator();
             }
 
             if (tokenDefinitions.getSpecialSymbols().containsKey(currentChar)) {
-                return tokenClasifier.classifySpecialSymbol();
+                return tokenClassifier.classifySpecialSymbol();
             }
 
             if (tokenDefinitions.getUndefinedSymbols().containsKey(currentChar)) {
@@ -108,7 +108,7 @@ public class Lexer {
             }
 
             if(currentChar == '\"') {
-                return tokenClasifier.classifyString();
+                return tokenClassifier.classifyString();
             }
 
             // REVISAR, CREO QUE NO DEBERÍA AUMENTAR EL COLUMN INDEX, SINO DIRECTAMENTE RETORNAR NULO O ERROR
@@ -149,6 +149,14 @@ public class Lexer {
         return currentData == null || columnIndex >= currentData.length();
     }
 
+    /**
+     * Método que verifica si hay otra línea en el archivo fuente, en caso de que
+     * exista, carga la línea y verifica si tiene contenido
+     * @return true si la línea tiene contenido, caso contrario devuelve false
+     * @throws LexerFileReadException ocasionado al leer el archivo
+     * @author Victor Ramirez
+     * @author Joaquin Ruiz
+     */
     public boolean loadNextLine() throws LexerFileReadException {
         try {
             currentData = reader.readLine();
@@ -163,58 +171,115 @@ public class Lexer {
         }
     }
 
+    /**
+     * Método que el caracter actual en la línea actual del archivo fuente
+     * @return caracter actual
+     * @author Victor Ramirez
+     * @author Joaquin Ruiz
+     */
     public char getCurrentChar() {
         return this.currentData.charAt(this.columnIndex);
     }
 
+    /**
+     * Getter de BufferedReader
+     * @return objeto BufferedReader
+     */
     public BufferedReader getReader() {
         return reader;
     }
 
+    /**
+     * Setter de BufferedReader
+     * @param reader
+     */
     public void setReader(BufferedReader reader) {
         this.reader = reader;
     }
 
+    /**
+     * Getter de currentData
+     * @return fila actual
+     */
     public String getCurrentData() {
         return currentData;
     }
 
+    /**
+     * Setter de currentData
+     * @param currentData
+     */
     public void setCurrentData(String currentData) {
         this.currentData = currentData;
     }
 
+    /**
+     * Método para incrementar la posición actual en la fila del archivo fuente
+     */
     public void incrementPosition(){
         columnIndex++;
     }
 
+    /**
+     * Getter de rowIndex
+     * @return número de fila actual
+     */
     public int getRowIndex() {
         return rowIndex;
     }
 
+    /**
+     * Setter de robIndex
+     * @param rowIndex
+     */
     public void setRowIndex(int rowIndex) {
         this.rowIndex = rowIndex;
     }
 
+    /**
+     * Getter de column index
+     * @return número de columna actual
+     */
     public int getColumnIndex() {
         return columnIndex;
     }
 
+    /**
+     * Setter de columnIndex
+     * @param columnIndex
+     */
     public void setColumnIndex(int columnIndex) {
         this.columnIndex = columnIndex;
     }
 
-    public TokenClasifier getTokenClasiffier() {
-        return tokenClasifier;
+    /**
+     * Getter de TokenClassifier
+     * @return objeto TokenClassifier
+     */
+    public TokenClassifier getTokenClasiffier() {
+        return tokenClassifier;
     }
 
-    public void setTokenClasiffier(TokenClasifier tokenClasifier) {
-        this.tokenClasifier = tokenClasifier;
+    /**
+     * Setter de TokenClassifier
+     * @param tokenClassifier
+     */
+    public void setTokenClasiffier(TokenClassifier tokenClassifier) {
+        this.tokenClassifier = tokenClassifier;
     }
 
+    /**
+     * Getter del path del archivo fuente
+     * @return path del archivo fuente
+     */
     public String getPath() {
         return path;
     }
 
+    /**
+     * Setter del path del archivo fuente
+     * @param path
+     */
     public void setPath(String path) {
         this.path = path;
     }
