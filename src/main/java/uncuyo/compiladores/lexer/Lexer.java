@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * La clase {@code Lexer} es responsable de analizar y extraer lexemas del archivo de entrada.
+ * Clase responsable de analizar y extraer lexemas del archivo de entrada.
  *
  * @author Victor Ramirez
  * @author Joaquin Ruiz
@@ -25,6 +25,13 @@ public class Lexer {
     private String currentData;
     private TokenDefinitions tokenDefinitions;
 
+    /**
+     * Constructor
+     * @param path Archivo de entrada
+     * @throws FileNotFoundException
+     * @author Victor Ramirez
+     * @author Joaquin Ruiz
+     */
     public Lexer(String path) throws FileNotFoundException {
         this.path = path;
         this.rowIndex = 0;
@@ -32,9 +39,16 @@ public class Lexer {
         this.tokenClasifier = new TokenClasifier(this);
         this.reader = new BufferedReader(new java.io.FileReader(this.path));
         this.tokenDefinitions = new TokenDefinitions();
-
     }
 
+    /**
+     * Método que devuelve el siguiente token del archivo fuente
+     * @return Token
+     * @throws LexerFileReadException ocasionado al leer el archivo
+     * @throws LexicalException ocasionado por un error léxico
+     * @author Victor Ramirez
+     * @author Joaquin Ruiz
+     */
     public Token getNextToken() throws LexerFileReadException, LexicalException {
 
         Token token;
@@ -104,6 +118,14 @@ public class Lexer {
         }
     }
 
+    /**
+     * Método que devuelve un listado de tokens, con el motivo de realizar pruebas sobre el analizador léxico
+     * @return Lista de tokens del archivo fuente
+     * @throws LexerFileReadException ocasionado al leer el archivo
+     * @throws LexicalException ocasionado por un error léxico
+     * @author Victor Ramirez
+     * @author Joaquin Ruiz
+     */
     public List<Token> getAllTokens() throws LexerFileReadException, LexicalException {
         List<Token> tokens = new ArrayList<>();
         Token token;
@@ -116,6 +138,13 @@ public class Lexer {
         return tokens;
     }
 
+    /**
+     * Método que comprueba si la posición actual sobre la que se encuentra el analizador léxico
+     * es un fin de línea, es decir, si ya leyó la línea actual
+     * @return true si es fin de línea, falso en caso contrario
+     * @author Victor Ramirez
+     * @author Joaquin Ruiz
+     */
     public boolean isEndOfLine() {
         return currentData == null || columnIndex >= currentData.length();
     }
