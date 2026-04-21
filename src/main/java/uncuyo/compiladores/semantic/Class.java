@@ -3,8 +3,7 @@ package uncuyo.compiladores.semantic;
 import uncuyo.compiladores.exceptions.SemanticException;
 import uncuyo.compiladores.lexer.Token;
 
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 
 public class Class {
 
@@ -12,7 +11,7 @@ public class Class {
     private Hashtable<String, Attribute> attributes = new Hashtable<>();
     private Hashtable<String, Method> methods = new Hashtable<>();
     private Constructor constructor = new Constructor();
-    private String parent = "Object";
+    private String parent;
 
     public Class() {
     }
@@ -73,11 +72,6 @@ public class Class {
         return attributes.getOrDefault(attributeName, null);
     }
 
-    public void saveAttribute(Token token, Type type , boolean isPrivate){
-        Attribute attribute = new Attribute(token, type, isPrivate, this.attributes.size());
-        this.attributes.put(token.getLexeme(), attribute);
-    }
-
     public void merge(Class newClassDeclaration) {
         mergeAttributes(newClassDeclaration);
         mergeMethods(newClassDeclaration);
@@ -85,32 +79,33 @@ public class Class {
     }
 
     private void mergeAttributes(Class newClassDeclaration) {
-        for (Map.Entry<String, Attribute> entry : newClassDeclaration.getAttributes().entrySet()) {
+        for (Attribute attribute : newClassDeclaration.getAttributesInOrder()) {
 
-            if (this.getAttributes().containsKey(entry.getKey())) {
+            if (this.getAttributes().containsKey(attribute.getName())) {
                 throw new SemanticException(
                         newClassDeclaration.getToken().getRowIndex(),
                         newClassDeclaration.getToken().getColumnIndex(),
-                        "El atributo '" + entry.getKey() + "' ya esta definido"
+                        "El atributo '" + attribute.getName() + "' ya esta definido para la clase '" + newClassDeclaration.getToken().getLexeme()
+                                + "' en la linea " + this.getAttributes().get(attribute.getName()).getToken().getColumnIndex()
                 );
             }
-
-            this.getAttributes().put(entry.getKey(), entry.getValue());
+            this.insertAttribute(attribute);
         }
     }
 
     private void mergeMethods(Class newClassDeclaration) {
-        for (Map.Entry<String, Method> entry : newClassDeclaration.getMethods().entrySet()) {
+        for (Method method : this.getMethodsInOrder()) {
 
-            if (this.getMethods().containsKey(entry.getKey())) { // <-- FIX
+            if (this.getMethods().containsKey(method.getName())) {
                 throw new SemanticException(
-                        newClassDeclaration.getToken().getRowIndex(),
-                        newClassDeclaration.getToken().getColumnIndex(),
-                        "El metodo '" + entry.getKey() + "' ya esta definido"
+                        method.getToken().getRowIndex(),
+                        method.getToken().getColumnIndex(),
+                        "El metodo '" + method.getName() + "' ya esta definido para la clase '" +
+                                newClassDeclaration.getToken().getLexeme() + "' en la linea " +
+                                this.getMethods().get(method.getName()).getToken().getRowIndex()
                 );
             }
-
-            newClassDeclaration.getMethods().put(entry.getKey(), entry.getValue());
+            this.insertMethod(method);
         }
     }
 
@@ -118,18 +113,27 @@ public class Class {
         String currentParent = this.getParent();
         String newClassDeclarationParent = newClassDeclaration.getParent();
 
-        boolean differentParents = !currentParent.equals(newClassDeclarationParent);
+        if (newClassDeclarationParent == null) {
+            // Caso de implements
+        } else if (currentParent == null) {
+            this.setParent(newClassDeclarationParent);
+            this.setToken(newClassDeclaration.getToken());
+        } else {
+            boolean differentParents = !currentParent.equals(newClassDeclarationParent);
 
-        if (differentParents) {
-            throw new SemanticException(
-                    newClassDeclaration.getToken().getRowIndex(),
-                    newClassDeclaration.getToken().getColumnIndex(),
-                    "La clase '" + newClassDeclaration.getToken().getLexeme() +
-                            "' no puede heredar de '" + newClassDeclarationParent +
-                            "' por que ya hereda de '" + currentParent + "' en la línea " +
-                            this.getToken().getRowIndex()
-            );
+            if (differentParents) {
+                throw new SemanticException(
+                        newClassDeclaration.getToken().getRowIndex(),
+                        newClassDeclaration.getToken().getColumnIndex(),
+                        "La clase '" + newClassDeclaration.getToken().getLexeme() +
+                                "' no puede heredar de '" + newClassDeclarationParent +
+                                "' por que ya hereda de '" + currentParent + "' en la línea " +
+                                this.getToken().getRowIndex()
+                );
+            }
         }
+
+
     }
 
     public boolean attributeAlreadyExists(String attributeName){
@@ -139,5 +143,22 @@ public class Class {
     public void insertMethod(Method newMethod){
         newMethod.setPosition(this.getMethods().size());
         this.getMethods().put(newMethod.getToken().getLexeme(), newMethod);
+    }
+
+    public void insertAttribute(Attribute newAttribute){
+        newAttribute.setPosition(this.getAttributes().size());
+        this.getAttributes().put(newAttribute.getToken().getLexeme(), newAttribute);
+    }
+
+    public List<Attribute> getAttributesInOrder() {
+        List<Attribute> attributes = new ArrayList<>(this.getAttributes().values());
+        attributes.sort(Comparator.comparing(Attribute::getPosition));
+        return attributes;
+    }
+
+    public List<Method> getMethodsInOrder() {
+        List<Method> methods = new ArrayList<>(this.getMethods().values());
+        methods.sort(Comparator.comparing(Method::getPosition));
+        return methods;
     }
 }

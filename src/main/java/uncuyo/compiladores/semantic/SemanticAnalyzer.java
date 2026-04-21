@@ -115,7 +115,7 @@ public class SemanticAnalyzer {
     public void class_() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.KW_CLASS);
 
-        Token auxToken = Token.copy(currentToken);
+        Token auxToken = currentToken;
         matchTokenType(TokenType.IDENTIFIER_CLASS);
 
         Class currentClass = new Class(auxToken);
@@ -178,10 +178,14 @@ public class SemanticAnalyzer {
      */
     public void impl() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.KW_IMPL);
+        Token auxToken = currentToken;
         matchTokenType(TokenType.IDENTIFIER_CLASS);
+        Class currentClass = new Class(auxToken);
+        symbolTable.setCurrentClass(currentClass);
         matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
         miembroK();
         matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
+        symbolTable.saveClass(symbolTable.getCurrentClass());
     }
 
     /*
@@ -381,7 +385,7 @@ public class SemanticAnalyzer {
          else TS.guardar(ClaseActual, idMetAt.lex, ListaDeclaracionVariables.tipo) }
          {ListaDeclaracionVariablesF.tipo = ListaDeclaracionVariables.tipo, ListaDeclaracionVariablesF.privado = ListaDeclaracionVariables.privado} ⟨Lista-Declaración-VariablesF⟩    */
     public void listaDeclaracionVariables(Type type , boolean isPrivate) throws LexicalException, SyntacticException {
-        Token auxToken = Token.copy(currentToken);
+        Token auxToken = currentToken;
 
         matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
 
@@ -391,7 +395,8 @@ public class SemanticAnalyzer {
                     "El atributo '"+ auxToken.getLexeme() + "' ya ha sido definido dentro de la clase '" +
                             symbolTable.getCurrentClass().getToken().getLexeme() + "'");
         }
-        symbolTable.getCurrentClass().saveAttribute(auxToken, type, isPrivate);
+        Attribute attribute = new Attribute(auxToken, type, isPrivate);
+        symbolTable.getCurrentClass().insertAttribute(attribute);
         listaDeclaracionVariablesF(type, isPrivate);
     }
     

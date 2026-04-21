@@ -75,6 +75,10 @@ public class Method {
         this.position = position;
     }
 
+    public String getName() {
+        return token.getLexeme();
+    }
+
     public void insertParameter(Type type, String name) {
         int position = this.getParameters().size();
         this.getParameters().put(name, new Parameter(type, name, position));

@@ -2,6 +2,8 @@ package uncuyo.compiladores.semantic;
 
 import uncuyo.compiladores.lexer.Token;
 
+import java.util.List;
+
 public class Attribute {
 
     private Type type;
@@ -12,11 +14,10 @@ public class Attribute {
     public Attribute() {
     }
 
-    public Attribute(Token token, Type type, boolean isPrivate, int position) {
+    public Attribute(Token token, Type type, boolean isPrivate) {
         this.token = token;
         this.type = type;
         this.isPrivate = isPrivate;
-        this.position = position;
     }
 
     public Type getType() {
@@ -49,5 +50,9 @@ public class Attribute {
 
     public void setPrivate(boolean aPrivate) {
         isPrivate = aPrivate;
+    }
+
+    public String getName() {
+        return token.getLexeme();
     }
 }

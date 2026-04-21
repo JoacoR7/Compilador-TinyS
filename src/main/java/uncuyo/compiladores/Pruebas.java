@@ -39,7 +39,7 @@ public class Pruebas {
             int attrCount = 0;
             int totalAttrs = currentClass.getAttributes().size();
 
-            for (Attribute currentAttribute : currentClass.getAttributes().values()) {
+            for (Attribute currentAttribute : currentClass.getAttributesInOrder()) {
 
                 sb.append("\t\t\t{\n");
 
@@ -75,7 +75,7 @@ public class Pruebas {
             int methodCount = 0;
             int totalMethods = currentClass.getMethods().size();
 
-            for (Method currentMethod : currentClass.getMethods().values()) {
+            for (Method currentMethod : currentClass.getMethodsInOrder()) {
 
                 sb.append("\t\t\t{\n");
 
