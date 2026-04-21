@@ -9,10 +9,10 @@ public class Parameter {
     public Parameter() {
     }
 
-    public Parameter(Type type, int position, String lexeme) {
+    public Parameter(Type type, String lexeme, int position) {
         this.type = type;
-        this.position = position;
         this.lexeme = lexeme;
+        this.position = position;
     }
 
     public Type getType() {

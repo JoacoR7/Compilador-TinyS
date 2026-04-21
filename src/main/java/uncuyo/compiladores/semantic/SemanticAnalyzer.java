@@ -93,7 +93,6 @@ public class SemanticAnalyzer {
     public void listaDefiniciones() throws LexicalException, SyntacticException {
         if (checkType(TokenType.KW_CLASS)){
             class_();
-
             listaDefiniciones();
         } else if (checkType(TokenType.KW_IMPL)) {
             impl();
@@ -268,13 +267,15 @@ public class SemanticAnalyzer {
         | ⟨Forma-Método⟩ fn ⟨MétodoF⟩
     */
     public void metodo() throws LexicalException, SyntacticException {
+        boolean isStatic = false;
         if(checkType(TokenType.KW_FN)){
             matchTokenType(TokenType.KW_FN);
-            metodoF();
+            metodoF(isStatic);
         }else if (checkType(TokenType.KW_ST)){
             formaMetodo();
+            isStatic = true;
             matchTokenType(TokenType.KW_FN);
-            metodoF();
+            metodoF(isStatic);
         }else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
@@ -282,21 +283,31 @@ public class SemanticAnalyzer {
                             currentToken.getLexeme() + "'"
             );
         }
+        symbolTable.getCurrentClass().insertMethod(symbolTable.getCurrentMethod());
     }
 
     /*
-        ⟨MétodoF⟩ ::= idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
-            | ⟨Tipo-Método⟩ idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+        ⟨MétodoF⟩ ::= {MétodoF.tipo = void} idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+            | ⟨Tipo-Método⟩ {MétodoF.tipo = Tipo-Método.tipo} idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
     */
-    public void metodoF() throws LexicalException, SyntacticException {
+    public void metodoF(boolean isStatic) throws LexicalException, SyntacticException {
+        Type type = null;
         if(checkType(TokenType.IDENTIFIER_VAR_METHOD)){
+            type = new Type(TokenType.KW_VOID, "void");
+            Token auxToken = currentToken;
             matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
+            Method currentMethod = new Method(auxToken, type, isStatic);
+            symbolTable.setCurrentMethod(currentMethod);
             argumentosFormales();
             bloqueMetodo();
         }else if (checkType(TokenType.KW_VOID, TokenType.IDENTIFIER_CLASS,
                 TokenType.INT_CLASS, TokenType.BOOL_CLASS, TokenType.STR_CLASS, TokenType.ARRAY_CLASS)){
-            tipoMetodo();
+            type = tipoMetodo();
+            Token auxToken = currentToken;
             matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
+            Method currentMethod = new Method(auxToken, type, isStatic);
+            currentMethod.setType(type);
+            symbolTable.setCurrentMethod(currentMethod);
             argumentosFormales();
             bloqueMetodo();
         }else {
@@ -467,20 +478,24 @@ public class SemanticAnalyzer {
         ⟨Argumento-Formal ⟩ ::= ⟨Tipo⟩ idMetAt
     */
     public void argumentoFormal() throws LexicalException, SyntacticException {
-        tipo();
+        Type type = tipo();
+        Token auxToken = currentToken;
         matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
+        symbolTable.getCurrentMethod().insertParameter(type, auxToken.getLexeme());
     }
 
     /*
         ⟨Tipo-Método⟩ ::= ⟨Tipo⟩
             | void
     */
-    public void tipoMetodo() throws LexicalException, SyntacticException {
+    public Type tipoMetodo() throws LexicalException, SyntacticException {
+        Type type = null;
         if(checkType(TokenType.STR_CLASS, TokenType.BOOL_CLASS,
                 TokenType.INT_CLASS, TokenType.IDENTIFIER_CLASS)) {
-            tipo();
+            type = tipo();
         } else if (checkType(TokenType.KW_VOID)) {
             matchTokenType(TokenType.KW_VOID);
+            type = new Type(TokenType.KW_VOID, "void");
         }else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
@@ -488,6 +503,7 @@ public class SemanticAnalyzer {
                             currentToken.getLexeme() + "'"
             );
         }
+        return type;
     }
 
     /*

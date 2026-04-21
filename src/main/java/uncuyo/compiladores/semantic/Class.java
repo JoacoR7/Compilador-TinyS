@@ -135,4 +135,9 @@ public class Class {
     public boolean attributeAlreadyExists(String attributeName){
         return this.searchAttribute(attributeName) != null;
     }
+
+    public void insertMethod(Method newMethod){
+        newMethod.setPosition(this.getMethods().size());
+        this.getMethods().put(newMethod.getToken().getLexeme(), newMethod);
+    }
 }

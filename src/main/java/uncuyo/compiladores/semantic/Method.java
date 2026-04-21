@@ -1,22 +1,38 @@
 package uncuyo.compiladores.semantic;
 
+import uncuyo.compiladores.lexer.Token;
+
 import java.util.Hashtable;
 
 public class Method {
 
+    private Token token;
     private Hashtable<String, Parameter> parameters;
     private Hashtable<String, Attribute> atributes;
-    private Type returnType;
+    private Type type;
     private boolean isStatic;
+    private int position;
 
-    public Method() {
+    public Method(Token token, Type type, boolean isStatic) {
+        this.token = token;
+        this.type = type;
+        this.isStatic = isStatic;
     }
 
-    public Method(Hashtable<String, Parameter> parameters, Hashtable<String, Attribute> atributes, Type returnType, boolean isStatic) {
+    public Method(Token token, Hashtable<String, Parameter> parameters, Hashtable<String, Attribute> atributes, Type type, boolean isStatic) {
+        this.token = token;
         this.parameters = parameters;
         this.atributes = atributes;
-        this.returnType = returnType;
+        this.type = type;
         this.isStatic = isStatic;
+    }
+
+    public Token getToken() {
+        return token;
+    }
+
+    public void setToken(Token token) {
+        this.token = token;
     }
 
     public Hashtable<String, Parameter> getParameters() {
@@ -35,12 +51,12 @@ public class Method {
         this.atributes = atributes;
     }
 
-    public Type getReturnType() {
-        return returnType;
+    public Type getType() {
+        return type;
     }
 
-    public void setReturnType(Type returnType) {
-        this.returnType = returnType;
+    public void setType(Type type) {
+        this.type = type;
     }
 
     public boolean isStatic() {
@@ -49,5 +65,18 @@ public class Method {
 
     public void setStatic(boolean aStatic) {
         isStatic = aStatic;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    public void insertParameter(Type type, String name) {
+        int position = this.getParameters().size();
+        this.getParameters().put(name, new Parameter(type, name, position));
     }
 }
