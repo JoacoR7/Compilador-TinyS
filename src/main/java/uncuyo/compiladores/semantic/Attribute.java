@@ -1,17 +1,19 @@
 package uncuyo.compiladores.semantic;
 
+import uncuyo.compiladores.lexer.Token;
+
 public class Attribute {
 
     private Type type;
-    private String lexeme;
+    private Token token;
     private int position;
     private boolean isPrivate;
 
     public Attribute() {
     }
 
-    public Attribute(String lexeme, Type type, boolean isPrivate, int position) {
-        this.lexeme = lexeme;
+    public Attribute(Token token, Type type, boolean isPrivate, int position) {
+        this.token = token;
         this.type = type;
         this.isPrivate = isPrivate;
         this.position = position;
@@ -25,12 +27,12 @@ public class Attribute {
         this.type = type;
     }
 
-    public String getLexeme() {
-        return lexeme;
+    public Token getToken() {
+        return token;
     }
 
-    public void setLexeme(String lexeme) {
-        this.lexeme = lexeme;
+    public void setToken(Token token) {
+        this.token = token;
     }
 
     public int getPosition() {

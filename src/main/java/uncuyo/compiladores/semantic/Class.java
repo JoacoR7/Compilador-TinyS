@@ -1,8 +1,10 @@
 package uncuyo.compiladores.semantic;
 
+import uncuyo.compiladores.exceptions.SemanticException;
 import uncuyo.compiladores.lexer.Token;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 public class Class {
 
@@ -71,8 +73,66 @@ public class Class {
         return attributes.getOrDefault(attributeName, null);
     }
 
-    public void saveAttribute(String attributeName, Type type , boolean isPrivate){
-        Attribute attribute = new Attribute(attributeName, type, isPrivate, this.attributes.size());
-        this.attributes.put(attributeName, attribute);
+    public void saveAttribute(Token token, Type type , boolean isPrivate){
+        Attribute attribute = new Attribute(token, type, isPrivate, this.attributes.size());
+        this.attributes.put(token.getLexeme(), attribute);
+    }
+
+    public void merge(Class newClassDeclaration) {
+        mergeAttributes(newClassDeclaration);
+        mergeMethods(newClassDeclaration);
+        validateAndSetParent(newClassDeclaration);
+    }
+
+    private void mergeAttributes(Class newClassDeclaration) {
+        for (Map.Entry<String, Attribute> entry : newClassDeclaration.getAttributes().entrySet()) {
+
+            if (this.getAttributes().containsKey(entry.getKey())) {
+                throw new SemanticException(
+                        newClassDeclaration.getToken().getRowIndex(),
+                        newClassDeclaration.getToken().getColumnIndex(),
+                        "El atributo '" + entry.getKey() + "' ya esta definido"
+                );
+            }
+
+            this.getAttributes().put(entry.getKey(), entry.getValue());
+        }
+    }
+
+    private void mergeMethods(Class newClassDeclaration) {
+        for (Map.Entry<String, Method> entry : newClassDeclaration.getMethods().entrySet()) {
+
+            if (this.getMethods().containsKey(entry.getKey())) { // <-- FIX
+                throw new SemanticException(
+                        newClassDeclaration.getToken().getRowIndex(),
+                        newClassDeclaration.getToken().getColumnIndex(),
+                        "El metodo '" + entry.getKey() + "' ya esta definido"
+                );
+            }
+
+            newClassDeclaration.getMethods().put(entry.getKey(), entry.getValue());
+        }
+    }
+
+    private void validateAndSetParent(Class newClassDeclaration) {
+        String currentParent = this.getParent();
+        String newClassDeclarationParent = newClassDeclaration.getParent();
+
+        boolean differentParents = !currentParent.equals(newClassDeclarationParent);
+
+        if (differentParents) {
+            throw new SemanticException(
+                    newClassDeclaration.getToken().getRowIndex(),
+                    newClassDeclaration.getToken().getColumnIndex(),
+                    "La clase '" + newClassDeclaration.getToken().getLexeme() +
+                            "' no puede heredar de '" + newClassDeclarationParent +
+                            "' por que ya hereda de '" + currentParent + "' en la línea " +
+                            this.getToken().getRowIndex()
+            );
+        }
+    }
+
+    public boolean attributeAlreadyExists(String attributeName){
+        return this.searchAttribute(attributeName) != null;
     }
 }

@@ -20,6 +20,10 @@ public class SemanticAnalyzer {
         this.currentToken = token;
     }
 
+    public SymbolTable getSymbolTable() {
+        return this.symbolTable;
+    }
+
     private void nextToken() throws LexerFileReadException, LexicalException {
         currentToken = lexer.getNextToken();
     }
@@ -89,6 +93,7 @@ public class SemanticAnalyzer {
     public void listaDefiniciones() throws LexicalException, SyntacticException {
         if (checkType(TokenType.KW_CLASS)){
             class_();
+
             listaDefiniciones();
         } else if (checkType(TokenType.KW_IMPL)) {
             impl();
@@ -105,9 +110,7 @@ public class SemanticAnalyzer {
     }
 
     /*
-        ⟨class⟩ ::= class idclass
-            {if(TS.yaExiste(HTClass, idclass.lex)) then Error
-            else TS.guardar(HTClass , idclass.lex)} ⟨classF⟩ {idclass.padre = classF.tipo}
+        class idclass ⟨classF⟩ {idclass.padre = classF.tipo, TS.guardar(HTClass , idclass.lex)}
             INCOMPLETO FALTA AGREGAR ACCIONES SEMÁNTICAS
 	    */
     public void class_() throws LexicalException, SyntacticException {
@@ -116,11 +119,12 @@ public class SemanticAnalyzer {
         Token auxToken = Token.copy(currentToken);
         matchTokenType(TokenType.IDENTIFIER_CLASS);
 
-        Class currentClass = symbolTable.saveClass(new Class(auxToken));
+        Class currentClass = new Class(auxToken);
         symbolTable.setCurrentClass(currentClass);
 
         Type type = classF();
         currentClass.setParent(type.getLexeme());
+        symbolTable.saveClass(currentClass);
     }
 
     /*
@@ -370,13 +374,13 @@ public class SemanticAnalyzer {
 
         matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
 
-        if (symbolTable.attributeAlreadyExistsInCurrentClass(auxToken.getLexeme())){
+        if(symbolTable.getCurrentClass().attributeAlreadyExists(auxToken.getLexeme())){
             throw new SemanticException(auxToken.getRowIndex(),
                     auxToken.getColumnIndex(),
                     "El atributo '"+ auxToken.getLexeme() + "' ya ha sido definido dentro de la clase '" +
                             symbolTable.getCurrentClass().getToken().getLexeme() + "'");
         }
-        symbolTable.saveClassAttribute(auxToken.getLexeme(), type, isPrivate);
+        symbolTable.getCurrentClass().saveAttribute(auxToken, type, isPrivate);
         listaDeclaracionVariablesF(type, isPrivate);
     }
     
