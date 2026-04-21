@@ -94,7 +94,7 @@ public class Class {
     }
 
     private void mergeMethods(Class newClassDeclaration) {
-        for (Method method : this.getMethodsInOrder()) {
+        for (Method method : newClassDeclaration.getMethodsInOrder()) {
 
             if (this.getMethods().containsKey(method.getName())) {
                 throw new SemanticException(
