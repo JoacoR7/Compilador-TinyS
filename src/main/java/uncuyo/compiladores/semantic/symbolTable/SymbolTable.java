@@ -1,33 +1,34 @@
 package uncuyo.compiladores.semantic.symbolTable;
 
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 public class SymbolTable {
 
-    private Hashtable<String, Class> classes;
+    private LinkedHashMap<String, Class> classes;
     private Class currentClass;
     private Method currentMethod;
     private Method start;
 
     public SymbolTable() {
-        this.classes = new Hashtable<>();
+        this.classes = new LinkedHashMap<>();
         this.currentClass = null;
         this.currentMethod = null;
         this.start = null;
     }
 
-    public SymbolTable(Hashtable<String, Class> classes, Class currentClass, Method currentMethod, Method start) {
+    public SymbolTable(LinkedHashMap<String, Class> classes, Class currentClass, Method currentMethod, Method start) {
         this.classes = classes;
         this.currentClass = currentClass;
         this.currentMethod = currentMethod;
         this.start = start;
     }
 
-    public Hashtable<String, Class> getClasses() {
+    public LinkedHashMap<String, Class> getClasses() {
         return classes;
     }
 
-    public void setClasses(Hashtable<String, Class> classes) {
+    public void setClasses(LinkedHashMap<String, Class> classes) {
         this.classes = classes;
     }
 
@@ -55,25 +56,31 @@ public class SymbolTable {
         this.start = start;
     }
 
-    public Class searchClass(String idclass){
+    public Class searchOriginalClass(String idclass){
         return classes.getOrDefault(idclass, null);
     }
 
-    public Class saveClass(Class newClass) {
-        Class auxClass = searchClass(newClass.getToken().getLexeme());
-
-        if (auxClass == null) {
-            newClass.validateParent();
-            insertNewClass(newClass);
-            auxClass = newClass;
-        } else {
-            auxClass.merge(newClass);
+    public Class searchAndCopyClass(String idclass){
+        Class original = classes.getOrDefault(idclass, null);
+        if (original != null){
+            original = new Class(original);
         }
-        return auxClass;
+        return original;
     }
 
-    private void insertNewClass(Class newClass) {
+    public void saveClass(Class newClass) {
+        newClass.validateParent();
         classes.put(newClass.getToken().getLexeme(), newClass);
     }
+
+    public void mergeClassDeclarations(Class existingClass){
+        existingClass.mergeDeclarations(this.currentClass);
+    }
+
+    public void mergeClassImplements(Class existingClass){
+        existingClass.mergeImplements(this.currentClass);
+    }
+
+
 
 }

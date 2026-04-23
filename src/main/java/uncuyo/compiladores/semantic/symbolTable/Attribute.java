@@ -1,8 +1,9 @@
 package uncuyo.compiladores.semantic.symbolTable;
 
 import uncuyo.compiladores.lexer.Token;
+import uncuyo.compiladores.semantic.JsonSerializable;
 
-public class Attribute {
+public class Attribute implements JsonSerializable {
 
     private Type type;
     private Token token;
@@ -53,5 +54,28 @@ public class Attribute {
 
     public String getName() {
         return token.getLexeme();
+    }
+
+    @Override
+    public String toJson(String indent) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(indent).append("{\n");
+
+        sb.append(indent).append("\t\"name\": \"")
+                .append(getName()).append("\",\n");
+
+        sb.append(indent).append("\t\"type\": \"")
+                .append(type.getLexeme()).append("\",\n");
+
+        sb.append(indent).append("\t\"private\": ")
+                .append(isPrivate).append(",\n");
+
+        sb.append(indent).append("\t\"position\": ")
+                .append(position).append("\n");
+
+        sb.append(indent).append("}");
+
+        return sb.toString();
     }
 }

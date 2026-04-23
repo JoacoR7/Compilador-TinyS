@@ -1,4 +1,6 @@
-class Base : A{ }
+class Base : A{
+    Int i1;
+}
 impl Base {
     .() { }
 }
@@ -13,7 +15,9 @@ impl A {
     .() { }
 }
 
-class Base : A { }
+class Base : A {
+    Int i2;
+}
 
 start {
 

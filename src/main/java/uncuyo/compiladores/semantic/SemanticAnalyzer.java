@@ -119,14 +119,25 @@ public class SemanticAnalyzer {
 
         Token auxToken = currentToken;
         matchTokenType(TokenType.IDENTIFIER_CLASS);
+        Class currentClass = symbolTable.searchAndCopyClass(auxToken.getLexeme());
 
-        uncuyo.compiladores.semantic.symbolTable.Class currentClass = new uncuyo.compiladores.semantic.symbolTable.Class(auxToken);
+        boolean classAlreadyExists = currentClass != null;
+
+        if (!classAlreadyExists){
+            currentClass = new Class(auxToken);
+        }
+
         symbolTable.setCurrentClass(currentClass);
 
         Type type = classF();
         currentClass.setParent(type.getLexeme());
         currentClass.setFoundClass(true);
-        symbolTable.saveClass(currentClass);
+
+        if (classAlreadyExists){
+            symbolTable.mergeClassDeclarations(symbolTable.searchOriginalClass(currentClass.getName()));
+        }else {
+            symbolTable.saveClass(currentClass);
+        }
     }
 
     /*
@@ -181,15 +192,31 @@ public class SemanticAnalyzer {
      */
     public void impl() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.KW_IMPL);
+
         Token auxToken = currentToken;
+
         matchTokenType(TokenType.IDENTIFIER_CLASS);
-        uncuyo.compiladores.semantic.symbolTable.Class currentClass = new Class(auxToken);
+
+        Class currentClass = symbolTable.searchAndCopyClass(auxToken.getLexeme());
+
+        boolean classAlreadyExists = currentClass != null;
+
+        if (!classAlreadyExists){
+            currentClass = new Class(auxToken);
+        }
+
         symbolTable.setCurrentClass(currentClass);
+
         matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
         miembroK();
         matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
+
         symbolTable.getCurrentClass().setFoundImpl(true);
-        symbolTable.saveClass(symbolTable.getCurrentClass());
+        if (classAlreadyExists){
+            symbolTable.mergeClassImplements(symbolTable.searchOriginalClass(currentClass.getName()));
+        }else {
+            symbolTable.saveClass(currentClass);
+        }
     }
 
     /*
@@ -247,7 +274,7 @@ public class SemanticAnalyzer {
     /*
 
     ⟨Atributo⟩ ::= ⟨Tipo⟩ {ListaDeclaracionVariables.tipo = Tipo.tipo, ListaDeclaracionVariables.privado = true } ⟨Lista-Declaración-Variables⟩ ;
-        | ⟨Visibilidad⟩ ⟨Tipo⟩ {ListaDeclaracionVariables.tipo = Tipo.tipo, ListaDeclaracionVariables.privado = false}  ⟨Lista-Declaración-Variables⟩ ;
+        | pub ⟨Tipo⟩ {ListaDeclaracionVariables.tipo = Tipo.tipo, ListaDeclaracionVariables.privado = false}  ⟨Lista-Declaración-Variables⟩ ;
     */
     public void atributo() throws LexicalException, SyntacticException {
         Type type = null;
@@ -257,7 +284,7 @@ public class SemanticAnalyzer {
             listaDeclaracionVariables(type , true);
             matchTokenType(TokenType.SPECIAL_SYMBOL_S);
         } else if (checkType(TokenType.KW_PUB)) {
-            visibilidad();
+            matchTokenType(TokenType.KW_PUB);
             type = tipo();
             listaDeclaracionVariables(type , false);
             matchTokenType(TokenType.SPECIAL_SYMBOL_S);
@@ -272,7 +299,7 @@ public class SemanticAnalyzer {
 
     /*
     ⟨Método⟩ ::= fn ⟨MétodoF⟩
-        | ⟨Forma-Método⟩ fn ⟨MétodoF⟩
+        | st fn ⟨MétodoF⟩
     */
     public void metodo() throws LexicalException, SyntacticException {
         boolean isStatic = false;
@@ -280,7 +307,7 @@ public class SemanticAnalyzer {
             matchTokenType(TokenType.KW_FN);
             metodoF(isStatic);
         }else if (checkType(TokenType.KW_ST)){
-            formaMetodo();
+            matchTokenType(TokenType.KW_ST);
             isStatic = true;
             matchTokenType(TokenType.KW_FN);
             metodoF(isStatic);
@@ -325,20 +352,6 @@ public class SemanticAnalyzer {
                             currentToken.getLexeme() + "'"
             );
         }
-    }
-
-    /*
-        ⟨Visibilidad ⟩ ::= pub
-    */
-    public void visibilidad() throws LexicalException, SyntacticException {
-        matchTokenType(TokenType.KW_PUB);
-    }
-
-    /*
-        ⟨Forma-Método⟩ ::= st
-     */
-    public void formaMetodo() throws LexicalException, SyntacticException {
-        matchTokenType(TokenType.KW_ST);
     }
 
     /*
