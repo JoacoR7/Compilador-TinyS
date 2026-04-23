@@ -1,8 +1,6 @@
-package uncuyo.compiladores.semantic;
+package uncuyo.compiladores.semantic.symbolTable;
 
 import uncuyo.compiladores.lexer.Token;
-
-import java.util.List;
 
 public class Attribute {
 
@@ -10,6 +8,7 @@ public class Attribute {
     private Token token;
     private int position;
     private boolean isPrivate;
+    private boolean isInherited;
 
     public Attribute() {
     }

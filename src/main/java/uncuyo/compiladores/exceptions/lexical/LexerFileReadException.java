@@ -1,4 +1,4 @@
-package uncuyo.compiladores.exceptions;
+package uncuyo.compiladores.exceptions.lexical;
 
 public class LexerFileReadException extends RuntimeException {
 

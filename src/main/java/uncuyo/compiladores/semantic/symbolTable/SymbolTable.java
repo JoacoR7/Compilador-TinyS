@@ -1,9 +1,6 @@
-package uncuyo.compiladores.semantic;
-
-import uncuyo.compiladores.exceptions.SemanticException;
+package uncuyo.compiladores.semantic.symbolTable;
 
 import java.util.Hashtable;
-import java.util.Map;
 
 public class SymbolTable {
 
@@ -66,6 +63,7 @@ public class SymbolTable {
         Class auxClass = searchClass(newClass.getToken().getLexeme());
 
         if (auxClass == null) {
+            newClass.validateParent();
             insertNewClass(newClass);
             auxClass = newClass;
         } else {

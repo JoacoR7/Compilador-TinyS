@@ -1,6 +1,6 @@
 package uncuyo.compiladores;
 
-import uncuyo.compiladores.exceptions.LexicalException;
+import uncuyo.compiladores.exceptions.lexical.LexicalException;
 import uncuyo.compiladores.lexer.Lexer;
 import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.lexer.TokenType;

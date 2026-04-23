@@ -1,13 +1,11 @@
 package uncuyo.compiladores.syntactic;
 
-import uncuyo.compiladores.exceptions.LexerFileReadException;
-import uncuyo.compiladores.exceptions.LexicalException;
-import uncuyo.compiladores.exceptions.SyntacticException;
+import uncuyo.compiladores.exceptions.lexical.LexerFileReadException;
+import uncuyo.compiladores.exceptions.lexical.LexicalException;
+import uncuyo.compiladores.exceptions.syntactic.SyntacticException;
 import uncuyo.compiladores.lexer.Lexer;
 import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.lexer.TokenType;
-
-import java.io.IOException;
 
 
 public class SyntacticAnalyzer {

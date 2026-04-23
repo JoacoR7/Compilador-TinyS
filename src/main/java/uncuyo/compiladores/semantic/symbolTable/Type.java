@@ -1,4 +1,4 @@
-package uncuyo.compiladores.semantic;
+package uncuyo.compiladores.semantic.symbolTable;
 
 import uncuyo.compiladores.lexer.TokenType;
 

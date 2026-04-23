@@ -1,4 +1,4 @@
-package uncuyo.compiladores.exceptions;
+package uncuyo.compiladores.exceptions.semantic;
 
 public class SemanticException extends RuntimeException {
     public SemanticException(int rowIndex, int columnIndex, String description) {

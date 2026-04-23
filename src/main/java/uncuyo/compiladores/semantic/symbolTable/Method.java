@@ -1,4 +1,4 @@
-package uncuyo.compiladores.semantic;
+package uncuyo.compiladores.semantic.symbolTable;
 
 import uncuyo.compiladores.lexer.Token;
 
@@ -11,6 +11,8 @@ public class Method {
     private Hashtable<String, Attribute> atributes;
     private Type type;
     private boolean isStatic;
+    private boolean isInherited;
+    private boolean isRedefined;
     private int position;
 
     public Method(Token token, Type type, boolean isStatic) {

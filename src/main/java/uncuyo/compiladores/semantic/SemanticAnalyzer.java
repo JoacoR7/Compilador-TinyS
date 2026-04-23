@@ -1,12 +1,14 @@
 package uncuyo.compiladores.semantic;
 
-import uncuyo.compiladores.exceptions.LexerFileReadException;
-import uncuyo.compiladores.exceptions.LexicalException;
-import uncuyo.compiladores.exceptions.SemanticException;
-import uncuyo.compiladores.exceptions.SyntacticException;
+import uncuyo.compiladores.exceptions.lexical.LexerFileReadException;
+import uncuyo.compiladores.exceptions.lexical.LexicalException;
+import uncuyo.compiladores.exceptions.semantic.SemanticException;
+import uncuyo.compiladores.exceptions.syntactic.SyntacticException;
 import uncuyo.compiladores.lexer.Lexer;
 import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.lexer.TokenType;
+import uncuyo.compiladores.semantic.symbolTable.*;
+import uncuyo.compiladores.semantic.symbolTable.Class;
 
 
 public class SemanticAnalyzer {
@@ -118,11 +120,12 @@ public class SemanticAnalyzer {
         Token auxToken = currentToken;
         matchTokenType(TokenType.IDENTIFIER_CLASS);
 
-        Class currentClass = new Class(auxToken);
+        uncuyo.compiladores.semantic.symbolTable.Class currentClass = new uncuyo.compiladores.semantic.symbolTable.Class(auxToken);
         symbolTable.setCurrentClass(currentClass);
 
         Type type = classF();
         currentClass.setParent(type.getLexeme());
+        currentClass.setFoundClass(true);
         symbolTable.saveClass(currentClass);
     }
 
@@ -180,11 +183,12 @@ public class SemanticAnalyzer {
         matchTokenType(TokenType.KW_IMPL);
         Token auxToken = currentToken;
         matchTokenType(TokenType.IDENTIFIER_CLASS);
-        Class currentClass = new Class(auxToken);
+        uncuyo.compiladores.semantic.symbolTable.Class currentClass = new Class(auxToken);
         symbolTable.setCurrentClass(currentClass);
         matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
         miembroK();
         matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
+        symbolTable.getCurrentClass().setFoundImpl(true);
         symbolTable.saveClass(symbolTable.getCurrentClass());
     }
 

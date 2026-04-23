@@ -1,4 +1,4 @@
-package uncuyo.compiladores.exceptions;
+package uncuyo.compiladores.exceptions.syntactic;
 
 public class SyntacticException extends Exception {
     public SyntacticException(int rowIndex, int columnIndex, String description) {

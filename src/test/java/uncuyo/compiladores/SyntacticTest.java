@@ -1,8 +1,8 @@
 package uncuyo.compiladores;
 
 import org.junit.jupiter.api.Test;
-import uncuyo.compiladores.exceptions.LexicalException;
-import uncuyo.compiladores.exceptions.SyntacticException;
+import uncuyo.compiladores.exceptions.lexical.LexicalException;
+import uncuyo.compiladores.exceptions.syntactic.SyntacticException;
 import uncuyo.compiladores.lexer.Lexer;
 import uncuyo.compiladores.syntactic.SyntacticAnalyzer;
 import static org.junit.jupiter.api.Assertions.*;

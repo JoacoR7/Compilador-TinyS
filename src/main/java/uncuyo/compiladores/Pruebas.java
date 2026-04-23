@@ -1,18 +1,17 @@
 package uncuyo.compiladores;
 
-import uncuyo.compiladores.exceptions.LexicalException;
-import uncuyo.compiladores.exceptions.SyntacticException;
+import uncuyo.compiladores.exceptions.lexical.LexicalException;
+import uncuyo.compiladores.exceptions.syntactic.SyntacticException;
 import uncuyo.compiladores.lexer.Lexer;
-import uncuyo.compiladores.lexer.Token;
-import uncuyo.compiladores.semantic.*;
-import uncuyo.compiladores.semantic.Class;
+import uncuyo.compiladores.semantic.SemanticAnalyzer;
+import uncuyo.compiladores.semantic.symbolTable.*;
+import uncuyo.compiladores.semantic.symbolTable.Class;
 
 import java.io.IOException;
-import java.util.Optional;
 
 public class Pruebas {
     public static void main(String[] args) throws IOException, LexicalException, SyntacticException {
-        Lexer lexer = new Lexer("C:\\Users\\AMD\\Desktop\\Compiladores2026\\testFiles\\semanticFiles\\success\\methods&Attributes.s");
+        Lexer lexer = new Lexer("C:\\Users\\AMD\\Desktop\\Compiladores2026\\testFiles\\semanticFiles\\success\\classAttributes.s");
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(lexer, lexer.getNextToken());
         semanticAnalyzer.program();
         SymbolTable symbolTable = semanticAnalyzer.getSymbolTable();
@@ -32,6 +31,14 @@ public class Pruebas {
 
             sb.append("\t\t\"parent\": \"")
                     .append(currentClass.getParent())
+                    .append("\",\n");
+
+            sb.append("\t\t\"foundClass:\": \"")
+                    .append(currentClass.isFoundClass())
+                    .append("\",\n");
+
+            sb.append("\t\t\"foundImpl\": \"")
+                    .append(currentClass.isFoundImpl())
                     .append("\",\n");
 
             sb.append("\t\t\"attributes\": [\n");

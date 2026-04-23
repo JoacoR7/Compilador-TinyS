@@ -1,7 +1,7 @@
 package uncuyo.compiladores.lexer;
 
-import uncuyo.compiladores.exceptions.LexerFileReadException;
-import uncuyo.compiladores.exceptions.LexicalException;
+import uncuyo.compiladores.exceptions.lexical.LexerFileReadException;
+import uncuyo.compiladores.exceptions.lexical.LexicalException;
 
 import java.util.Optional;
 

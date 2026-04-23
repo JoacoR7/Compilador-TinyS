@@ -1,8 +1,8 @@
-package uncuyo.compiladores.semantic;
+package uncuyo.compiladores.semantic.symbolTable;
 
 import uncuyo.compiladores.lexer.TokenType;
 
-public class ArrayType extends Type{
+public class ArrayType extends Type {
     private Type subType;
 
     public ArrayType(Type subType) {

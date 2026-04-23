@@ -1,6 +1,8 @@
-package uncuyo.compiladores.semantic;
+package uncuyo.compiladores.semantic.symbolTable;
 
-import uncuyo.compiladores.exceptions.SemanticException;
+import uncuyo.compiladores.exceptions.semantic.SemanticException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.MultipleInheritanceException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.PrimitiveInheritanceException;
 import uncuyo.compiladores.lexer.Token;
 
 import java.util.*;
@@ -12,6 +14,8 @@ public class Class {
     private Hashtable<String, Method> methods = new Hashtable<>();
     private Constructor constructor = new Constructor();
     private String parent;
+    private boolean foundClass;
+    private boolean foundImpl;
 
     public Class() {
     }
@@ -68,6 +72,34 @@ public class Class {
         this.token = token;
     }
 
+    public boolean isFoundClass() {
+        return foundClass;
+    }
+
+    public void setFoundClass(boolean foundClass) {
+        this.foundClass = foundClass;
+    }
+
+    public boolean isFoundImpl() {
+        return foundImpl;
+    }
+
+    public void setFoundImpl(boolean foundImpl) {
+        this.foundImpl = foundImpl;
+    }
+
+    public int getLine() {
+        return this.getToken().getRowIndex();
+    }
+
+    public int getColumn() {
+        return this.getToken().getColumnIndex();
+    }
+
+    public String getName() {
+        return this.getToken().getLexeme();
+    }
+
     public Attribute searchAttribute(String attributeName){
         return attributes.getOrDefault(attributeName, null);
     }
@@ -95,7 +127,6 @@ public class Class {
 
     private void mergeMethods(Class newClassDeclaration) {
         for (Method method : newClassDeclaration.getMethodsInOrder()) {
-
             if (this.getMethods().containsKey(method.getName())) {
                 throw new SemanticException(
                         method.getToken().getRowIndex(),
@@ -107,11 +138,24 @@ public class Class {
             }
             this.insertMethod(method);
         }
+        this.setFoundImpl(newClassDeclaration.isFoundImpl());
+    }
+
+    public void validateParent() {
+        String newClassDeclarationParent = this.getParent();
+        List<String> primitiveTypes = List.of("Int", "Bool", "Str");
+
+        if (newClassDeclarationParent != null && primitiveTypes.contains(newClassDeclarationParent)) {
+            throw new PrimitiveInheritanceException(this.getLine(),
+                    this.getColumn(), newClassDeclarationParent);
+        }
     }
 
     private void validateAndSetParent(Class newClassDeclaration) {
         String currentParent = this.getParent();
         String newClassDeclarationParent = newClassDeclaration.getParent();
+
+        newClassDeclaration.validateParent();
 
         if (newClassDeclarationParent == null) {
             // Caso de implements
@@ -122,14 +166,8 @@ public class Class {
             boolean differentParents = !currentParent.equals(newClassDeclarationParent);
 
             if (differentParents) {
-                throw new SemanticException(
-                        newClassDeclaration.getToken().getRowIndex(),
-                        newClassDeclaration.getToken().getColumnIndex(),
-                        "La clase '" + newClassDeclaration.getToken().getLexeme() +
-                                "' no puede heredar de '" + newClassDeclarationParent +
-                                "' por que ya hereda de '" + currentParent + "' en la línea " +
-                                this.getToken().getRowIndex()
-                );
+                throw new MultipleInheritanceException(newClassDeclaration.getLine(), newClassDeclaration.getColumn(),
+                        this.getName(), newClassDeclarationParent, currentParent, this.getLine());
             }
         }
 

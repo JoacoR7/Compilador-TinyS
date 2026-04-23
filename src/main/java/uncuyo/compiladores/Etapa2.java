@@ -1,19 +1,11 @@
 package uncuyo.compiladores;
 
-import uncuyo.compiladores.exceptions.LexicalException;
-import uncuyo.compiladores.exceptions.SyntacticException;
+import uncuyo.compiladores.exceptions.lexical.LexicalException;
+import uncuyo.compiladores.exceptions.syntactic.SyntacticException;
 import uncuyo.compiladores.lexer.Lexer;
-import uncuyo.compiladores.lexer.Token;
-import uncuyo.compiladores.lexer.TokenType;
 import uncuyo.compiladores.syntactic.SyntacticAnalyzer;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.SQLOutput;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Etapa2 {
     public static void main(String[] args) throws IOException, LexicalException, SyntacticException {
