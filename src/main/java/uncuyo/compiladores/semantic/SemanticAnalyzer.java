@@ -281,12 +281,12 @@ public class SemanticAnalyzer {
         if (checkType(TokenType.IDENTIFIER_CLASS, TokenType.STR_CLASS, TokenType.BOOL_CLASS,
                 TokenType.INT_CLASS, TokenType.ARRAY_CLASS)) {
             type = tipo();
-            listaDeclaracionVariables(type , true);
+            listaDeclaracionVariables(type , true, true);
             matchTokenType(TokenType.SPECIAL_SYMBOL_S);
         } else if (checkType(TokenType.KW_PUB)) {
             matchTokenType(TokenType.KW_PUB);
             type = tipo();
-            listaDeclaracionVariables(type , false);
+            listaDeclaracionVariables(type , false, true);
             matchTokenType(TokenType.SPECIAL_SYMBOL_S);
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
@@ -392,8 +392,8 @@ public class SemanticAnalyzer {
         ⟨Decl-Var-Locales⟩ ::= ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
     */
     public void declVarLocales() throws LexicalException, SyntacticException {
-        tipo();
-        listaDeclaracionVariables(null , false); // INCOMPLETO
+        Type tipo = tipo();
+        listaDeclaracionVariables(tipo , true, false);
         matchTokenType(TokenType.SPECIAL_SYMBOL_S);
     }
 
@@ -401,7 +401,7 @@ public class SemanticAnalyzer {
         ⟨Lista-Declaración-Variables⟩ ::= idMetAt {if(TS.yaExiste(ClaseActual, idMetAt.lex)) then Error
          else TS.guardar(ClaseActual, idMetAt.lex, ListaDeclaracionVariables.tipo) }
          {ListaDeclaracionVariablesF.tipo = ListaDeclaracionVariables.tipo, ListaDeclaracionVariablesF.privado = ListaDeclaracionVariables.privado} ⟨Lista-Declaración-VariablesF⟩    */
-    public void listaDeclaracionVariables(Type type , boolean isPrivate) throws LexicalException, SyntacticException {
+    public void listaDeclaracionVariables(Type type , boolean isPrivate, boolean isClass) throws LexicalException, SyntacticException {
         Token auxToken = currentToken;
 
         matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
@@ -413,18 +413,23 @@ public class SemanticAnalyzer {
                             symbolTable.getCurrentClass().getToken().getLexeme() + "'");
         }
         Attribute attribute = new Attribute(auxToken, type, isPrivate);
-        symbolTable.getCurrentClass().insertAttribute(attribute);
-        listaDeclaracionVariablesF(type, isPrivate);
+        if (isClass) {
+            symbolTable.getCurrentClass().insertAttribute(attribute);
+        } else {
+            getSymbolTable().getCurrentMethod().insertVariable(attribute);
+        }
+
+        listaDeclaracionVariablesF(type, isPrivate, isClass);
     }
     
     /*
         ⟨Lista-Declaración-VariablesF⟩ ::= , {ListaDeclaracionVariables.tipo = ListaDeclaracionVariablesF.tipo, ListaDeclaracionVariables.privado = ListaDeclaracionVariablesF.privado } ⟨Lista-Declaración-Variables⟩
             | λ
     */
-    public void listaDeclaracionVariablesF(Type type, boolean isPrivate) throws LexicalException, SyntacticException {
+    public void listaDeclaracionVariablesF(Type type, boolean isPrivate, boolean isClass) throws LexicalException, SyntacticException {
         if (checkType(TokenType.SPECIAL_SYMBOL_CM)) {
             matchTokenType(TokenType.SPECIAL_SYMBOL_CM);
-            listaDeclaracionVariables(type , isPrivate);
+            listaDeclaracionVariables(type , isPrivate, isClass);
         } else if (checkType(TokenType.STRING_CONSTANT, TokenType.BOOLEAN_CONSTANT, TokenType.INT_CONSTANT,
                 TokenType.IDENTIFIER_CLASS, TokenType.SPECIAL_SYMBOL_S, TokenType.KW_WHILE, TokenType.KW_FOR,
                 TokenType.KW_IF, TokenType.KW_RET, TokenType.SPECIAL_SYMBOL_PO, TokenType.SPECIAL_SYMBOL_LCB,

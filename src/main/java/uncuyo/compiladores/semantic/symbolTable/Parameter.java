@@ -1,6 +1,8 @@
 package uncuyo.compiladores.semantic.symbolTable;
 
-public class Parameter {
+import uncuyo.compiladores.semantic.JsonSerializable;
+
+public class Parameter implements JsonSerializable {
 
     private Type type;
     private String lexeme;
@@ -37,5 +39,25 @@ public class Parameter {
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    @Override
+    public String toJson(String indent) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("{\n");
+
+        sb.append(indent).append("\t\"name\": \"")
+                .append(getLexeme()).append("\",\n");
+
+        sb.append(indent).append("\t\"type\": \"")
+                .append(type.getLexeme()).append("\",\n");
+
+        sb.append(indent).append("\t\"position\": ")
+                .append(position).append("\n");
+
+        sb.append(indent).append("}");
+
+        return sb.toString();
     }
 }

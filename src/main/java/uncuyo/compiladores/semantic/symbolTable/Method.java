@@ -3,14 +3,13 @@ package uncuyo.compiladores.semantic.symbolTable;
 import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.semantic.JsonSerializable;
 
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 
 public class Method implements JsonSerializable {
 
     private Token token;
-    private LinkedHashMap<String, Parameter> parameters;
-    private LinkedHashMap<String, Attribute> atributes;
+    private LinkedHashMap<String, Parameter> parameters = new LinkedHashMap<>();;
+    private LinkedHashMap<String, Attribute> variables = new LinkedHashMap<>();;
     private Type type;
     private boolean isStatic;
     private boolean isInherited;
@@ -23,10 +22,10 @@ public class Method implements JsonSerializable {
         this.isStatic = isStatic;
     }
 
-    public Method(Token token, LinkedHashMap<String, Parameter> parameters, LinkedHashMap<String, Attribute> atributes, Type type, boolean isStatic) {
+    public Method(Token token, LinkedHashMap<String, Parameter> parameters, LinkedHashMap<String, Attribute> variables, Type type, boolean isStatic) {
         this.token = token;
         this.parameters = parameters;
-        this.atributes = atributes;
+        this.variables = variables;
         this.type = type;
         this.isStatic = isStatic;
     }
@@ -47,12 +46,12 @@ public class Method implements JsonSerializable {
         this.parameters = parameters;
     }
 
-    public LinkedHashMap<String, Attribute> getAtributes() {
-        return atributes;
+    public LinkedHashMap<String, Attribute> getVariables() {
+        return variables;
     }
 
-    public void setAtributes(LinkedHashMap<String, Attribute> atributes) {
-        this.atributes = atributes;
+    public void setVariables(LinkedHashMap<String, Attribute> variables) {
+        this.variables = variables;
     }
 
     public Type getType() {
@@ -88,6 +87,11 @@ public class Method implements JsonSerializable {
         this.getParameters().put(name, new Parameter(type, name, position));
     }
 
+    public void insertVariable(Attribute newVariable) {
+        newVariable.setPosition(this.getVariables().size());
+        this.getVariables().put(newVariable.getName(), newVariable);
+    }
+
     @Override
     public String toJson(String indent) {
         StringBuilder sb = new StringBuilder();
@@ -105,6 +109,44 @@ public class Method implements JsonSerializable {
 
         sb.append(indent).append("\t\"position\": ")
                 .append(getPosition()).append("\n");
+
+        sb.append(indent).append("\t\"parameters\": [\n");
+        String methodObjectsIndent = indent + "\t\t";
+
+        int parameterSize = this.getParameters().size() - 1;
+
+        for (Parameter parameter : getParameters().values()) {
+            if (parameterSize != parameter.getPosition()) {
+                sb.append(methodObjectsIndent)
+                        .append(parameter.toJson(methodObjectsIndent))
+                        .append(",\n");
+            } else {
+                sb.append(methodObjectsIndent)
+                        .append(parameter.toJson(methodObjectsIndent))
+                        .append("\n");
+            }
+        }
+
+        sb.append(indent).append("\t]\n");
+
+        sb.append(indent).append("\t\"variables\": [\n");
+
+        int variableSize = this.getVariables().size() - 1;
+
+        for (Attribute variable : getVariables().values()) {
+            if (variableSize != variable.getPosition()) {
+                sb.append(methodObjectsIndent)
+                        .append(variable.toJson(methodObjectsIndent))
+                        .append(",\n");
+            } else {
+                sb.append(methodObjectsIndent)
+                        .append(variable.toJson(methodObjectsIndent))
+                        .append("\n");
+            }
+        }
+
+        sb.append(indent).append("\t]\n");
+
 
         sb.append(indent).append("}");
 

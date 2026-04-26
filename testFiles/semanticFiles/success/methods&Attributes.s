@@ -5,7 +5,10 @@ impl A {
 }
 
 impl A {
-    fn m4(){}
+    fn m4(Str s1, Bool b1){
+        Int i5;
+        i1 = 1;
+    }
 }
 
 class A : B {
@@ -21,6 +24,8 @@ impl A {
     fn m6(){}
 }
 
-class B {}
+class B {
+    Str s1;
+}
 
 start {}
