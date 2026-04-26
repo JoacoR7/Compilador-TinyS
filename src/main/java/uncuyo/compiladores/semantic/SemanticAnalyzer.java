@@ -4,6 +4,7 @@ import uncuyo.compiladores.exceptions.lexical.LexerFileReadException;
 import uncuyo.compiladores.exceptions.lexical.LexicalException;
 import uncuyo.compiladores.exceptions.semantic.SemanticException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.ConstructorRedefinitionException;
+import uncuyo.compiladores.exceptions.syntactic.MethodOutsideImplException;
 import uncuyo.compiladores.exceptions.syntactic.SyntacticException;
 import uncuyo.compiladores.lexer.Lexer;
 import uncuyo.compiladores.lexer.Token;
@@ -78,6 +79,7 @@ public class SemanticAnalyzer {
     public void program() throws LexicalException, SyntacticException {
         listaDefiniciones();
         start();
+        symbolTable.setStart(symbolTable.getCurrentMethod());
         matchTokenType(TokenType.EOF);
     }
 
@@ -85,7 +87,15 @@ public class SemanticAnalyzer {
         ⟨Start⟩ ::= start ⟨Bloque-Método⟩
     */
     public void start() throws LexerFileReadException, LexicalException, SyntacticException {
-        matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
+        Token auxToken = currentToken;
+        if (checkLexeme("start")){
+            matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
+        } else {
+            throw new MethodOutsideImplException(auxToken);
+        }
+        Type type = new Type(TokenType.KW_VOID , "void");
+        Method startMethod = new Method(auxToken, type, false);
+        symbolTable.setCurrentMethod(startMethod);
         bloqueMetodo();
     }
 
@@ -416,14 +426,15 @@ public class SemanticAnalyzer {
 
         matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
 
-        if(symbolTable.getCurrentClass().attributeAlreadyExists(auxToken.getLexeme())){
-            throw new SemanticException(auxToken.getRowIndex(),
-                    auxToken.getColumnIndex(),
-                    "El atributo '"+ auxToken.getLexeme() + "' ya ha sido definido dentro de la clase '" +
-                            symbolTable.getCurrentClass().getToken().getLexeme() + "'");
-        }
-
         if (isClass) {
+
+            if(symbolTable.getCurrentClass().attributeAlreadyExists(auxToken.getLexeme())){
+                throw new SemanticException(auxToken.getRowIndex(),
+                        auxToken.getColumnIndex(),
+                        "El atributo '"+ auxToken.getLexeme() + "' ya ha sido definido dentro de la clase '" +
+                                symbolTable.getCurrentClass().getToken().getLexeme() + "'");
+            }
+
             Attribute attribute = new Attribute(auxToken, type, isPrivate);
             symbolTable.getCurrentClass().insertAttribute(attribute);
         } else {

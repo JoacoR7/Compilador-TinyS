@@ -2,6 +2,7 @@ package uncuyo.compiladores.syntactic;
 
 import uncuyo.compiladores.exceptions.lexical.LexerFileReadException;
 import uncuyo.compiladores.exceptions.lexical.LexicalException;
+import uncuyo.compiladores.exceptions.syntactic.MethodOutsideImplException;
 import uncuyo.compiladores.exceptions.syntactic.SyntacticException;
 import uncuyo.compiladores.lexer.Lexer;
 import uncuyo.compiladores.lexer.Token;
@@ -76,7 +77,11 @@ public class SyntacticAnalyzer {
         ⟨Start⟩ ::= start ⟨Bloque-Método⟩
     */
     public void start() throws LexerFileReadException, LexicalException, SyntacticException {
-        matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
+        if (checkLexeme("start")){
+            matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
+        } else {
+            throw new MethodOutsideImplException(currentToken);
+        }
         bloqueMetodo();
     }
 

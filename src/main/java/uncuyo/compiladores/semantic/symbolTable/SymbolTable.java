@@ -1,9 +1,11 @@
 package uncuyo.compiladores.semantic.symbolTable;
 
+import uncuyo.compiladores.semantic.JsonSerializable;
+
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 
-public class SymbolTable {
+public class SymbolTable implements JsonSerializable {
 
     private LinkedHashMap<String, Class> classes;
     private Class currentClass;
@@ -56,13 +58,13 @@ public class SymbolTable {
         this.start = start;
     }
 
-    public Class searchOriginalClass(String idclass){
+    public Class searchOriginalClass(String idclass) {
         return classes.getOrDefault(idclass, null);
     }
 
-    public Class searchAndCopyClass(String idclass){
+    public Class searchAndCopyClass(String idclass) {
         Class original = classes.getOrDefault(idclass, null);
-        if (original != null){
+        if (original != null) {
             original = new Class(original);
         }
         return original;
@@ -73,14 +75,45 @@ public class SymbolTable {
         classes.put(newClass.getToken().getLexeme(), newClass);
     }
 
-    public void mergeClassDeclarations(Class existingClass){
+    public void mergeClassDeclarations(Class existingClass) {
         existingClass.mergeDeclarations(this.currentClass);
     }
 
-    public void mergeClassImplements(Class existingClass){
+    public void mergeClassImplements(Class existingClass) {
         existingClass.mergeImplements(this.currentClass);
     }
 
 
+    @Override
+    public String toJson(String indent) {
 
+        StringBuilder sb = new StringBuilder();
+        String innerIndent = indent + "\t";
+
+        sb.append(indent).append("{\n");
+        int total = this.getClasses().size();
+        if (total > 0 ){
+            sb.append(innerIndent).append("\"classes\": [\n");
+
+            int i = 0;
+
+            for (Class c : this.getClasses().values()) {
+                sb.append(c.toJson(innerIndent + "\t"));
+
+                if (++i < total) sb.append(",");
+                sb.append("\n");
+            }
+            sb.append(innerIndent).append("],\n");
+
+        }else {
+            sb.append(innerIndent).append("\"classes\": [],\n");
+        }
+
+        sb.append(innerIndent).append("\"startMethod\": \n");
+        sb.append(this.getStart().toJson(innerIndent)).append("\n");
+
+        sb.append(indent).append("}");
+
+        return sb.toString();
+    }
 }

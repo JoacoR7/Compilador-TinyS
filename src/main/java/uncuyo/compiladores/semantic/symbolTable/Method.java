@@ -108,45 +108,51 @@ public class Method implements JsonSerializable {
                 .append(isStatic()).append(",\n");
 
         sb.append(indent).append("\t\"position\": ")
-                .append(getPosition()).append("\n");
-
-        sb.append(indent).append("\t\"parameters\": [\n");
-        String methodObjectsIndent = indent + "\t\t";
+                .append(getPosition()).append(",\n");
 
         int parameterSize = this.getParameters().size() - 1;
+        String methodObjectsIndent = indent + "\t\t";
 
-        for (Parameter parameter : getParameters().values()) {
-            if (parameterSize != parameter.getPosition()) {
-                sb.append(methodObjectsIndent)
-                        .append(parameter.toJson(methodObjectsIndent))
-                        .append(",\n");
-            } else {
-                sb.append(methodObjectsIndent)
-                        .append(parameter.toJson(methodObjectsIndent))
-                        .append("\n");
+        if (parameterSize > 0){
+            sb.append(indent).append("\t\"parameters\": [\n");
+
+            for (Parameter parameter : getParameters().values()) {
+                if (parameterSize != parameter.getPosition()) {
+                    sb.append(methodObjectsIndent)
+                            .append(parameter.toJson(methodObjectsIndent))
+                            .append(",\n");
+                } else {
+                    sb.append(methodObjectsIndent)
+                            .append(parameter.toJson(methodObjectsIndent))
+                            .append("\n");
+                }
             }
+
+            sb.append(indent).append("\t]\n");
+        }else {
+            sb.append(indent).append("\t\"parameters\": [],\n");
         }
-
-        sb.append(indent).append("\t]\n");
-
-        sb.append(indent).append("\t\"variables\": [\n");
 
         int variableSize = this.getVariables().size() - 1;
 
-        for (Variable variable : getVariables().values()) {
-            if (variableSize != variable.getPosition()) {
-                sb.append(methodObjectsIndent)
-                        .append(variable.toJson(methodObjectsIndent))
-                        .append(",\n");
-            } else {
-                sb.append(methodObjectsIndent)
-                        .append(variable.toJson(methodObjectsIndent))
-                        .append("\n");
+        if (variableSize > 0){
+            sb.append(indent).append("\t\"variables\": [\n");
+            for (Variable variable : getVariables().values()) {
+                if (variableSize != variable.getPosition()) {
+                    sb.append(methodObjectsIndent)
+                            .append(variable.toJson(methodObjectsIndent))
+                            .append(",\n");
+                } else {
+                    sb.append(methodObjectsIndent)
+                            .append(variable.toJson(methodObjectsIndent))
+                            .append("\n");
+                }
             }
+
+            sb.append(indent).append("\t]\n");
+        }else {
+            sb.append(indent).append("\t\"variables\": []\n");
         }
-
-        sb.append(indent).append("\t]\n");
-
 
         sb.append(indent).append("}");
 

@@ -125,7 +125,10 @@ public class Class implements JsonSerializable {
             Token newClassDeclarationConstructorToken = newClassDeclaration.getConstructor().getToken();
             throw new ConstructorRedefinitionException(newClassDeclarationConstructorToken.getRowIndex(),
                     newClassDeclarationConstructorToken.getColumnIndex(), getName(), getConstructor().getToken());
+        } else if (this.getConstructor() == null && newClassDeclaration.getConstructor() != null) {
+            this.setConstructor(newClassDeclaration.getConstructor());
         }
+
         mergeMethods(newClassDeclaration);
         this.setFoundImpl(newClassDeclaration.isFoundImpl());
     }
@@ -237,37 +240,46 @@ public class Class implements JsonSerializable {
                 .append(constructor.toJson(indent+"\t\t")).append(",\n");
 
         // ATTRIBUTES
-        sb.append(indent).append("\t\"attributes\": [\n");
-
-        int i = 0;
         int total = getAttributes().size();
+        int i = 0;
+        if (total > 0){
+            sb.append(indent).append("\t\"attributes\": [\n");
 
-        for (Map.Entry<String, Attribute> entry : this.getAttributes().entrySet()) {
-            Attribute a = entry.getValue();
-            sb.append(a.toJson(indent + "\t\t"));
+            for (Map.Entry<String, Attribute> entry : this.getAttributes().entrySet()) {
+                Attribute a = entry.getValue();
+                sb.append(a.toJson(indent + "\t\t"));
 
-            if (++i < total) sb.append(",");
-            sb.append("\n");
+                if (++i < total) sb.append(",");
+                sb.append("\n");
+            }
+
+            sb.append(indent).append("\t],\n");
+        }else {
+            sb.append(indent).append("\t\"attributes\": [],\n");
         }
 
-        sb.append(indent).append("\t],\n");
 
         // METHODS
-        sb.append(indent).append("\t\"methods\": [\n");
-
-        i = 0;
         total = getMethods().size();
+        if (total > 0){
+            sb.append(indent).append("\t\"methods\": [\n");
 
-        for (Map.Entry<String, Method> entry : this.getMethods().entrySet()) {
-            Method m = entry.getValue();
+            i = 0;
 
-            sb.append(m.toJson(indent + "\t\t"));
+            for (Map.Entry<String, Method> entry : this.getMethods().entrySet()) {
+                Method m = entry.getValue();
 
-            if (++i < total) sb.append(",");
-            sb.append("\n");
+                sb.append(m.toJson(indent + "\t\t"));
+
+                if (++i < total) sb.append(",");
+                sb.append("\n");
+            }
+
+            sb.append(indent).append("\t]\n");
+        }else {
+            sb.append(indent).append("\t\"methods\": []\n");
         }
 
-        sb.append(indent).append("\t]\n");
 
         sb.append(indent).append("}");
 
