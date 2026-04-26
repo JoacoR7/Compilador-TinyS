@@ -3,6 +3,7 @@ package uncuyo.compiladores.semantic;
 import uncuyo.compiladores.exceptions.lexical.LexerFileReadException;
 import uncuyo.compiladores.exceptions.lexical.LexicalException;
 import uncuyo.compiladores.exceptions.semantic.SemanticException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.ConstructorRedefinitionException;
 import uncuyo.compiladores.exceptions.syntactic.SyntacticException;
 import uncuyo.compiladores.lexer.Lexer;
 import uncuyo.compiladores.lexer.Token;
@@ -269,6 +270,10 @@ public class SemanticAnalyzer {
         Token auxToken = currentToken;
         matchTokenType(TokenType.SPECIAL_SYMBOL_P);
         Class currentClass = symbolTable.getCurrentClass();
+        if (currentClass.getConstructor() != null) {
+            throw new ConstructorRedefinitionException(auxToken.getRowIndex(), auxToken.getColumnIndex(),
+                    currentClass.getName(), currentClass.getConstructor().getToken());
+        }
         Method constructor = new Method(auxToken, new Type(TokenType.KW_CLASS, currentClass.getName()), false);
         symbolTable.getCurrentClass().setConstructor(constructor);
         symbolTable.setCurrentMethod(constructor);

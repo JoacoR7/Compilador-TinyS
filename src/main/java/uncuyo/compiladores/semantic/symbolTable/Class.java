@@ -1,6 +1,7 @@
 package uncuyo.compiladores.semantic.symbolTable;
 
 import uncuyo.compiladores.exceptions.semantic.SemanticException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.ConstructorRedefinitionException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.MultipleInheritanceException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.PrimitiveInheritanceException;
 import uncuyo.compiladores.lexer.Token;
@@ -120,6 +121,11 @@ public class Class implements JsonSerializable {
     }
 
     public void mergeImplements(Class newClassDeclaration) {
+        if(newClassDeclaration.getConstructor() != null && this.getConstructor() != null){
+            Token newClassDeclarationConstructorToken = newClassDeclaration.getConstructor().getToken();
+            throw new ConstructorRedefinitionException(newClassDeclarationConstructorToken.getRowIndex(),
+                    newClassDeclarationConstructorToken.getColumnIndex(), getName(), getConstructor().getToken());
+        }
         mergeMethods(newClassDeclaration);
         this.setFoundImpl(newClassDeclaration.isFoundImpl());
     }

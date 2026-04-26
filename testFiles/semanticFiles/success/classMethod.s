@@ -7,6 +7,10 @@ impl A {
     }
 }
 
+impl A {
+    fn m2() {}
+}
+
 class A {
     Int i1, i2, i3;
 }
