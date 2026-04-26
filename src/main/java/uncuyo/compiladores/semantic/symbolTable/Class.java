@@ -13,7 +13,7 @@ public class Class implements JsonSerializable {
     private Token token;
     private LinkedHashMap<String, Attribute> attributes = new LinkedHashMap<>();
     private LinkedHashMap<String, Method> methods = new LinkedHashMap<>();
-    private Constructor constructor = new Constructor();
+    private Method constructor;
     private String parent;
     private boolean foundClass;
     private boolean foundImpl;
@@ -25,11 +25,10 @@ public class Class implements JsonSerializable {
         this.token = token;
     }
 
-    public Class(Token token, LinkedHashMap<String, Attribute> attributes, LinkedHashMap<String, Method> methods, Constructor constructor, String parent) {
+    public Class(Token token, LinkedHashMap<String, Attribute> attributes, LinkedHashMap<String, Method> methods, String parent) {
         this.token = token;
         this.attributes = attributes;
         this.methods = methods;
-        this.constructor = constructor;
         this.parent = parent;
     }
 
@@ -58,11 +57,11 @@ public class Class implements JsonSerializable {
         this.methods = methods;
     }
 
-    public Constructor getConstructor() {
+    public Method getConstructor() {
         return constructor;
     }
 
-    public void setConstructor(Constructor constructor) {
+    public void setConstructor(Method constructor) {
         this.constructor = constructor;
     }
 
@@ -227,6 +226,9 @@ public class Class implements JsonSerializable {
 
         sb.append(indent).append("\t\"foundImpl\": ")
                 .append(isFoundImpl()).append(",\n");
+
+        sb.append(indent).append("\t\"constructor\": \n")
+                .append(constructor.toJson(indent+"\t\t")).append(",\n");
 
         // ATTRIBUTES
         sb.append(indent).append("\t\"attributes\": [\n");

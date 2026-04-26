@@ -266,7 +266,12 @@ public class SemanticAnalyzer {
         ⟨Constructor ⟩ ::= . ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
     */
     public void constructor() throws LexicalException, SyntacticException {
+        Token auxToken = currentToken;
         matchTokenType(TokenType.SPECIAL_SYMBOL_P);
+        Class currentClass = symbolTable.getCurrentClass();
+        Method constructor = new Method(auxToken, new Type(TokenType.KW_CLASS, currentClass.getName()), false);
+        symbolTable.getCurrentClass().setConstructor(constructor);
+        symbolTable.setCurrentMethod(constructor);
         argumentosFormales();
         bloqueMetodo();
     }
@@ -412,11 +417,13 @@ public class SemanticAnalyzer {
                     "El atributo '"+ auxToken.getLexeme() + "' ya ha sido definido dentro de la clase '" +
                             symbolTable.getCurrentClass().getToken().getLexeme() + "'");
         }
-        Attribute attribute = new Attribute(auxToken, type, isPrivate);
+
         if (isClass) {
+            Attribute attribute = new Attribute(auxToken, type, isPrivate);
             symbolTable.getCurrentClass().insertAttribute(attribute);
         } else {
-            getSymbolTable().getCurrentMethod().insertVariable(attribute);
+            Variable variable = new Variable(auxToken, type);
+            getSymbolTable().getCurrentMethod().insertVariable(variable);
         }
 
         listaDeclaracionVariablesF(type, isPrivate, isClass);

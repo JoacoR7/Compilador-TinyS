@@ -9,7 +9,7 @@ public class Method implements JsonSerializable {
 
     private Token token;
     private LinkedHashMap<String, Parameter> parameters = new LinkedHashMap<>();;
-    private LinkedHashMap<String, Attribute> variables = new LinkedHashMap<>();;
+    private LinkedHashMap<String, Variable> variables = new LinkedHashMap<>();;
     private Type type;
     private boolean isStatic;
     private boolean isInherited;
@@ -22,7 +22,7 @@ public class Method implements JsonSerializable {
         this.isStatic = isStatic;
     }
 
-    public Method(Token token, LinkedHashMap<String, Parameter> parameters, LinkedHashMap<String, Attribute> variables, Type type, boolean isStatic) {
+    public Method(Token token, LinkedHashMap<String, Parameter> parameters, LinkedHashMap<String, Variable> variables, Type type, boolean isStatic) {
         this.token = token;
         this.parameters = parameters;
         this.variables = variables;
@@ -46,11 +46,11 @@ public class Method implements JsonSerializable {
         this.parameters = parameters;
     }
 
-    public LinkedHashMap<String, Attribute> getVariables() {
+    public LinkedHashMap<String, Variable> getVariables() {
         return variables;
     }
 
-    public void setVariables(LinkedHashMap<String, Attribute> variables) {
+    public void setVariables(LinkedHashMap<String, Variable> variables) {
         this.variables = variables;
     }
 
@@ -87,7 +87,7 @@ public class Method implements JsonSerializable {
         this.getParameters().put(name, new Parameter(type, name, position));
     }
 
-    public void insertVariable(Attribute newVariable) {
+    public void insertVariable(Variable newVariable) {
         newVariable.setPosition(this.getVariables().size());
         this.getVariables().put(newVariable.getName(), newVariable);
     }
@@ -133,7 +133,7 @@ public class Method implements JsonSerializable {
 
         int variableSize = this.getVariables().size() - 1;
 
-        for (Attribute variable : getVariables().values()) {
+        for (Variable variable : getVariables().values()) {
             if (variableSize != variable.getPosition()) {
                 sb.append(methodObjectsIndent)
                         .append(variable.toJson(methodObjectsIndent))
