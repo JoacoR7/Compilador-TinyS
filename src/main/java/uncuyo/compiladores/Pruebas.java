@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class Pruebas {
     public static void main(String[] args) throws IOException, LexicalException, SyntacticException {
-        Lexer lexer = new Lexer("C:\\Users\\AMD\\Desktop\\Compiladores2026\\testFiles\\semanticFiles\\success\\inheritanceChain.s");
+        Lexer lexer = new Lexer("C:\\Users\\AMD\\Desktop\\Compiladores2026\\testFiles\\semanticFiles\\success\\mergeClass.s");
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(lexer, lexer.getNextToken());
         semanticAnalyzer.program();
         SymbolTable symbolTable = semanticAnalyzer.getSymbolTable();

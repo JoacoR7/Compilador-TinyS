@@ -5,12 +5,16 @@ impl Base {
     .() { }
 }
 
-class Sub : Base { }
+class Sub : Base {
+    Str s1;
+}
 impl Sub {
     .() { }
 }
 
-class A  { }
+class A  {
+    Bool b1;
+}
 impl A {
     .() { }
 }

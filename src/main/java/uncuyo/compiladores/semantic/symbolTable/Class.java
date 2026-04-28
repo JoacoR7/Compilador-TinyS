@@ -2,6 +2,7 @@ package uncuyo.compiladores.semantic.symbolTable;
 
 import uncuyo.compiladores.exceptions.semantic.SemanticException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.ConstructorRedefinitionException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.InheritedAttributeRedeclaration;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.MultipleInheritanceException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.PrimitiveInheritanceException;
 import uncuyo.compiladores.lexer.Token;
@@ -19,6 +20,8 @@ public class Class implements JsonSerializable {
     private boolean foundClass;
     private boolean foundImpl;
     private boolean circularInheritanceChecked;
+    private boolean atributesConsolidationChecked;
+    private boolean methodsConsolidationChecked;
 
     public Class() {
     }
@@ -117,6 +120,22 @@ public class Class implements JsonSerializable {
 
     public void setCircularInheritanceChecked(boolean circularInheritanceChecked) {
         this.circularInheritanceChecked = circularInheritanceChecked;
+    }
+
+    public boolean isAtributesConsolidationChecked() {
+        return atributesConsolidationChecked;
+    }
+
+    public void setAtributesConsolidationChecked(boolean atributesConsolidationChecked) {
+        this.atributesConsolidationChecked = atributesConsolidationChecked;
+    }
+
+    public boolean isMethodsConsolidationChecked() {
+        return methodsConsolidationChecked;
+    }
+
+    public void setMethodsConsolidationChecked(boolean methodsConsolidationChecked) {
+        this.methodsConsolidationChecked = methodsConsolidationChecked;
     }
 
     public Attribute searchAttribute(String attributeName){
@@ -223,9 +242,36 @@ public class Class implements JsonSerializable {
 
     public void insertAttribute(Attribute newAttribute){
         newAttribute.setPosition(this.getAttributes().size());
+        newAttribute.setClassName(this.getName());
         this.getAttributes().put(newAttribute.getToken().getLexeme(), newAttribute);
     }
 
+    public void checkAndSetInheritedAttributes(Class parentClass) {
+        LinkedHashMap<String, Attribute> parentAttributes = parentClass.getAttributes();
+        LinkedHashMap<String, Attribute> currentAttributes = this.getAttributes();
+
+        for (Attribute attribute : currentAttributes.values()) {
+            if (parentAttributes.containsKey(attribute.getName())) {
+                Attribute originalAttribute = parentAttributes.get(attribute.getName());
+                throw new InheritedAttributeRedeclaration(
+                        attribute.getToken(),
+                        originalAttribute.getToken(),
+                        this.getName(),
+                        originalAttribute.getClassName()
+                );
+            }
+        }
+
+        LinkedHashMap<String, Attribute> newAttributeList = new LinkedHashMap<>(parentAttributes);
+
+        for (Attribute attribute : currentAttributes.values()) {
+            attribute.setPosition(newAttributeList.size());
+            newAttributeList.put(attribute.getToken().getLexeme(), attribute);
+        }
+
+        this.setAttributes(newAttributeList);
+        this.setAtributesConsolidationChecked(true);
+    }
 
     @Override
     public String toJson(String indent) {

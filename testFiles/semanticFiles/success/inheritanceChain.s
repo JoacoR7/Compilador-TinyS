@@ -1,9 +1,15 @@
-class A {}
+class A {
+    Bool b1;
+}
+Class A {
+    Bool b1;
+}
 impl A {
     .() {}
 }
 
-class B : A {}
+class B : A {
+}
 impl B {
     .() {}
 }

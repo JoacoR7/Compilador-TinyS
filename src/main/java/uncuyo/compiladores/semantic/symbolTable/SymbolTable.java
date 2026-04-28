@@ -84,17 +84,27 @@ public class SymbolTable implements JsonSerializable {
         existingClass.mergeImplements(this.currentClass);
     }
 
-    public void checkParentExistance(Class currentClass) {
+    public void checkParentExistence(Class currentClass) {
         String parentName = currentClass.getParent();
-        if(!parentName.equals("Object") && !classes.containsKey(parentName)) {
+        if(!classes.containsKey(parentName)) {
             throw new ParentClassNotFoundException(currentClass.getToken(), parentName);
         }
     }
 
     public void checkClasses() {
         for (Class currentClass : classes.values()) {
-            checkParentExistance(currentClass);
-            checkCircularInheritance(currentClass);
+            String currentClassParent = currentClass.getParent();
+
+            if(!currentClassParent.equals("Object")) {
+                checkParentExistence(currentClass);
+                checkCircularInheritance(currentClass);
+                if(!currentClass.isAtributesConsolidationChecked()) {
+                    currentClass.checkAndSetInheritedAttributes(classes.get(currentClassParent));
+                }
+            } else {
+                currentClass.setAtributesConsolidationChecked(true);
+            }
+
         }
     }
 
@@ -110,7 +120,7 @@ public class SymbolTable implements JsonSerializable {
         } else if (!currentClass.isCircularInheritanceChecked()) {
 
             if (!visited.add(parentName)) {
-                throw new CircularInheritanceException(currentClass.getToken(), parentName);
+                throw new CircularInheritanceException(currentClass.getToken(), parentName, visited);
             }
 
             Class parentClass = classes.get(parentName);
