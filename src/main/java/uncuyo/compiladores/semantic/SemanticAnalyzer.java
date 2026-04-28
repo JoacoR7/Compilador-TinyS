@@ -81,6 +81,7 @@ public class SemanticAnalyzer {
         start();
         symbolTable.setStart(symbolTable.getCurrentMethod());
         matchTokenType(TokenType.EOF);
+        symbolTable.consolidate();
     }
 
     /*

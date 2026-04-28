@@ -18,6 +18,7 @@ public class Class implements JsonSerializable {
     private String parent;
     private boolean foundClass;
     private boolean foundImpl;
+    private boolean circularInheritanceChecked;
 
     public Class() {
     }
@@ -108,6 +109,14 @@ public class Class implements JsonSerializable {
 
     public String getName() {
         return this.getToken().getLexeme();
+    }
+
+    public boolean isCircularInheritanceChecked() {
+        return circularInheritanceChecked;
+    }
+
+    public void setCircularInheritanceChecked(boolean circularInheritanceChecked) {
+        this.circularInheritanceChecked = circularInheritanceChecked;
     }
 
     public Attribute searchAttribute(String attributeName){

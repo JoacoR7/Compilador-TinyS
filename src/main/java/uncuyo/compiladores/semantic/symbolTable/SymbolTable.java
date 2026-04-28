@@ -1,9 +1,10 @@
 package uncuyo.compiladores.semantic.symbolTable;
 
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.CircularInheritanceException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.ParentClassNotFoundException;
 import uncuyo.compiladores.semantic.JsonSerializable;
 
-import java.util.Hashtable;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 public class SymbolTable implements JsonSerializable {
 
@@ -83,6 +84,47 @@ public class SymbolTable implements JsonSerializable {
         existingClass.mergeImplements(this.currentClass);
     }
 
+    public void checkParentExistance(Class currentClass) {
+        String parentName = currentClass.getParent();
+        if(!parentName.equals("Object") && !classes.containsKey(parentName)) {
+            throw new ParentClassNotFoundException(currentClass.getToken(), parentName);
+        }
+    }
+
+    public void checkClasses() {
+        for (Class currentClass : classes.values()) {
+            checkParentExistance(currentClass);
+            checkCircularInheritance(currentClass);
+        }
+    }
+
+    public void checkCircularInheritance(Class currentClass) {
+        validateInheritanceChain(currentClass, new HashSet<>());
+    }
+
+    private void validateInheritanceChain(Class currentClass, Set<String> visited) {
+        String parentName = currentClass.getParent();
+
+        if(parentName.equals("Object")) {
+            currentClass.setCircularInheritanceChecked(true);
+        } else if (!currentClass.isCircularInheritanceChecked()) {
+
+            if (!visited.add(parentName)) {
+                throw new CircularInheritanceException(currentClass.getToken(), parentName);
+            }
+
+            Class parentClass = classes.get(parentName);
+
+            if (!parentClass.isCircularInheritanceChecked()) {
+                validateInheritanceChain(parentClass, visited);
+            }
+            currentClass.setCircularInheritanceChecked(true);
+        }
+    }
+
+    public void consolidate() {
+        checkClasses();
+    }
 
     @Override
     public String toJson(String indent) {
@@ -116,4 +158,6 @@ public class SymbolTable implements JsonSerializable {
 
         return sb.toString();
     }
+
+
 }
