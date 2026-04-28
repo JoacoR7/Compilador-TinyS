@@ -113,7 +113,7 @@ public class Method implements JsonSerializable {
         int parameterSize = this.getParameters().size() - 1;
         String methodObjectsIndent = indent + "\t\t";
 
-        if (parameterSize > 0){
+        if (parameterSize >= 0){
             sb.append(indent).append("\t\"parameters\": [\n");
 
             for (Parameter parameter : getParameters().values()) {

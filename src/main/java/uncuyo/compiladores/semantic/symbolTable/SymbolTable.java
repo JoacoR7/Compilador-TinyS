@@ -101,8 +101,12 @@ public class SymbolTable implements JsonSerializable {
                 if(!currentClass.isAtributesConsolidationChecked()) {
                     currentClass.checkAndSetInheritedAttributes(classes.get(currentClassParent));
                 }
+                if(!currentClass.isMethodsConsolidationChecked()) {
+                    currentClass.checkAndSetInheritedMethods(classes.get(currentClassParent));
+                }
             } else {
                 currentClass.setAtributesConsolidationChecked(true);
+                currentClass.setMethodsConsolidationChecked(true);
             }
 
         }

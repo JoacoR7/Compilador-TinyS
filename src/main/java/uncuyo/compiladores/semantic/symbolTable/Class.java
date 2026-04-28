@@ -1,10 +1,7 @@
 package uncuyo.compiladores.semantic.symbolTable;
 
 import uncuyo.compiladores.exceptions.semantic.SemanticException;
-import uncuyo.compiladores.exceptions.semantic.symbolTableException.ConstructorRedefinitionException;
-import uncuyo.compiladores.exceptions.semantic.symbolTableException.InheritedAttributeRedeclaration;
-import uncuyo.compiladores.exceptions.semantic.symbolTableException.MultipleInheritanceException;
-import uncuyo.compiladores.exceptions.semantic.symbolTableException.PrimitiveInheritanceException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.*;
 import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.semantic.JsonSerializable;
 
@@ -271,6 +268,49 @@ public class Class implements JsonSerializable {
 
         this.setAttributes(newAttributeList);
         this.setAtributesConsolidationChecked(true);
+    }
+
+    public void checkAndSetInheritedMethods(Class parentClass) {
+        LinkedHashMap<String, Method> parentMethods = parentClass.getMethods();
+        LinkedHashMap<String, Method> currentMethods = this.getMethods();
+
+        for (Method method : currentMethods.values()) {
+            if (parentMethods.containsKey(method.getName())) {
+                Method originalMethod = parentMethods.get(method.getName());
+                if (!originalMethod.getType().getLexeme().equals(method.getType().getLexeme())) {
+                    String description = "El metodo '" + originalMethod.getName() + "' no puede retornar '" +
+                            method.getType().getLexeme() + "', debe retornar '" + originalMethod.getType().getLexeme() + "'";
+                    throw new InvalidOverrideException(method.getToken(), description);
+                } else if (originalMethod.getParameters().size() != method.getParameters().size()) {
+                    String description = "Se encontraron " + method.getParameters().size() + " parametros, se esperaban " +
+                            originalMethod.getParameters().size() + " parametros";
+                    throw new InvalidOverrideException(method.getToken(), description);
+                } else {
+                    List<Parameter> originalParameters = new ArrayList<>(originalMethod.getParameters().values());
+                    List<Parameter> currentParameters = new ArrayList<>(method.getParameters().values());
+
+                    for (int i = 0; i < originalParameters.size(); i++) {
+                        Parameter originalParameter = originalParameters.get(i);
+                        Parameter currentParameter = currentParameters.get(i);
+                        if (!originalParameter.getType().getLexeme().equals(currentParameter.getType().getLexeme())) {
+                            String description = "Se esperaba parametro de tipo '" + originalParameter.getType().getLexeme() +
+                                    "', pero se encontro de tipo '" + currentParameter.getType().getLexeme() + "'";
+                            throw new InvalidOverrideException(method.getToken(), description);
+                        }
+                    }
+                }
+            }
+        }
+
+        LinkedHashMap<String, Method> newMethodList = new LinkedHashMap<>(parentMethods);
+
+        for (Method method : currentMethods.values()) {
+            method.setPosition(newMethodList.size());
+            newMethodList.put(method.getToken().getLexeme(), method);
+        }
+
+        this.setMethods(newMethodList);
+        this.setMethodsConsolidationChecked(true);
     }
 
     @Override

@@ -3,6 +3,9 @@ class Base : A{
 }
 impl Base {
     .() { }
+
+    fn m2() {}
+    fn m1(Int i1) {}
 }
 
 class Sub : Base {
@@ -17,6 +20,7 @@ class A  {
 }
 impl A {
     .() { }
+    fn m1(Int a4) {}
 }
 
 class Base : A {
