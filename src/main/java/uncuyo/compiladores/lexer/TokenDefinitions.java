@@ -24,7 +24,6 @@ public class TokenDefinitions {
         keywords.put("st", TokenType.KW_ST);
         keywords.put("self", TokenType.KW_SELF);
         keywords.put("pub", TokenType.KW_PUB);
-        keywords.put("div", TokenType.KW_DIV);
         keywords.put("for", TokenType.KW_FOR);
         keywords.put("in", TokenType.KW_IN);
         keywords.put("true", TokenType.BOOLEAN_CONSTANT);

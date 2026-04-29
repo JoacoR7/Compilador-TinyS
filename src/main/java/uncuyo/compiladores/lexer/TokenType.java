@@ -25,8 +25,6 @@ public enum TokenType {
     KW_SELF,
     /** Keyword 'pub' **/
     KW_PUB,
-    /** Keyword 'div' **/
-    KW_DIV,
     /** Keyword 'for' **/
     KW_FOR,
     /** Keyword 'in' **/
