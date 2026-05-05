@@ -12,8 +12,7 @@ public class Method implements JsonSerializable {
     private LinkedHashMap<String, Variable> variables = new LinkedHashMap<>();;
     private Type type;
     private boolean isStatic;
-    private boolean isInherited;
-    private boolean isRedefined;
+    private String className;
     private int position;
 
     public Method(Token token, Type type, boolean isStatic) {
@@ -78,6 +77,14 @@ public class Method implements JsonSerializable {
         this.position = position;
     }
 
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
     public String getName() {
         return token.getLexeme();
     }
@@ -106,6 +113,9 @@ public class Method implements JsonSerializable {
 
         sb.append(indent).append("\t\"static\": ")
                 .append(isStatic()).append(",\n");
+
+        sb.append(indent).append("\t\"className\": ")
+                .append(getClassName()).append(",\n");
 
         sb.append(indent).append("\t\"position\": ")
                 .append(getPosition()).append(",\n");

@@ -234,6 +234,7 @@ public class Class implements JsonSerializable {
 
     public void insertMethod(Method newMethod){
         newMethod.setPosition(this.getMethods().size());
+        newMethod.setClassName(this.getName());
         this.getMethods().put(newMethod.getToken().getLexeme(), newMethod);
     }
 
@@ -305,8 +306,11 @@ public class Class implements JsonSerializable {
         LinkedHashMap<String, Method> newMethodList = new LinkedHashMap<>(parentMethods);
 
         for (Method method : currentMethods.values()) {
-            method.setPosition(newMethodList.size());
-            newMethodList.put(method.getToken().getLexeme(), method);
+            if (!newMethodList.containsKey(method.getName())) {
+                method.setPosition(newMethodList.size());
+                method.setClassName(this.getName());
+                newMethodList.put(method.getToken().getLexeme(), method);
+            }
         }
 
         this.setMethods(newMethodList);
