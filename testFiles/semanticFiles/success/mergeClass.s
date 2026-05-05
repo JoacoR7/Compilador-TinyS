@@ -16,7 +16,7 @@ impl Sub {
     .() { }
 }
 
-class A  {
+class A {
     Bool b1;
 }
 impl A {
@@ -29,5 +29,4 @@ class Base : A {
 }
 
 start {
-
 }

@@ -197,7 +197,7 @@ public class Class implements JsonSerializable {
 
     public void validateParent() {
         String newClassDeclarationParent = this.getParent();
-        List<String> primitiveTypes = List.of("Int", "Bool", "Str");
+        List<String> primitiveTypes = List.of("Int", "Bool", "Str", "Array");
 
         if (newClassDeclarationParent != null && primitiveTypes.contains(newClassDeclarationParent)) {
             throw new PrimitiveInheritanceException(this.getLine(),

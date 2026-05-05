@@ -203,6 +203,19 @@ public class SymbolTable implements JsonSerializable {
                 null);
         this.getClasses().put(IO.getToken().getLexeme(), IO);
 
+        Class Int = createPredefinedClass("Int", TokenType.INT_CLASS, "Object");
+        this.getClasses().put(Int.getToken().getLexeme(), Int);
+
+        Class Str = createPredefinedClass("Str", TokenType.STR_CLASS, "Object");
+        setPredefinedClassMethods(Str, "length", false, new Type(TokenType.INT_CLASS, "Int"),
+                null);
+        setPredefinedClassMethods(Str, "concat", true, new Type(TokenType.STR_CLASS, "Str"),
+                new Parameter(new Type(TokenType.STR_CLASS, "Str"), "s", 0));
+        this.getClasses().put(Str.getToken().getLexeme(), Str);
+
+        Class Bool = createPredefinedClass("Bool", TokenType.BOOL_CLASS, "Object");
+        this.getClasses().put(Bool.getToken().getLexeme(), Bool);
+
     }
 
     private Class createPredefinedClass(String name, TokenType type, String parent) {

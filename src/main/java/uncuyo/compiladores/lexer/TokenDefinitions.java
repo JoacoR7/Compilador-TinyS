@@ -2,6 +2,7 @@ package uncuyo.compiladores.lexer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class TokenDefinitions {
     private final Map<String, TokenType> keywords = new HashMap<>();
@@ -118,4 +119,21 @@ public class TokenDefinitions {
     }
 
     public Map<String, TokenType> getPrimitiveTypes() {return primitiveTypes;}
+
+    public static String getLexeme(TokenType tokenType) {
+        TokenDefinitions defs = new TokenDefinitions();
+
+        return Stream.of(
+                        defs.getKeywords().entrySet().stream(),
+                        defs.getOperators().entrySet().stream(),
+                        defs.getPrimitiveTypes().entrySet().stream(),
+                        defs.getSpecialSymbols().entrySet().stream().map(e -> Map.entry(String.valueOf(e.getKey()), e.getValue())),
+                        defs.getUndefinedSymbols().entrySet().stream().map(e -> Map.entry(String.valueOf(e.getKey()), e.getValue()))
+                )
+                .flatMap(s -> s)
+                .filter(e -> e.getValue() == tokenType)
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(tokenType.name());
+    }
 }

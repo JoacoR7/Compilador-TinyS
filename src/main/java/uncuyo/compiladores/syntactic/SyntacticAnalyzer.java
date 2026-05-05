@@ -6,6 +6,7 @@ import uncuyo.compiladores.exceptions.syntactic.MethodOutsideImplException;
 import uncuyo.compiladores.exceptions.syntactic.SyntacticException;
 import uncuyo.compiladores.lexer.Lexer;
 import uncuyo.compiladores.lexer.Token;
+import uncuyo.compiladores.lexer.TokenDefinitions;
 import uncuyo.compiladores.lexer.TokenType;
 
 
@@ -59,7 +60,7 @@ public class SyntacticAnalyzer {
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
-                    "Se esperaba " + expectedTokenType + ", pero se encontro '" +
+                    "Se esperaba " + TokenDefinitions.getLexeme(expectedTokenType) + ", pero se encontro '" +
                             currentToken.getLexeme() + "'"
             );
         }
