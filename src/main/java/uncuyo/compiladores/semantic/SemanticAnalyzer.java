@@ -542,7 +542,7 @@ public class SemanticAnalyzer {
     public Type tipoMetodo() throws LexicalException, SyntacticException {
         Type type = null;
         if(checkType(TokenType.STR_CLASS, TokenType.BOOL_CLASS,
-                TokenType.INT_CLASS, TokenType.IDENTIFIER_CLASS)) {
+                TokenType.INT_CLASS, TokenType.ARRAY_CLASS, TokenType.IDENTIFIER_CLASS)) {
             type = tipo();
         } else if (checkType(TokenType.KW_VOID)) {
             matchTokenType(TokenType.KW_VOID);
@@ -617,7 +617,6 @@ public class SemanticAnalyzer {
         ⟨Tipo-Arreglo⟩ ::= Array ⟨Tipo-Primitivo⟩ {TipoArreglo.tipo = TipoPrimitivo.tipo}
     */
     public Type tipoArreglo() throws LexicalException, SyntacticException {
-        // INCOMPLETO , DEBO CREAR LA CLASE ARRAY Y ASIGNARLE EL SUBTIPO?
         matchTokenType(TokenType.ARRAY_CLASS);
         Type subType = tipoPrimitivo();
         ArrayType type = new ArrayType(subType);

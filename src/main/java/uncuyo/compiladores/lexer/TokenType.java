@@ -47,6 +47,8 @@ public enum TokenType {
     STR_CLASS,
     /** Primitive class: array type */
     ARRAY_CLASS,
+    /** IO class */
+    IO_CLASS,
 
     /** Integer constant **/
     INT_CONSTANT,

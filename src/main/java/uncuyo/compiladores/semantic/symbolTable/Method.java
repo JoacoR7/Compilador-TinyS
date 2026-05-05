@@ -108,8 +108,14 @@ public class Method implements JsonSerializable {
         sb.append(indent).append("\t\"name\": \"")
                 .append(getToken().getLexeme()).append("\",\n");
 
-        sb.append(indent).append("\t\"type\": \"")
-                .append(getType().getLexeme()).append("\",\n");
+        if (getType() instanceof ArrayType) {
+            sb.append(indent).append("\t\"type\": \"")
+                    .append(getType().getLexeme()).append(" ").
+                    append(((ArrayType) getType()).getSubType().getLexeme()).append("\",\n");
+        } else {
+            sb.append(indent).append("\t\"type\": \"")
+                    .append(getType().getLexeme()).append("\",\n");
+        }
 
         sb.append(indent).append("\t\"static\": ")
                 .append(isStatic()).append(",\n");

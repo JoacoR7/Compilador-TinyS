@@ -2,6 +2,8 @@ package uncuyo.compiladores.semantic.symbolTable;
 
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.CircularInheritanceException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.ParentClassNotFoundException;
+import uncuyo.compiladores.lexer.Token;
+import uncuyo.compiladores.lexer.TokenType;
 import uncuyo.compiladores.semantic.JsonSerializable;
 
 import java.util.*;
@@ -92,23 +94,25 @@ public class SymbolTable implements JsonSerializable {
     }
 
     public void checkClasses() {
+        List<String> predefinedClasses = List.of("Object", "IO", "Int", "Str", "Bool", "Array");
         for (Class currentClass : classes.values()) {
-            String currentClassParent = currentClass.getParent();
+            if(!predefinedClasses.contains(currentClass.getToken().getLexeme())) {
+                String currentClassParent = currentClass.getParent();
 
-            if(!currentClassParent.equals("Object")) {
-                checkParentExistence(currentClass);
-                checkCircularInheritance(currentClass);
-                if(!currentClass.isAtributesConsolidationChecked()) {
-                    currentClass.checkAndSetInheritedAttributes(classes.get(currentClassParent));
+                if(!currentClassParent.equals("Object")) {
+                    checkParentExistence(currentClass);
+                    checkCircularInheritance(currentClass);
+                    if(!currentClass.isAtributesConsolidationChecked()) {
+                        currentClass.checkAndSetInheritedAttributes(classes.get(currentClassParent));
+                    }
+                    if(!currentClass.isMethodsConsolidationChecked()) {
+                        currentClass.checkAndSetInheritedMethods(classes.get(currentClassParent));
+                    }
+                } else {
+                    currentClass.setAtributesConsolidationChecked(true);
+                    currentClass.setMethodsConsolidationChecked(true);
                 }
-                if(!currentClass.isMethodsConsolidationChecked()) {
-                    currentClass.checkAndSetInheritedMethods(classes.get(currentClassParent));
-                }
-            } else {
-                currentClass.setAtributesConsolidationChecked(true);
-                currentClass.setMethodsConsolidationChecked(true);
             }
-
         }
     }
 
@@ -137,6 +141,7 @@ public class SymbolTable implements JsonSerializable {
     }
 
     public void consolidate() {
+        init();
         checkClasses();
     }
 
@@ -171,6 +176,67 @@ public class SymbolTable implements JsonSerializable {
         sb.append(indent).append("}");
 
         return sb.toString();
+    }
+
+    public void init() {
+        Class Object = createPredefinedClass("Object", TokenType.OBJECT_CLASS, null);
+        this.getClasses().put(Object.getToken().getLexeme(), Object);
+
+        Class IO = createPredefinedClass("IO", TokenType.IO_CLASS, "Object");
+        setPredefinedClassMethods(IO, "out_str", true, new Type(TokenType.KW_VOID, "void"),
+                new Parameter(new Type(TokenType.STR_CLASS, "Str"), "s", 0));
+        setPredefinedClassMethods(IO, "out_int", true, new Type(TokenType.KW_VOID, "void"),
+                new Parameter(new Type(TokenType.INT_CLASS, "Int"), "i", 0));
+        setPredefinedClassMethods(IO, "out_bool", true, new Type(TokenType.KW_VOID, "void"),
+                new Parameter(new Type(TokenType.BOOL_CLASS, "Bool"), "b", 0));
+        setPredefinedClassMethods(IO, "out_array_int", true, new Type(TokenType.KW_VOID, "void"),
+                new Parameter(new ArrayType(new Type(TokenType.INT_CLASS, "Int")), "a", 0));
+        setPredefinedClassMethods(IO, "out_array_str", true, new Type(TokenType.KW_VOID, "void"),
+                new Parameter(new ArrayType(new Type(TokenType.STR_CLASS, "Str")), "a", 0));
+        setPredefinedClassMethods(IO, "out_array_bool", true, new Type(TokenType.KW_VOID, "void"),
+                new Parameter(new ArrayType(new Type(TokenType.BOOL_CLASS, "Bool")), "a", 0));
+        setPredefinedClassMethods(IO, "in_str", true, new Type(TokenType.STR_CLASS, "Str"),
+                 null);
+        setPredefinedClassMethods(IO, "in_int", true, new Type(TokenType.INT_CLASS, "Int"),
+                null);
+        setPredefinedClassMethods(IO, "in_bool", true, new Type(TokenType.BOOL_CLASS, "Bool"),
+                null);
+        this.getClasses().put(IO.getToken().getLexeme(), IO);
+
+    }
+
+    private Class createPredefinedClass(String name, TokenType type, String parent) {
+        Class c = new Class();
+        setPredefinedClassAtributes(c, name, type);
+        if (parent != null) {
+            c.setParent(parent);
+        }
+        return c;
+    }
+
+    public void setPredefinedClassAtributes(Class predefinedClass, String lexeme, TokenType tokenType) {
+        predefinedClass.setFoundClass(true);
+        predefinedClass.setFoundImpl(true);
+        predefinedClass.setCircularInheritanceChecked(true);
+        predefinedClass.setAtributesConsolidationChecked(true);
+        predefinedClass.setMethodsConsolidationChecked(true);
+        predefinedClass.setToken(new Token(lexeme, tokenType, 0, 0));
+    }
+
+    public void setPredefinedClassMethods(Class predefinedClass, String lexeme, boolean isStatic, Type type, Parameter... parameters) {
+        Method method = new Method(new Token(lexeme, TokenType.IDENTIFIER_VAR_METHOD, 0, 0), type, isStatic);
+
+        if (parameters != null && parameters.length > 0) {
+            LinkedHashMap<String, Parameter> params = new LinkedHashMap<>();
+
+            for (Parameter parameter : parameters) {
+                params.put(parameter.getLexeme(), parameter);
+            }
+
+            method.setParameters(params);
+        }
+
+        predefinedClass.insertMethod(method);
     }
 
 

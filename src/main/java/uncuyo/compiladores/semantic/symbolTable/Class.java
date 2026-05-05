@@ -335,8 +335,10 @@ public class Class implements JsonSerializable {
         sb.append(indent).append("\t\"foundImpl\": ")
                 .append(isFoundImpl()).append(",\n");
 
-        sb.append(indent).append("\t\"constructor\": \n")
-                .append(constructor.toJson(indent+"\t\t")).append(",\n");
+        if (constructor != null) {
+            sb.append(indent).append("\t\"constructor\": \n")
+                    .append(constructor.toJson(indent+"\t\t")).append(",\n");
+        }
 
         // ATTRIBUTES
         int total = getAttributes().size();

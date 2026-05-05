@@ -50,8 +50,14 @@ public class Parameter implements JsonSerializable {
         sb.append(indent).append("\t\"name\": \"")
                 .append(getLexeme()).append("\",\n");
 
-        sb.append(indent).append("\t\"type\": \"")
-                .append(type.getLexeme()).append("\",\n");
+        if (getType() instanceof ArrayType) {
+            sb.append(indent).append("\t\"type\": \"")
+                    .append(getType().getLexeme()).append(" ").
+                    append(((ArrayType) getType()).getSubType().getLexeme()).append("\",\n");
+        } else {
+            sb.append(indent).append("\t\"type\": \"")
+                    .append(getType().getLexeme()).append("\",\n");
+        }
 
         sb.append(indent).append("\t\"position\": ")
                 .append(position).append("\n");

@@ -4,8 +4,9 @@ class Base : A{
 impl Base {
     .() { }
 
-    fn m2() {}
+    fn m2(Array Int a) {}
     fn m1(Int i1) {}
+    fn Array Int m3() {}
 }
 
 class Sub : Base {

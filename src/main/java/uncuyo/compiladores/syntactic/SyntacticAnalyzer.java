@@ -449,7 +449,7 @@ public class SyntacticAnalyzer {
     */
     public void tipoMetodo() throws LexicalException, SyntacticException {
         if(checkType(TokenType.STR_CLASS, TokenType.BOOL_CLASS,
-                TokenType.INT_CLASS, TokenType.IDENTIFIER_CLASS)) {
+                TokenType.INT_CLASS, TokenType.ARRAY_CLASS, TokenType.IDENTIFIER_CLASS)) {
             tipo();
         } else if (checkType(TokenType.KW_VOID)) {
             matchTokenType(TokenType.KW_VOID);
