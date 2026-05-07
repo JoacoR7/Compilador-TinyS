@@ -216,6 +216,21 @@ public class SymbolTable implements JsonSerializable {
         Class Bool = createPredefinedClass("Bool", TokenType.BOOL_CLASS, "Object");
         this.getClasses().put(Bool.getToken().getLexeme(), Bool);
 
+        Class Array = createPredefinedClass("Array", TokenType.ARRAY_CLASS, "Object");
+
+        setPredefinedClassMethods(Array, "length", false, new Type(TokenType.INT_CLASS, "Int"),
+                null);
+        setPredefinedClassMethods(Array, "hasNext", false, new Type(TokenType.BOOL_CLASS, "Bool"),
+                null);
+        setPredefinedClassMethods(Array, "next_int", false, new Type(TokenType.INT_CLASS, "Int"),
+                null);
+        setPredefinedClassMethods(Array, "next_bool", false, new Type(TokenType.BOOL_CLASS, "Bool"),
+                null);
+        setPredefinedClassMethods(Array, "next_str", false, new Type(TokenType.STR_CLASS, "Str"),
+                null);
+
+        this.getClasses().put(Array.getToken().getLexeme(), Array);
+
     }
 
     private Class createPredefinedClass(String name, TokenType type, String parent) {
