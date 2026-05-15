@@ -42,16 +42,6 @@ public class SyntacticAnalyzer {
         return false;
     }
 
-    private void matchLexeme(String expected) throws LexerFileReadException, LexicalException, SyntacticException {
-        if (currentToken.getLexeme().equals(expected)) {
-            nextToken();
-        } else {
-            throw new SyntacticException(currentToken.getRowIndex(),
-                    currentToken.getColumnIndex(),
-                    "Se esperaba '" + expected + "', pero se encontro '" +
-                            currentToken.getLexeme() + "'");
-        }
-    }
 
     private void matchTokenType(TokenType expectedTokenType) throws LexerFileReadException, LexicalException, SyntacticException {
 
@@ -1277,10 +1267,9 @@ public class SyntacticAnalyzer {
     /*
     ⟨Llamada-MétodoF⟩ ::= λ
         | ⟨Encadenado⟩
-    INCOMPLETO
     */
     public void llamadaMetodoF() throws SyntacticException, LexicalException {
-        // REVISAR AMBIGUEDAD CON TokenType.SPECIAL_SYMBOL_P
+
         if (checkType(TokenType.SPECIAL_SYMBOL_P)) {
             encadenado();
         } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
@@ -1299,37 +1288,13 @@ public class SyntacticAnalyzer {
     }
 
     /*
-    ⟨Llamada-Método-Estático⟩ ::= idclass . id ⟨Llamada-Método⟩ ⟨Llamada-Método-EstáticoF⟩
+    ⟨Llamada-Método-Estático⟩ ::= idclass . id ⟨Llamada-Método⟩
     */
     public void llamadaMetodoEstatico() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.IDENTIFIER_CLASS);
         matchTokenType(TokenType.SPECIAL_SYMBOL_P);
         matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
         llamadaMetodo();
-        llamadaMetodoEstaticoF();
-    }
-
-    /*
-    ⟨Llamada-Método-EstáticoF⟩ ::= λ
-        | ⟨Encadenado⟩
-    */
-    public void llamadaMetodoEstaticoF() throws LexicalException, SyntacticException {
-        if (checkType(TokenType.SPECIAL_SYMBOL_P)){
-            encadenado();
-        } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
-                TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT, TokenType.OPERATOR_GT,
-                TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
-                TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR,
-                TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
-                TokenType.SPECIAL_SYMBOL_CM)) {
-            // Siguientes de llamadaMetodoEstaticoF, cierro
-
-            throw new SyntacticException(currentToken.getRowIndex(),
-                    currentToken.getColumnIndex(),
-                    "Se esperaba '.', '*', '/', '+', '-', '<', '>', '<=', '>=', '==', '!=', '&&', '||', ')' , ';' , ']', ',', pero se encontro '" +
-                            currentToken.getLexeme() + "'"
-            );
-        }
     }
     
     /*
