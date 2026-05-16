@@ -754,16 +754,16 @@ public class SemanticAnalyzer {
         AssignmentNode assignmentNode = null;
 
         if (checkType(TokenType.IDENTIFIER_VAR_METHOD)) {
-            OperandNode operandNode = accesoVarSimple();
+            SimpleAccessNode simpleAccessNode = accesoVarSimple();
             matchTokenType(TokenType.OPERATOR_ASSIGN);
             ExpressionNode expressionNode = expresion();
-            assignmentNode = new AssignmentNode(operandNode, expressionNode);
+            assignmentNode = new AssignmentNode(simpleAccessNode, expressionNode);
 
         } else if (checkType(TokenType.KW_SELF)) {
-            OperandNode operandNode = accesoSelfSimple();
+            SimpleAccessNode simpleAccessNode = accesoSelfSimple();
             matchTokenType(TokenType.OPERATOR_ASSIGN);
             ExpressionNode expressionNode = expresion();
-            assignmentNode = new AssignmentNode(operandNode, expressionNode);
+            assignmentNode = new AssignmentNode(simpleAccessNode, expressionNode);
         }
         return assignmentNode;
     }
@@ -771,7 +771,7 @@ public class SemanticAnalyzer {
      /*
 	⟨AccesoVar-Simple⟩ ::= id ⟨AccesoVar-SimpleF⟩
      */
-    public OperandNode accesoVarSimple() throws LexicalException, SyntacticException {
+    public SimpleAccessNode accesoVarSimple() throws LexicalException, SyntacticException {
         Token auxToken = currentToken;
         matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
         return accesoVarSimpleF(auxToken);
@@ -781,16 +781,17 @@ public class SemanticAnalyzer {
     ⟨AccesoVar-SimpleF⟩ ::= ⟨Encadenado-SimpleK⟩
         | [ ⟨Expresión⟩ ]
      */
-    public OperandNode accesoVarSimpleF(Token idToken) throws LexicalException, SyntacticException {
-        OperandNode operandNode = null;
+    public SimpleAccessNode accesoVarSimpleF(Token token) throws LexicalException, SyntacticException {
+        SimpleAccessNode simpleAccessNode = null;
         if(checkType(TokenType.SPECIAL_SYMBOL_P)) {
-            operandNode = new SimpleChainedNode(idToken, null,
-                    symbolTable.getCurrentClass().getName(), symbolTable.getCurrentMethod().getName());
-            encadenadoSimpleK((SimpleChainedNode) operandNode);
+            simpleAccessNode = new SimpleVariableNode(token, null);
+            SimpleVariableNode simpleVariableNode = (SimpleVariableNode) simpleAccessNode;
+            simpleVariableNode.setSimpleChainedNode(encadenadoSimpleK());
+
 
         } else if (checkType(TokenType.SPECIAL_SYMBOL_LB)) {
             matchTokenType(TokenType.SPECIAL_SYMBOL_LB);
-            operandNode = new ArrayNode(idToken, null, expresion());
+            simpleAccessNode = new SimpleArrayNode(token, expresion());
             matchTokenType(TokenType.SPECIAL_SYMBOL_RB);
         } else if (checkType(TokenType.OPERATOR_ASSIGN)) {
             // Primeros(⟨Encadenado-SimpleK⟩) contiene λ, por lo tanto checkeo siguientes
@@ -802,32 +803,28 @@ public class SemanticAnalyzer {
                             currentToken.getLexeme() + "'"
             );
         }
-        return operandNode;
+        return simpleAccessNode;
     }
 
     /*
     ⟨AccesoSelf-Simple⟩ ::= self ⟨Encadenado-SimpleK⟩
     */
-    public SimpleChainedNode accesoSelfSimple() throws LexicalException, SyntacticException {
+    public SimpleSelfNode accesoSelfSimple() throws LexicalException, SyntacticException {
         Token auxToken = currentToken;
         matchTokenType(TokenType.KW_SELF);
-        SimpleChainedNode simpleChainedNode = new SimpleChainedNode(auxToken, null,
-                symbolTable.getCurrentClass().getName(), symbolTable.getCurrentMethod().getName());
-        encadenadoSimpleK(simpleChainedNode);
-        return simpleChainedNode;
+        return new SimpleSelfNode(encadenadoSimpleK());
     }
 
     /*
     ⟨Encadenado-SimpleK⟩ ::= ⟨Encadenado-Simple⟩ ⟨Encadenado-SimpleK⟩
         | λ
     */
-    public void encadenadoSimpleK(SimpleChainedNode simpleChainedNode) throws LexicalException, SyntacticException {
+    public SimpleChainedNode encadenadoSimpleK() throws LexicalException, SyntacticException {
+        SimpleChainedNode simpleChainedNode = null;
         if (checkType(TokenType.SPECIAL_SYMBOL_P)) {
-            SimpleChainedNode simpleChainedNode2 = encadenadoSimple();
-            encadenadoSimpleK(simpleChainedNode2);
-            simpleChainedNode.setSimpleChainedNode(simpleChainedNode2);
+            simpleChainedNode = encadenadoSimple();
+            simpleChainedNode.setSimpleChainedNode(encadenadoSimpleK());
         } else if (checkType(TokenType.OPERATOR_ASSIGN)) {
-            simpleChainedNode.setSimpleChainedNode(null);
             // Siguientes de encadenadoSimpleK, cierro
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
@@ -836,6 +833,7 @@ public class SemanticAnalyzer {
                             currentToken.getLexeme() + "'"
             );
         }
+        return simpleChainedNode;
     }
 
     /*

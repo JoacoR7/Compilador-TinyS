@@ -2,24 +2,25 @@ package uncuyo.compiladores.semantic.abstractSintaxTree.sentence;
 
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ExpressionNode;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.OperandNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleAccessNode;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleChainedNode;
 
 public class AssignmentNode extends SentenceNode {
 
-    private OperandNode operandNode;
+    private SimpleAccessNode simpleAccessNode;
     private ExpressionNode expressionNode;
 
-    public AssignmentNode(OperandNode operandNode, ExpressionNode expressionNode) {
-        this.operandNode = operandNode;
+    public AssignmentNode(SimpleAccessNode simpleAccessNode, ExpressionNode expressionNode) {
+        this.simpleAccessNode = simpleAccessNode;
         this.expressionNode = expressionNode;
     }
 
-    public OperandNode getOperandNode() {
-        return operandNode;
+    public SimpleAccessNode getSimpleAccessNode() {
+        return simpleAccessNode;
     }
 
-    public void setOperandNode(OperandNode operandNode) {
-        this.operandNode = operandNode;
+    public void setSimpleAccessNode(SimpleAccessNode simpleAccessNode) {
+        this.simpleAccessNode = simpleAccessNode;
     }
 
     public ExpressionNode getExpressionNode() {
