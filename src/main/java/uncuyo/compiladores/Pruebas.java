@@ -13,7 +13,7 @@ public class Pruebas {
     public static void main(String[] args) throws IOException, LexicalException, SyntacticException {
         int a;
         (a) = 3;
-        Lexer lexer = new Lexer("C:\\Users\\AMD\\Desktop\\Compiladores2026\\testFiles\\semanticFiles\\success\\startVariables.s");
+        Lexer lexer = new Lexer("C:\\Users\\AMD\\Desktop\\Compiladores2026\\testFiles\\semanticFiles\\error\\classNotDeclarated.s");
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(lexer, lexer.getNextToken());
         semanticAnalyzer.program();
         SymbolTable symbolTable = semanticAnalyzer.getSymbolTable();
