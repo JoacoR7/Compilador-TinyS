@@ -7,4 +7,11 @@ public class SemanticException extends RuntimeException {
                 "| LINEA " + rowIndex + " (COLUMNA " + columnIndex + ") | " + description + " |"
         );
     }
+
+    public SemanticException(String description) {
+        super("ERROR SEMANTICO" + "\n" +
+                "| DESCRIPCION: |" +  "\n" +
+                "| " + description + " |"
+        );
+    }
 }

@@ -651,6 +651,12 @@ public class SyntacticAnalyzer {
             accesoSelfSimple();
             matchTokenType(TokenType.OPERATOR_ASSIGN);
             expresion();
+        } else {
+        throw new SyntacticException(currentToken.getRowIndex(),
+                currentToken.getColumnIndex(),
+                "Se esperaba 'self' o un identificador de variable, pero se encontro '" +
+                        currentToken.getLexeme() + "'"
+            );
         }
     }
 

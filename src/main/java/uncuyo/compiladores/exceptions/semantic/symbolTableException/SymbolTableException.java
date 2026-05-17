@@ -6,4 +6,7 @@ public class SymbolTableException extends SemanticException {
     public SymbolTableException(int rowIndex, int columnIndex, String description) {
         super(rowIndex, columnIndex, description);
     }
+    public SymbolTableException(String description) {
+        super(description);
+    }
 }

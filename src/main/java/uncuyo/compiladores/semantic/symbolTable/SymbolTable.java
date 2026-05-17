@@ -1,6 +1,8 @@
 package uncuyo.compiladores.semantic.symbolTable;
 
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.CircularInheritanceException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.ConstructorNotFoundException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.ImplNotFoundException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.ParentClassNotFoundException;
 import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.lexer.TokenType;
@@ -97,6 +99,12 @@ public class SymbolTable implements JsonSerializable {
         List<String> predefinedClasses = List.of("Object", "IO", "Int", "Str", "Bool", "Array");
         for (Class currentClass : classes.values()) {
             if(!predefinedClasses.contains(currentClass.getToken().getLexeme())) {
+                if(!currentClass.isFoundImpl()) {
+                    throw new ImplNotFoundException(currentClass.getName());
+                }
+                if(currentClass.getConstructor() == null) {
+                    throw new ConstructorNotFoundException(currentClass.getName());
+                }
                 String currentClassParent = currentClass.getParent();
 
                 if(!currentClassParent.equals("Object")) {
