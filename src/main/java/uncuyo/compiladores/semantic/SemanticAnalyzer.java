@@ -12,6 +12,7 @@ import uncuyo.compiladores.lexer.TokenDefinitions;
 import uncuyo.compiladores.lexer.TokenType;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.*;
 import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.AssignmentNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.SentenceNode;
 import uncuyo.compiladores.semantic.symbolTable.*;
 import uncuyo.compiladores.semantic.symbolTable.Class;
 
@@ -648,11 +649,12 @@ public class SemanticAnalyzer {
         | if (⟨Expresión⟩) ⟨Sentencia⟩ ⟨SentenciaF1⟩
         | ret ⟨SentenciaF2⟩
     */
-    public void sentencia() throws LexicalException, SyntacticException {
+    public SentenceNode sentencia() throws LexicalException, SyntacticException {
+        SentenceNode sentenceNode = null;
         if (checkType(TokenType.SPECIAL_SYMBOL_S)) {
             matchTokenType(TokenType.SPECIAL_SYMBOL_S);
         } else if (checkType(TokenType.IDENTIFIER_VAR_METHOD, TokenType.KW_SELF)) {
-            asignacion();
+            sentenceNode = asignacion();
             matchTokenType(TokenType.SPECIAL_SYMBOL_S);
         } else if(checkType(TokenType.SPECIAL_SYMBOL_PO)) {
             sentenciaSimple();
@@ -691,6 +693,7 @@ public class SemanticAnalyzer {
                             currentToken.getLexeme() + "'"
             );
         }
+        return sentenceNode;
     }
     /*
 	⟨SentenciaF1⟩ ::= else ⟨Sentencia⟩
@@ -751,19 +754,25 @@ public class SemanticAnalyzer {
     */
     public AssignmentNode asignacion() throws LexicalException, SyntacticException {
 
-        AssignmentNode assignmentNode = null;
-
+        AssignmentNode assignmentNode;
+        ExpressionNode expressionNode;
         if (checkType(TokenType.IDENTIFIER_VAR_METHOD)) {
             SimpleAccessNode simpleAccessNode = accesoVarSimple();
             matchTokenType(TokenType.OPERATOR_ASSIGN);
-            ExpressionNode expressionNode = expresion();
+            expressionNode = expresion();
             assignmentNode = new AssignmentNode(simpleAccessNode, expressionNode);
 
         } else if (checkType(TokenType.KW_SELF)) {
             SimpleAccessNode simpleAccessNode = accesoSelfSimple();
             matchTokenType(TokenType.OPERATOR_ASSIGN);
-            ExpressionNode expressionNode = expresion();
+            expressionNode = expresion();
             assignmentNode = new AssignmentNode(simpleAccessNode, expressionNode);
+        }else {
+            throw new SyntacticException(currentToken.getRowIndex(),
+                    currentToken.getColumnIndex(),
+                    "Se esperaba 'self' o un identificador de variable, pero se encontro '" +
+                            currentToken.getLexeme() + "'"
+            );
         }
         return assignmentNode;
     }
@@ -781,14 +790,13 @@ public class SemanticAnalyzer {
     ⟨AccesoVar-SimpleF⟩ ::= ⟨Encadenado-SimpleK⟩
         | [ ⟨Expresión⟩ ]
      */
+
     public SimpleAccessNode accesoVarSimpleF(Token token) throws LexicalException, SyntacticException {
         SimpleAccessNode simpleAccessNode = null;
         if(checkType(TokenType.SPECIAL_SYMBOL_P)) {
             simpleAccessNode = new SimpleVariableNode(token, null);
             SimpleVariableNode simpleVariableNode = (SimpleVariableNode) simpleAccessNode;
             simpleVariableNode.setSimpleChainedNode(encadenadoSimpleK());
-
-
         } else if (checkType(TokenType.SPECIAL_SYMBOL_LB)) {
             matchTokenType(TokenType.SPECIAL_SYMBOL_LB);
             simpleAccessNode = new SimpleArrayNode(token, expresion());
@@ -796,6 +804,7 @@ public class SemanticAnalyzer {
         } else if (checkType(TokenType.OPERATOR_ASSIGN)) {
             // Primeros(⟨Encadenado-SimpleK⟩) contiene λ, por lo tanto checkeo siguientes
             // Siguientes de accesoVarSimpleF, cierro
+            simpleAccessNode = new SimpleVariableNode(token, null);
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
@@ -1321,19 +1330,19 @@ public class SemanticAnalyzer {
             chainedNode = accesoVar(token);
         }else if (checkType(TokenType.SPECIAL_SYMBOL_PO)){
             chainedNode = llamadaMetodo(token);
-        } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
+        } else if (checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
                 TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT, TokenType.OPERATOR_GT,
                 TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
                 TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR,
                 TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
                 TokenType.SPECIAL_SYMBOL_CM)) {
-
+            chainedNode = new VariableNode(token, null, symbolTable.getCurrentClass().getName(), symbolTable.getCurrentMethod().getName());
+        } else{
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
                     "Se esperaba '[','.','(','*', '/', '+', '-', '<', '>', '<=', '>=', '==', '!=', '&&', '||', ')' , ';' , ']', ',', pero se encontro '" +
                             currentToken.getLexeme() + "'"
             );
-
         }
         return chainedNode;
     }
@@ -1421,13 +1430,14 @@ public class SemanticAnalyzer {
             chainedNode = new ArrayNode(token, null, expressionNode);
             matchTokenType(TokenType.SPECIAL_SYMBOL_RB);
             chainedNode.setChainedNode(accesoVarF());
-        } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
+        } else if (checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
                 TokenType.OPERATOR_SUB, TokenType.OPERATOR_LT, TokenType.OPERATOR_GT,
                 TokenType.OPERATOR_LTE, TokenType.OPERATOR_GTE, TokenType.OPERATOR_EQ,
                 TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR,
                 TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
                 TokenType.SPECIAL_SYMBOL_CM)) {
-
+            chainedNode = new VariableNode(token, null, symbolTable.getCurrentClass().getName(), symbolTable.getCurrentMethod().getName());
+        } else{
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
                     "Se esperaba '.', '*', '/', '+', '-', '<', '>', '<=', '>=', '==', '!=', '&&', '||', ')' , ';' , ']', ',', pero se encontro '" +
@@ -1441,11 +1451,10 @@ public class SemanticAnalyzer {
     /*
     ⟨AccesoVarF⟩ ::= λ
         | ⟨Encadenado⟩
-    INCOMPLETO
     */
      public ChainedNode accesoVarF() throws SyntacticException, LexicalException {
          ChainedNode chainedNode = null;
-         // REVISAR AMBIGUEDAD CON TokenType.SPECIAL_SYMBOL_P
+
          if (checkType(TokenType.SPECIAL_SYMBOL_P)) {
              chainedNode = encadenado();
          } else if (!checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,

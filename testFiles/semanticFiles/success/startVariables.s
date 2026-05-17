@@ -1,6 +1,15 @@
+class A {}
+
+impl A {
+    .(){}
+}
 class Persona {
-    Int edad;
-    Persona padre;
+    pub Int edad;
+    pub Persona padre;
+}
+
+impl Persona {
+    .(){}
 }
 
 start {
