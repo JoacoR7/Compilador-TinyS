@@ -11,8 +11,7 @@ import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.lexer.TokenDefinitions;
 import uncuyo.compiladores.lexer.TokenType;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.*;
-import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.AssignmentNode;
-import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.SentenceNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.*;
 import uncuyo.compiladores.semantic.symbolTable.*;
 import uncuyo.compiladores.semantic.symbolTable.Class;
 
@@ -376,7 +375,8 @@ public class SemanticAnalyzer {
     public void bloqueMetodo() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
         declVarLocalesK();
-        sentenciaK();
+        LinkedList<SentenceNode> sentenceNodes = new LinkedList<>();
+        sentenciaK(sentenceNodes);
         matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
     }
 
@@ -621,12 +621,12 @@ public class SemanticAnalyzer {
         ⟨SentenciaK⟩ ::= ⟨Sentencia⟩ ⟨SentenciaK⟩
             | λ
     */
-    public void sentenciaK() throws LexicalException, SyntacticException {
+    public void sentenciaK(LinkedList<SentenceNode> sentenceNodes) throws LexicalException, SyntacticException {
         if (checkType(TokenType.SPECIAL_SYMBOL_S, TokenType.KW_WHILE, TokenType.KW_FOR,
                 TokenType.KW_IF, TokenType.KW_RET, TokenType.SPECIAL_SYMBOL_PO, TokenType.SPECIAL_SYMBOL_LCB,
                 TokenType.IDENTIFIER_VAR_METHOD, TokenType.KW_SELF)) {
-            sentencia();
-            sentenciaK();
+            sentenceNodes.add(sentencia());
+            sentenciaK(sentenceNodes);
         } else if (checkType(TokenType.SPECIAL_SYMBOL_RCB)) {
             // Siguientes de sentenciaK, cierro
         }else {
@@ -657,23 +657,25 @@ public class SemanticAnalyzer {
             sentenceNode = asignacion();
             matchTokenType(TokenType.SPECIAL_SYMBOL_S);
         } else if(checkType(TokenType.SPECIAL_SYMBOL_PO)) {
-            sentenciaSimple();
+            sentenceNode = sentenciaSimple();
             matchTokenType(TokenType.SPECIAL_SYMBOL_S);
         } else if (checkType(TokenType.KW_WHILE)) {
             matchTokenType(TokenType.KW_WHILE);
             matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
-            expresion();
+            ExpressionNode expressionNode = expresion();
             matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
-            sentencia();
+            sentenceNode = new WhileNode(expressionNode, sentencia());
         } else if (checkType(TokenType.KW_FOR)) {
             matchTokenType(TokenType.KW_FOR);
             matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
-            tipoPrimitivo();
+            Type type = tipoPrimitivo();
+            VariableNode variableNode1 = new VariableNode(currentToken,null,symbolTable.getCurrentClass().getName(),symbolTable.getCurrentMethod().getName());
             matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
             matchTokenType(TokenType.KW_IN);
+            VariableNode variableNode2 = new VariableNode(currentToken,null,symbolTable.getCurrentClass().getName(),symbolTable.getCurrentMethod().getName());
             matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
             matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
-            sentencia();
+            sentenceNode = new ForNode(type, variableNode1, variableNode2, sentencia());
         } else if (checkType(TokenType.SPECIAL_SYMBOL_LCB)) {
             bloque();
         } else if (checkType(TokenType.KW_IF)) {
@@ -743,8 +745,9 @@ public class SemanticAnalyzer {
         ⟨Bloque⟩ ::= { ⟨SentenciaK⟩ }
     */
     public void bloque() throws LexicalException, SyntacticException {
+        LinkedList<SentenceNode> sentenceNodes = new LinkedList<>();
         matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
-        sentenciaK();
+        sentenciaK(sentenceNodes);
         matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
     }
 
@@ -860,10 +863,11 @@ public class SemanticAnalyzer {
     /*
     ⟨Sentencia-Simple⟩ ::= (⟨Expresión⟩)
     */
-    public void sentenciaSimple() throws LexicalException, SyntacticException {
+    public SimpleSentenceNode sentenciaSimple() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
-        expresion();
+        SimpleSentenceNode simpleSentenceNode = new SimpleSentenceNode(expresion());
         matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
+        return simpleSentenceNode;
     }
 
     /*
