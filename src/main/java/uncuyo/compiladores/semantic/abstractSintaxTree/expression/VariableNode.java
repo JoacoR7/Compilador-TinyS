@@ -38,6 +38,47 @@ public class VariableNode extends ChainedNode{
 
     @Override
     public String toJson(String indent) {
-        return "";
+
+        StringBuilder sb = new StringBuilder();
+        String innerIndent = indent + "\t";
+
+        sb.append(indent).append("{\n");
+
+        sb.append(innerIndent)
+                .append("\"nodeType\": \"VariableNode\",\n");
+
+        sb.append(innerIndent)
+                .append("\"name\": \"")
+                .append(getToken().getLexeme())
+                .append("\"");
+
+        if (className != null) {
+            sb.append(",\n");
+            sb.append(innerIndent)
+                    .append("\"className\": \"")
+                    .append(className)
+                    .append("\"");
+        }
+
+        if (methodName != null) {
+            sb.append(",\n");
+            sb.append(innerIndent)
+                    .append("\"methodName\": \"")
+                    .append(methodName)
+                    .append("\"");
+        }
+
+        if (getChainedNode() != null) {
+            sb.append(",\n");
+            sb.append(innerIndent)
+                    .append("\"chained\": \n");
+
+            sb.append(getChainedNode().toJson(innerIndent + "\t"));
+        }
+
+        sb.append("\n");
+        sb.append(indent).append("}");
+
+        return sb.toString();
     }
 }

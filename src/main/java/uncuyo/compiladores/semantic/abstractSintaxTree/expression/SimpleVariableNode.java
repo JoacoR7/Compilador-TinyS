@@ -36,6 +36,32 @@ public class SimpleVariableNode extends  SimpleAccessNode {
 
     @Override
     public String toJson(String indent) {
-        return "";
+
+        StringBuilder sb = new StringBuilder();
+        String innerIndent = indent + "\t";
+
+        sb.append(indent).append("{\n");
+
+        sb.append(innerIndent)
+                .append("\"nodeType\": \"SimpleVariableNode\",\n");
+
+        sb.append(innerIndent)
+                .append("\"name\": \"")
+                .append(token.getLexeme())
+                .append("\"");
+
+        if (simpleChainedNode != null) {
+            sb.append(",\n");
+
+            sb.append(innerIndent)
+                    .append("\"chained\": \n");
+
+            sb.append(simpleChainedNode.toJson(innerIndent + "\t"));
+        }
+
+        sb.append("\n");
+        sb.append(indent).append("}");
+
+        return sb.toString();
     }
 }

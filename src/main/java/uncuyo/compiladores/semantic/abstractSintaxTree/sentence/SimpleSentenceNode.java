@@ -23,6 +23,28 @@ public class SimpleSentenceNode extends SentenceNode{
 
     @Override
     public String toJson(String indent) {
-        return "";
+
+        StringBuilder sb = new StringBuilder();
+        String innerIndent = indent + "\t";
+
+        sb.append(indent).append("{\n");
+
+        sb.append(innerIndent)
+                .append("\"nodeType\": \"SimpleSentenceNode\",\n");
+
+        sb.append(innerIndent)
+                .append("\"expression\": \n");
+
+        if (expressionNode != null) {
+            sb.append(expressionNode.toJson(innerIndent + "\t"));
+        } else {
+            sb.append(innerIndent).append("\tnull");
+        }
+
+        sb.append("\n");
+
+        sb.append(indent).append("}");
+
+        return sb.toString();
     }
 }

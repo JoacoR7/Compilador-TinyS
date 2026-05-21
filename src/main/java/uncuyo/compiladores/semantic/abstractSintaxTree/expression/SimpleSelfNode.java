@@ -26,6 +26,31 @@ public class SimpleSelfNode extends SimpleAccessNode {
 
     @Override
     public String toJson(String indent) {
-        return "";
+
+        StringBuilder sb = new StringBuilder();
+        String innerIndent = indent + "\t";
+
+        sb.append(indent).append("{\n");
+
+        sb.append(innerIndent)
+                .append("\"nodeType\": \"SimpleSelfNode\",\n");
+
+        sb.append(innerIndent)
+                .append("\"value\": \"self\"");
+
+        if (simpleChainedNode != null) {
+
+            sb.append(",\n");
+
+            sb.append(innerIndent)
+                    .append("\"chained\": \n");
+
+            sb.append(simpleChainedNode.toJson(innerIndent + "\t"));
+        }
+
+        sb.append("\n");
+        sb.append(indent).append("}");
+
+        return sb.toString();
     }
 }

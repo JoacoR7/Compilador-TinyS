@@ -10,6 +10,7 @@ import uncuyo.compiladores.lexer.Lexer;
 import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.lexer.TokenDefinitions;
 import uncuyo.compiladores.lexer.TokenType;
+import uncuyo.compiladores.semantic.abstractSintaxTree.AST;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.*;
 import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.*;
 import uncuyo.compiladores.semantic.symbolTable.*;
@@ -23,6 +24,7 @@ public class SemanticAnalyzer {
     private final Lexer lexer;
     private Token currentToken;
     private final SymbolTable symbolTable = new SymbolTable();
+    private final AST ast = new AST();
 
     public SemanticAnalyzer(Lexer lexer, Token token) {
         this.lexer = lexer;
@@ -31,6 +33,10 @@ public class SemanticAnalyzer {
 
     public SymbolTable getSymbolTable() {
         return this.symbolTable;
+    }
+
+    public AST getAst() {
+        return ast;
     }
 
     private void nextToken() throws LexerFileReadException, LexicalException {
@@ -72,6 +78,8 @@ public class SemanticAnalyzer {
     /* ⟨program⟩ ::= ⟨Lista-Definiciones⟩ ⟨Start⟩ */
     public void program() throws LexicalException, SyntacticException {
         listaDefiniciones();
+        symbolTable.setCurrentClass(null);
+        symbolTable.setCurrentMethod(null);
         start();
         symbolTable.setStart(symbolTable.getCurrentMethod());
         matchTokenType(TokenType.EOF);
@@ -91,7 +99,7 @@ public class SemanticAnalyzer {
         Type type = new Type(TokenType.KW_VOID , "void");
         Method startMethod = new Method(auxToken, type, false);
         symbolTable.setCurrentMethod(startMethod);
-        bloqueMetodo();
+        bloqueMetodo(true);
     }
 
     /* ⟨Lista-Definiciones⟩ ::= ⟨class⟩ ⟨Lista-Definiciones⟩
@@ -283,7 +291,7 @@ public class SemanticAnalyzer {
         symbolTable.getCurrentClass().setConstructor(constructor);
         symbolTable.setCurrentMethod(constructor);
         argumentosFormales();
-        bloqueMetodo();
+        bloqueMetodo(false);
     }
 
     /*
@@ -349,7 +357,7 @@ public class SemanticAnalyzer {
             Method currentMethod = new Method(auxToken, type, isStatic);
             symbolTable.setCurrentMethod(currentMethod);
             argumentosFormales();
-            bloqueMetodo();
+            bloqueMetodo(false);
         }else if (checkType(TokenType.KW_VOID, TokenType.IDENTIFIER_CLASS,
                 TokenType.INT_CLASS, TokenType.BOOL_CLASS, TokenType.STR_CLASS, TokenType.ARRAY_CLASS)){
             type = tipoMetodo();
@@ -359,7 +367,7 @@ public class SemanticAnalyzer {
             currentMethod.setType(type);
             symbolTable.setCurrentMethod(currentMethod);
             argumentosFormales();
-            bloqueMetodo();
+            bloqueMetodo(false);
         }else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
@@ -372,11 +380,18 @@ public class SemanticAnalyzer {
     /*
         ⟨Bloque-Método⟩ ::= { ⟨Decl-Var-LocalesK⟩ ⟨SentenciaK⟩ }
     */
-    public void bloqueMetodo() throws LexicalException, SyntacticException {
+    public void bloqueMetodo(boolean isStart) throws LexicalException, SyntacticException {
         matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
         declVarLocalesK();
         LinkedList<SentenceNode> sentenceNodes = new LinkedList<>();
         sentenciaK(sentenceNodes);
+        BlockNode blockNode = new BlockNode(sentenceNodes, symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null,
+                symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start", true);
+        if (isStart){
+            ast.setStartBlockNode(blockNode);
+        } else {
+            ast.getBlockNodes().add(blockNode);
+        }
         matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
     }
 
@@ -669,15 +684,15 @@ public class SemanticAnalyzer {
             matchTokenType(TokenType.KW_FOR);
             matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
             Type type = tipoPrimitivo();
-            VariableNode variableNode1 = new VariableNode(currentToken,null,symbolTable.getCurrentClass().getName(),symbolTable.getCurrentMethod().getName());
+            VariableNode variableNode1 = new VariableNode(currentToken,null,symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null, symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start");
             matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
             matchTokenType(TokenType.KW_IN);
-            VariableNode variableNode2 = new VariableNode(currentToken,null,symbolTable.getCurrentClass().getName(),symbolTable.getCurrentMethod().getName());
+            VariableNode variableNode2 = new VariableNode(currentToken,null,symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null, symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start");
             matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
             matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
             sentenceNode = new ForNode(type, variableNode1, variableNode2, sentencia());
         } else if (checkType(TokenType.SPECIAL_SYMBOL_LCB)) {
-            bloque();
+            sentenceNode = bloque();
         } else if (checkType(TokenType.KW_IF)) {
             matchTokenType(TokenType.KW_IF);
             matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
@@ -744,11 +759,13 @@ public class SemanticAnalyzer {
     /*
         ⟨Bloque⟩ ::= { ⟨SentenciaK⟩ }
     */
-    public void bloque() throws LexicalException, SyntacticException {
+    public BlockNode bloque() throws LexicalException, SyntacticException {
         LinkedList<SentenceNode> sentenceNodes = new LinkedList<>();
         matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
         sentenciaK(sentenceNodes);
         matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
+        return new BlockNode(sentenceNodes, symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null,
+                symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start", false);
     }
 
     /*
@@ -856,8 +873,8 @@ public class SemanticAnalyzer {
         Token auxToken = currentToken;
         matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
         return new SimpleChainedNode(auxToken,null,
-                symbolTable.getCurrentClass().getName(),
-                symbolTable.getCurrentMethod().getName());
+                symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null,
+                symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start");
     }
 
     /*
@@ -1340,7 +1357,8 @@ public class SemanticAnalyzer {
                 TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR,
                 TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
                 TokenType.SPECIAL_SYMBOL_CM)) {
-            chainedNode = new VariableNode(token, null, symbolTable.getCurrentClass().getName(), symbolTable.getCurrentMethod().getName());
+            chainedNode = new VariableNode(token, null, symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null,
+                    symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start");;
         } else{
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
@@ -1426,7 +1444,7 @@ public class SemanticAnalyzer {
     public ChainedNode accesoVar(Token token) throws SyntacticException, LexicalException {
         ChainedNode chainedNode = null;
         if (checkType(TokenType.SPECIAL_SYMBOL_P)) {
-            chainedNode = new VariableNode(token, null, symbolTable.getCurrentClass().getName(), symbolTable.getCurrentMethod().getName());
+            chainedNode = new VariableNode(token, null, symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null, symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start");
             chainedNode.setChainedNode(encadenado());
         } else if (checkType(TokenType.SPECIAL_SYMBOL_LB)) {
             matchTokenType(TokenType.SPECIAL_SYMBOL_LB);
@@ -1440,7 +1458,7 @@ public class SemanticAnalyzer {
                 TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR,
                 TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
                 TokenType.SPECIAL_SYMBOL_CM)) {
-            chainedNode = new VariableNode(token, null, symbolTable.getCurrentClass().getName(), symbolTable.getCurrentMethod().getName());
+            chainedNode = new VariableNode(token, null, symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null, symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start");
         } else{
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
@@ -1515,11 +1533,12 @@ public class SemanticAnalyzer {
     ⟨Llamada-Método-Estático⟩ ::= idclass . id ⟨Llamada-Método⟩
     */
     public ChainedCallNode llamadaMetodoEstatico() throws LexicalException, SyntacticException {
+        Token idClass = currentToken;
         matchTokenType(TokenType.IDENTIFIER_CLASS);
         matchTokenType(TokenType.SPECIAL_SYMBOL_P);
         Token auxToken = currentToken;
         matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
-        return llamadaMetodo(auxToken);
+        return new ChainedCallNode(idClass,llamadaMetodo(auxToken),null);
     }
     
     /*

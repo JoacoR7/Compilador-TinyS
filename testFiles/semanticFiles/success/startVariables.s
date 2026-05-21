@@ -10,6 +10,11 @@ class Persona {
 
 impl Persona {
     .(){}
+    fn saludar(Str nombre) {
+        Str saludo;
+        saludo = "Hola " + nombre;
+        (IO.str_out(saludo));
+    }
 }
 
 start {
@@ -22,4 +27,5 @@ start {
     hijo.padre = padre;
     i1 = 1 + 2 * 3 + 3;
     hijo.padre.edad = i1;
+    (hijo.saludar("Tomi"));
 }

@@ -151,7 +151,7 @@ public class Method implements JsonSerializable {
 
         int variableSize = this.getVariables().size() - 1;
 
-        if (variableSize > 0){
+        if (variableSize >= 0){
             sb.append(indent).append("\t\"variables\": [\n");
             for (Variable variable : getVariables().values()) {
                 if (variableSize != variable.getPosition()) {

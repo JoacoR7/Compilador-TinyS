@@ -38,6 +38,39 @@ public class AssignmentNode extends SentenceNode {
 
     @Override
     public String toJson(String indent) {
-        return "";
+
+        StringBuilder sb = new StringBuilder();
+        String innerIndent = indent + "\t";
+
+        sb.append(indent).append("{\n");
+
+        sb.append(innerIndent)
+                .append("\"nodeType\": \"AssignmentNode\",\n");
+
+        sb.append(innerIndent)
+                .append("\"leftSide\": \n");
+
+        if (simpleAccessNode != null) {
+            sb.append(simpleAccessNode.toJson(innerIndent + "\t"));
+        } else {
+            sb.append(innerIndent).append("\tnull");
+        }
+
+        sb.append(",\n");
+
+        sb.append(innerIndent)
+                .append("\"rightSide\": \n");
+
+        if (expressionNode != null) {
+            sb.append(expressionNode.toJson(innerIndent + "\t"));
+        } else {
+            sb.append(innerIndent).append("\tnull");
+        }
+
+        sb.append("\n");
+
+        sb.append(indent).append("}");
+
+        return sb.toString();
     }
 }
