@@ -1,11 +1,7 @@
-class A {}
-
-impl A {
-    .(){}
-}
 class Persona {
     pub Int edad;
     pub Persona padre;
+    Mascota mascota;
 }
 
 impl Persona {
@@ -15,17 +11,29 @@ impl Persona {
         saludo = "Hola " + nombre;
         (IO.str_out(saludo));
     }
+
+    fn Mascota obtenerMascota() {
+        ret self.mascota;
+    }
+}
+
+class Mascota {
+    pub Int edad;
+}
+
+impl Mascota {
+    .() {}
 }
 
 start {
-    Int i1;
-    Persona padre;
     Persona hijo;
-    padre = new Persona();
+    Persona padre;
+    Mascota mascota;
+    Int edadMascota;
     hijo = new Persona();
-    hijo.padre.edad = 30;
-    hijo.padre = padre;
-    i1 = 1 + 2 * 3 + 3;
-    hijo.padre.edad = i1;
-    (hijo.saludar("Tomi"));
+    padre = new Persona();
+    mascota = new Mascota();
+    //edadMascota = hijo.padre.obtenerMascota().edad;
+    edadMascota = hijo.padre.edad;
+    hijo = padre;
 }

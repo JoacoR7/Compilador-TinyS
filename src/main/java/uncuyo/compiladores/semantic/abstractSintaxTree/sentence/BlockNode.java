@@ -49,7 +49,9 @@ public class BlockNode extends SentenceNode{
 
     @Override
     public void check() {
-
+        for (SentenceNode sentence : sentences) {
+            sentence.check();
+        }
     }
 
     @Override

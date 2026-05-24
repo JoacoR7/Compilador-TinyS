@@ -27,6 +27,7 @@ public class LiteralNode extends OperandNode{
 
     @Override
     public Type check() {
+
         List<TokenType> literalTokenTypes = List.of(TokenType.KW_NIL, TokenType.BOOLEAN_CONSTANT,
                 TokenType.INT_CONSTANT, TokenType.STRING_CONSTANT);
 

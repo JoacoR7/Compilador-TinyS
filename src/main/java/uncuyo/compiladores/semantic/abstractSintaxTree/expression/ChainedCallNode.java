@@ -66,7 +66,7 @@ public class ChainedCallNode extends ChainedNode{
             sb.append(innerIndent).append("]");
         } else {
             sb.append(innerIndent)
-                    .append("\"arguments\": []\n");
+                    .append("\"arguments\": []");
         }
 
         if (getChainedNode() != null) {

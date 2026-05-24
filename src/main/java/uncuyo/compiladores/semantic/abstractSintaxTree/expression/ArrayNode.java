@@ -5,10 +5,14 @@ import uncuyo.compiladores.semantic.symbolTable.Type;
 
 public class ArrayNode extends ChainedNode{
     private ExpressionNode expression;
+    private String className;
+    private String methodName;
 
-    public ArrayNode(Token token, ChainedNode chainedNode, ExpressionNode expression) {
+    public ArrayNode(Token token, ChainedNode chainedNode, ExpressionNode expression, String className, String methodName) {
         super(token, chainedNode);
         this.expression = expression;
+        this.className = className;
+        this.methodName = methodName;
     }
 
     public ExpressionNode getExpression() {
@@ -17,6 +21,22 @@ public class ArrayNode extends ChainedNode{
 
     public void setExpression(ExpressionNode expression) {
         this.expression = expression;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
     }
 
     @Override

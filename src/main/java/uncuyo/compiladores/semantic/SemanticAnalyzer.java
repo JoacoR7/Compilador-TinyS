@@ -84,6 +84,8 @@ public class SemanticAnalyzer {
         symbolTable.setStart(symbolTable.getCurrentMethod());
         matchTokenType(TokenType.EOF);
         symbolTable.consolidate();
+        AST.setSymbolTable(symbolTable);
+        ast.consolidate();
     }
 
     /*
@@ -696,13 +698,12 @@ public class SemanticAnalyzer {
         } else if (checkType(TokenType.KW_IF)) {
             matchTokenType(TokenType.KW_IF);
             matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
-            expresion();
+            ExpressionNode expressionNode = expresion();
             matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
-            sentencia();
-            sentenciaF1();
+            sentenceNode = new IfElseNode(expressionNode, sentencia(), sentenciaF1());
         } else if (checkType(TokenType.KW_RET)) {
             matchTokenType(TokenType.KW_RET);
-            sentenciaF2();
+            sentenceNode = sentenciaF2();
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
@@ -716,11 +717,11 @@ public class SemanticAnalyzer {
 	⟨SentenciaF1⟩ ::= else ⟨Sentencia⟩
 		| λ
     */
-    public void sentenciaF1() throws LexicalException, SyntacticException {
-        // DUDA: AMBIGUEDAD? CON ELSE PODEMOS IR A 2 CAMINOS DISTINTOS
+    public SentenceNode sentenciaF1() throws LexicalException, SyntacticException {
+        SentenceNode sentenceNode = null;
         if (checkType(TokenType.KW_ELSE)) {
             matchTokenType(TokenType.KW_ELSE);
-            sentencia();
+            sentenceNode = sentencia();
         } else if (checkType(TokenType.SPECIAL_SYMBOL_S, TokenType.KW_WHILE, TokenType.KW_FOR,
                 TokenType.KW_IF, TokenType.KW_RET, TokenType.SPECIAL_SYMBOL_PO, TokenType.SPECIAL_SYMBOL_LCB,
                 TokenType.IDENTIFIER_VAR_METHOD, TokenType.KW_SELF, TokenType.SPECIAL_SYMBOL_RCB)) {
@@ -732,20 +733,22 @@ public class SemanticAnalyzer {
                             currentToken.getLexeme() + "'"
             );
         }
+        return sentenceNode;
     }
 
     /*
 	⟨SentenciaF2⟩ ::= ;
 		| ⟨Expresión⟩;
     */
-    public void sentenciaF2() throws LexicalException, SyntacticException {
+    public ReturnNode sentenciaF2() throws LexicalException, SyntacticException {
+        ReturnNode returnNode = new ReturnNode(null);
         if(checkType(TokenType.SPECIAL_SYMBOL_S)) {
             matchTokenType(TokenType.SPECIAL_SYMBOL_S);
         } else if (checkType(TokenType.OPERATOR_ADD, TokenType.OPERATOR_SUB, TokenType.OPERATOR_NOT,
             TokenType.OPERATOR_INC, TokenType.OPERATOR_DEC, TokenType.KW_NIL, TokenType.BOOLEAN_CONSTANT,
                     TokenType.INT_CONSTANT, TokenType.STRING_CONSTANT, TokenType.SPECIAL_SYMBOL_PO,
                     TokenType.KW_SELF, TokenType.IDENTIFIER_CLASS, TokenType.KW_NEW, TokenType.IDENTIFIER_VAR_METHOD)) {
-            expresion();
+            returnNode.setExpression(expresion());
             matchTokenType(TokenType.SPECIAL_SYMBOL_S);
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
@@ -755,6 +758,7 @@ public class SemanticAnalyzer {
                             currentToken.getLexeme() + "'"
             );
         }
+        return returnNode;
     }
     /*
         ⟨Bloque⟩ ::= { ⟨SentenciaK⟩ }
@@ -1449,7 +1453,7 @@ public class SemanticAnalyzer {
         } else if (checkType(TokenType.SPECIAL_SYMBOL_LB)) {
             matchTokenType(TokenType.SPECIAL_SYMBOL_LB);
             ExpressionNode expressionNode = expresion();
-            chainedNode = new ArrayNode(token, null, expressionNode);
+            chainedNode = new ArrayNode(token, null, expressionNode, symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null, symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start");
             matchTokenType(TokenType.SPECIAL_SYMBOL_RB);
             chainedNode.setChainedNode(accesoVarF());
         } else if (checkType(TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV, TokenType.OPERATOR_ADD,
@@ -1690,6 +1694,7 @@ public class SemanticAnalyzer {
                 TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR, TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S,
                 TokenType.SPECIAL_SYMBOL_RB, TokenType.SPECIAL_SYMBOL_CM, TokenType.SPECIAL_SYMBOL_P)) {
             // Siguientes de encadenadoF, cierro
+            chainedNode = new VariableNode(token, null, symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null, symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start");
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),

@@ -3,6 +3,7 @@ package uncuyo.compiladores.semantic.abstractSintaxTree;
 import uncuyo.compiladores.semantic.JsonSerializable;
 import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.BlockNode;
 import uncuyo.compiladores.semantic.symbolTable.Method;
+import uncuyo.compiladores.semantic.symbolTable.SymbolTable;
 
 import java.util.LinkedList;
 
@@ -11,6 +12,7 @@ public class AST implements JsonSerializable {
     private Method currentMethod;
     private LinkedList<BlockNode> blockNodes = new LinkedList<>();
     private BlockNode startBlockNode;
+    private static SymbolTable symbolTable;
 
     public AST() {
     }
@@ -46,6 +48,22 @@ public class AST implements JsonSerializable {
     public void setStartBlockNode(BlockNode startBlockNode) {
         this.startBlockNode = startBlockNode;
     }
+
+    public static SymbolTable getSymbolTable() {
+        return symbolTable;
+    }
+
+    public static void setSymbolTable(SymbolTable symbolTable) {
+        AST.symbolTable = symbolTable;
+    }
+
+    public void consolidate() {
+        for (BlockNode blockNode : blockNodes) {
+            blockNode.check();
+        }
+        startBlockNode.check();
+    }
+
 
     @Override
     public String toJson(String indent) {

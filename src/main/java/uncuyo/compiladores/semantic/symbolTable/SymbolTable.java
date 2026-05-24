@@ -1,10 +1,7 @@
 package uncuyo.compiladores.semantic.symbolTable;
 
-import uncuyo.compiladores.exceptions.semantic.symbolTableException.CircularInheritanceException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.*;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.ClassNotFoundException;
-import uncuyo.compiladores.exceptions.semantic.symbolTableException.ConstructorNotFoundException;
-import uncuyo.compiladores.exceptions.semantic.symbolTableException.ImplNotFoundException;
-import uncuyo.compiladores.exceptions.semantic.symbolTableException.ParentClassNotFoundException;
 import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.lexer.TokenType;
 import uncuyo.compiladores.semantic.JsonSerializable;
@@ -278,6 +275,5 @@ public class SymbolTable implements JsonSerializable {
 
         predefinedClass.insertMethod(method);
     }
-
 
 }

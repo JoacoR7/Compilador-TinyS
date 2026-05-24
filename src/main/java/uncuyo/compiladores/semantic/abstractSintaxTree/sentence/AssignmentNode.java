@@ -4,6 +4,7 @@ import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ExpressionNode
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.OperandNode;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleAccessNode;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleChainedNode;
+import uncuyo.compiladores.semantic.symbolTable.Type;
 
 public class AssignmentNode extends SentenceNode {
 
@@ -33,7 +34,11 @@ public class AssignmentNode extends SentenceNode {
 
     @Override
     public void check() {
-
+        Type leftNodeType = simpleAccessNode.check();
+        Type rightNodeType = expressionNode.check();
+        if(leftNodeType != rightNodeType) {
+            System.out.println("Error");
+        }
     }
 
     @Override

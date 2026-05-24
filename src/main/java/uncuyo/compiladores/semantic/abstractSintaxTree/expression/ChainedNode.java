@@ -5,6 +5,7 @@ import uncuyo.compiladores.lexer.Token;
 public abstract class ChainedNode extends OperandNode {
     private Token token;
     private ChainedNode chainedNode;
+    private boolean isChainedNode;
 
     public ChainedNode(Token token, ChainedNode chainedNode) {
         this.token = token;
@@ -27,6 +28,13 @@ public abstract class ChainedNode extends OperandNode {
         this.chainedNode = chainedNode;
     }
 
+    public boolean isChainedNode() {
+        return isChainedNode;
+    }
+
+    public void setIsChainedNode(boolean chainedNode) {
+        isChainedNode = chainedNode;
+    }
 
     @Override
     public String toJson(String indent) {
