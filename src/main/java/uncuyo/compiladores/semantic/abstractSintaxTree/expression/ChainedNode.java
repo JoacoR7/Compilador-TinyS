@@ -1,6 +1,7 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree.expression;
 
 import uncuyo.compiladores.lexer.Token;
+import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 
 public abstract class ChainedNode extends OperandNode {
     private Token token;
@@ -36,8 +37,4 @@ public abstract class ChainedNode extends OperandNode {
         isChainedNode = chainedNode;
     }
 
-    @Override
-    public String toJson(String indent) {
-        return "";
-    }
 }

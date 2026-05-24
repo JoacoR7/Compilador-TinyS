@@ -1,5 +1,6 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree.sentence;
 
+import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.VariableNode;
 import uncuyo.compiladores.semantic.symbolTable.Type;
 
@@ -48,13 +49,14 @@ public class ForNode extends SentenceNode {
         this.sentenceNode = sentenceNode;
     }
 
-    @Override
-    public void check() {
-
-    }
 
     @Override
     public String toJson(String indent) {
         return "";
+    }
+
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

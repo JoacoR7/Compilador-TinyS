@@ -1,5 +1,6 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree.sentence;
 
+import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ExpressionNode;
 
 public class ReturnNode extends SentenceNode {
@@ -17,10 +18,6 @@ public class ReturnNode extends SentenceNode {
         this.expression = expression;
     }
 
-    @Override
-    public void check() {
-
-    }
 
     @Override
     public String toJson(String indent) {
@@ -50,5 +47,10 @@ public class ReturnNode extends SentenceNode {
         sb.append(indent).append("}");
 
         return sb.toString();
+    }
+
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

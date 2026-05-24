@@ -58,10 +58,11 @@ public class AST implements JsonSerializable {
     }
 
     public void consolidate() {
+        TypeVisitor typeVisitor = new TypeVisitor();
         for (BlockNode blockNode : blockNodes) {
-            blockNode.check();
+            typeVisitor.visit(blockNode);
         }
-        startBlockNode.check();
+        typeVisitor.visit(startBlockNode);
     }
 
 

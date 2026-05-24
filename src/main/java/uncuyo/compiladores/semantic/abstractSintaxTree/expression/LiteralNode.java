@@ -3,6 +3,7 @@ package uncuyo.compiladores.semantic.abstractSintaxTree.expression;
 import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.InvalidLiteralNodeException;
 import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.lexer.TokenType;
+import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.symbolTable.Type;
 
 import java.util.List;
@@ -26,17 +27,8 @@ public class LiteralNode extends OperandNode{
     }
 
     @Override
-    public Type check() {
-
-        List<TokenType> literalTokenTypes = List.of(TokenType.KW_NIL, TokenType.BOOLEAN_CONSTANT,
-                TokenType.INT_CONSTANT, TokenType.STRING_CONSTANT);
-
-        if(!literalTokenTypes.contains(this.getType().getTokenType())) {
-            throw new InvalidLiteralNodeException(this.token.getRowIndex(), this.token.getColumnIndex(),
-                    "Se esperaba 'nil', constante entera, booleana o string");
-        }
-
-        return this.getType();
+    public <T> T accept(Visitor<T> visitor) {
+        return visitor.visit(this);
     }
 
     @Override
@@ -64,4 +56,5 @@ public class LiteralNode extends OperandNode{
 
         return sb.toString();
     }
+
 }

@@ -1,6 +1,7 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree.expression;
 
 import uncuyo.compiladores.lexer.Token;
+import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.symbolTable.Type;
 
 import java.util.LinkedList;
@@ -22,9 +23,10 @@ public class ChainedCallNode extends ChainedNode{
         this.expressionNodes = expressionNodes;
     }
 
+
     @Override
-    public Type check() {
-        return null;
+    public <T> T accept(Visitor<T> visitor) {
+        return visitor.visit(this);
     }
 
     @Override

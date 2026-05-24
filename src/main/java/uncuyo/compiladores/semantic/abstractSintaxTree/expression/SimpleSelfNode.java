@@ -1,6 +1,7 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree.expression;
 
 import uncuyo.compiladores.lexer.Token;
+import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.symbolTable.Type;
 
 public class SimpleSelfNode extends SimpleAccessNode {
@@ -19,9 +20,10 @@ public class SimpleSelfNode extends SimpleAccessNode {
         this.simpleChainedNode = simpleChainedNode;
     }
 
+
     @Override
-    public Type check() {
-        return null;
+    public <T> T accept(Visitor<T> visitor) {
+        return visitor.visit(this);
     }
 
     @Override

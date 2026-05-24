@@ -1,5 +1,7 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree.sentence;
 
+import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
+
 import java.util.LinkedList;
 
 public class BlockNode extends SentenceNode{
@@ -45,13 +47,6 @@ public class BlockNode extends SentenceNode{
 
     public void setMethod(boolean method) {
         isMethod = method;
-    }
-
-    @Override
-    public void check() {
-        for (SentenceNode sentence : sentences) {
-            sentence.check();
-        }
     }
 
     @Override
@@ -106,5 +101,10 @@ public class BlockNode extends SentenceNode{
         sb.append(indent).append("}");
 
         return sb.toString();
+    }
+
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

@@ -1,3 +1,4 @@
+/*
 class Persona {
     pub Int edad;
     pub Persona padre;
@@ -24,16 +25,22 @@ class Mascota {
 impl Mascota {
     .() {}
 }
-
+*/
 start {
+    /*
     Persona hijo;
     Persona padre;
     Mascota mascota;
-    Int edadMascota;
+    */
+    Int edadMascota , edadAux;
+    edadAux = 10;
+    /*
     hijo = new Persona();
     padre = new Persona();
     mascota = new Mascota();
     //edadMascota = hijo.padre.obtenerMascota().edad;
     edadMascota = hijo.padre.edad;
     hijo = padre;
+    */
+    edadMascota = edadAux + 5;
 }

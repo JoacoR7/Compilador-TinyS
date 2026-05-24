@@ -1,5 +1,6 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree.sentence;
 
+import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ExpressionNode;
 
 public class IfElseNode extends SentenceNode {
@@ -37,13 +38,14 @@ public class IfElseNode extends SentenceNode {
         this.sentenceNodeElse = sentenceNodeElse;
     }
 
-    @Override
-    public void check() {
-        
-    }
 
     @Override
     public String toJson(String indent) {
         return "";
+    }
+
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
+        return visitor.visit(this);
     }
 }
