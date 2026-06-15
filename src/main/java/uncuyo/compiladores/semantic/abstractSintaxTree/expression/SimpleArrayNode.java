@@ -8,20 +8,11 @@ import java.beans.Expression;
 
 public class SimpleArrayNode extends SimpleAccessNode{
 
-    private Token token;
     private ExpressionNode expressionNode;
 
     public SimpleArrayNode(Token token, ExpressionNode expressionNode) {
-        this.token = token;
+        super(token);
         this.expressionNode = expressionNode;
-    }
-
-    public Token getToken() {
-        return token;
-    }
-
-    public void setToken(Token token) {
-        this.token = token;
     }
 
     public ExpressionNode getExpressionNode() {

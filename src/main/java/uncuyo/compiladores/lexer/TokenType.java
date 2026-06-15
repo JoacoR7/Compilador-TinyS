@@ -114,5 +114,15 @@ public enum TokenType {
     /** Undefined token **/
     UNDEFINED,
     /** EOF token**/
-    EOF
+    EOF;
+
+    @Override
+    public String toString() {
+        return switch (this) {
+            case INT_CONSTANT -> "Int";
+            case STRING_CONSTANT -> "Str";
+            case BOOLEAN_CONSTANT -> "Bool";
+            default -> name();
+        };
+    }
 }

@@ -6,20 +6,12 @@ import uncuyo.compiladores.semantic.symbolTable.Type;
 
 public class SimpleVariableNode extends SimpleAccessNode {
 
-    private Token token;
     private SimpleChainedNode simpleChainedNode;
 
-    public SimpleVariableNode(Token token, SimpleChainedNode simpleChainedNode) {
-        this.token = token;
+    public SimpleVariableNode(Token token, Type type, SimpleChainedNode simpleChainedNode) {
+        super(token);
+        this.setType(type);
         this.simpleChainedNode = simpleChainedNode;
-    }
-
-    public Token getToken() {
-        return token;
-    }
-
-    public void setToken(Token token) {
-        this.token = token;
     }
 
     public SimpleChainedNode getSimpleChainedNode() {
@@ -49,7 +41,7 @@ public class SimpleVariableNode extends SimpleAccessNode {
 
         sb.append(innerIndent)
                 .append("\"name\": \"")
-                .append(token.getLexeme())
+                .append(this.getToken().getLexeme())
                 .append("\"");
 
         if (simpleChainedNode != null) {

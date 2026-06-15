@@ -128,12 +128,30 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(SimpleVariableNode simpleVariableNode) {
-
-        return null;
+        // persona.mascota.nombre
+        // persona
+        if (simpleVariableNode.getSimpleChainedNode() == null) {
+            return simpleVariableNode.getType();
+        } else {
+            return simpleVariableNode.getSimpleChainedNode().accept(this);
+        }
     }
 
     public Type visit(UnaryExpressionNode unaryExpressionNode) {
-        return null;
+        List<TokenType> intOperators = List.of(TokenType.OPERATOR_SUB, TokenType.OPERATOR_ADD, TokenType.OPERATOR_INC, TokenType.OPERATOR_DEC);
+        if(intOperators.contains(unaryExpressionNode.getUnaryOperatorToken().getTokenType())){
+            if (unaryExpressionNode.getExpressionNode().getType().getTokenType() != TokenType.INT_CLASS &&
+                    unaryExpressionNode.getExpressionNode().getType().getTokenType() != TokenType.INT_CONSTANT){
+                throw new TypeMismatchException(unaryExpressionNode.getUnaryOperatorToken().getRowIndex(), unaryExpressionNode.getUnaryOperatorToken().getColumnIndex(), "Int", TokenDefinitions.getLexeme(unaryExpressionNode.getExpressionNode().getType().getTokenType()));
+            }
+        } else if (unaryExpressionNode.getUnaryOperatorToken().getTokenType() == TokenType.OPERATOR_NOT) {
+            if (unaryExpressionNode.getExpressionNode().getType().getTokenType() != TokenType.BOOLEAN_CONSTANT &&
+                    unaryExpressionNode.getExpressionNode().getType().getTokenType() != TokenType.BOOL_CLASS) {
+                throw new TypeMismatchException(unaryExpressionNode.getUnaryOperatorToken().getRowIndex(), unaryExpressionNode.getUnaryOperatorToken().getColumnIndex(),
+                        "Bool", TokenDefinitions.getLexeme(unaryExpressionNode.getExpressionNode().getType().getTokenType()));
+            }
+        }
+        return unaryExpressionNode.getExpressionNode().getType();
     }
 
     public Type visit(VariableNode variableNode){
@@ -186,6 +204,7 @@ public class TypeVisitor implements Visitor<Type> {
             }
             type = chainedNode.accept(this);
         }
+        variableNode.setType(type);
         return type;
     }
 
@@ -200,10 +219,12 @@ public class TypeVisitor implements Visitor<Type> {
         Type rightNodeType = assignmentNode.getExpressionNode().accept(this);
         assignmentNode.getExpressionNode().setType(rightNodeType);
 
-        if(leftNodeType != rightNodeType) {
-            System.out.println("Error");
+        if(!Type.areCompatible(leftNodeType, rightNodeType)) {
+            Token token = assignmentNode.getSimpleAccessNode().getToken();
+            throw new TypeMismatchException(token.getRowIndex(),token.getColumnIndex(),
+                    leftNodeType.getLexeme(), rightNodeType.getTokenType().toString());
         }
-        return null;
+        return leftNodeType;
     }
 
     public Type visit(BlockNode blockNode) {

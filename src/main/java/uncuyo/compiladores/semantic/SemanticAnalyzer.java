@@ -818,7 +818,7 @@ public class SemanticAnalyzer {
     public SimpleAccessNode accesoVarSimpleF(Token token) throws LexicalException, SyntacticException {
         SimpleAccessNode simpleAccessNode = null;
         if(checkType(TokenType.SPECIAL_SYMBOL_P)) {
-            simpleAccessNode = new SimpleVariableNode(token, null);
+            simpleAccessNode = new SimpleVariableNode(token, this.getSymbolTable().getCurrentMethod().getVariables().get(token.getLexeme()).getType(), null);
             SimpleVariableNode simpleVariableNode = (SimpleVariableNode) simpleAccessNode;
             simpleVariableNode.setSimpleChainedNode(encadenadoSimpleK());
         } else if (checkType(TokenType.SPECIAL_SYMBOL_LB)) {
@@ -828,7 +828,7 @@ public class SemanticAnalyzer {
         } else if (checkType(TokenType.OPERATOR_ASSIGN)) {
             // Primeros(⟨Encadenado-SimpleK⟩) contiene λ, por lo tanto checkeo siguientes
             // Siguientes de accesoVarSimpleF, cierro
-            simpleAccessNode = new SimpleVariableNode(token, null);
+            simpleAccessNode = new SimpleVariableNode(token, this.getSymbolTable().getCurrentMethod().getVariables().get(token.getLexeme()).getType(), null);
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
@@ -845,7 +845,7 @@ public class SemanticAnalyzer {
     public SimpleSelfNode accesoSelfSimple() throws LexicalException, SyntacticException {
         Token auxToken = currentToken;
         matchTokenType(TokenType.KW_SELF);
-        return new SimpleSelfNode(encadenadoSimpleK());
+        return new SimpleSelfNode(auxToken, encadenadoSimpleK());
     }
 
     /*
@@ -896,7 +896,6 @@ public class SemanticAnalyzer {
     */
     public ExpressionNode expresion() throws LexicalException, SyntacticException {
         ExpressionNode expressionNode = expOr();
-        System.out.println(expressionNode.toJson(""));
         return expressionNode;
 
     }

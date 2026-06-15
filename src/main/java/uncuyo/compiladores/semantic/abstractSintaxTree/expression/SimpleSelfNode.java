@@ -8,7 +8,8 @@ public class SimpleSelfNode extends SimpleAccessNode {
 
     private SimpleChainedNode simpleChainedNode;
 
-    public SimpleSelfNode(SimpleChainedNode simpleChainedNode) {
+    public SimpleSelfNode(Token token, SimpleChainedNode simpleChainedNode) {
+        super(token);
         this.simpleChainedNode = simpleChainedNode;
     }
 
