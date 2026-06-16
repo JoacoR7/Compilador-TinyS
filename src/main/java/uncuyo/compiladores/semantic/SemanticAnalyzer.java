@@ -1360,8 +1360,8 @@ public class SemanticAnalyzer {
                 TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR,
                 TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
                 TokenType.SPECIAL_SYMBOL_CM)) {
-            chainedNode = new VariableNode(token, null, symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null,
-                    symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start");;
+            chainedNode = new VariableNode(token, symbolTable.getCurrentMethod().getVariables().get(token.getLexeme()).getType(), null, symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null,
+                    symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start");
         } else{
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),

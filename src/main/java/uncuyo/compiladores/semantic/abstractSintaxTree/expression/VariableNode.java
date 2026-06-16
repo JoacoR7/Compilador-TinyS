@@ -22,6 +22,13 @@ public class VariableNode extends ChainedNode{
         this.methodName = methodName;
     }
 
+    public VariableNode(Token token, Type type, ChainedNode chainedNode, String className, String methodName) {
+        super(token, chainedNode);
+        this.setType(type);
+        this.className = className;
+        this.methodName = methodName;
+    }
+
 
     public String getMethodName() {
         return methodName;
