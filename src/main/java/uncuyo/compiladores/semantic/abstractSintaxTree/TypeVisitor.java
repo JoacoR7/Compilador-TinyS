@@ -11,8 +11,10 @@ import uncuyo.compiladores.lexer.TokenDefinitions;
 import uncuyo.compiladores.lexer.TokenType;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.*;
 import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.*;
+import uncuyo.compiladores.semantic.symbolTable.Class;
 import uncuyo.compiladores.semantic.symbolTable.SymbolTable;
 import uncuyo.compiladores.semantic.symbolTable.Type;
+import uncuyo.compiladores.semantic.symbolTable.Variable;
 
 import java.util.List;
 
@@ -80,7 +82,7 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(ClassConstructorNode classConstructorNode) {
-        return null;
+        return classConstructorNode.getType();
     }
 
     public Type visit(ConclassorCallNode conclassorCallNode) {
@@ -124,15 +126,22 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(SimpleSelfNode simpleSelfNode) {
-        return null;
+        if (simpleSelfNode.getSimpleChainedNode() == null) {
+            return null;
+        } else {
+            System.out.println("Hola");
+            return simpleSelfNode.getSimpleChainedNode().accept(this);
+        }
     }
 
     public Type visit(SimpleVariableNode simpleVariableNode) {
-        // persona.mascota.nombre
+        // hijo.getPadre().getMascota().edad
         // persona
         if (simpleVariableNode.getSimpleChainedNode() == null) {
             return simpleVariableNode.getType();
         } else {
+            Class currentClass = symbolTable.getClasses().get(simpleVariableNode.getType().getLexeme());
+
             return simpleVariableNode.getSimpleChainedNode().accept(this);
         }
     }

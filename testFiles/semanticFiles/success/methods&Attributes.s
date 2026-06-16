@@ -8,7 +8,8 @@ impl A {
 impl A {
     fn m4(Str s1, Bool b1){
         Int i5;
-        i1 = 1;
+        i5 = 1;
+        self.i1 = 2;
     }
 }
 

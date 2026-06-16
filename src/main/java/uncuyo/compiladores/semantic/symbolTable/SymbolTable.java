@@ -7,6 +7,7 @@ import uncuyo.compiladores.lexer.TokenType;
 import uncuyo.compiladores.semantic.JsonSerializable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SymbolTable implements JsonSerializable {
 
@@ -125,6 +126,28 @@ public class SymbolTable implements JsonSerializable {
         }
     }
 
+    public void checkStart(){
+        LinkedHashMap<String, Class> classList = this.getClasses()
+                .entrySet()
+                .stream()
+                .filter(entry -> !entry.getKey().equals("Object"))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+        for (Variable variable : this.getStart().getVariables().values()) {
+            if (!classList.containsKey(variable.getType().getLexeme())) {
+                if (variable.getType().getLexeme().equals("Object")) {
+                    throw new ObjectDeclarationException(variable.getToken());
+                } else {
+                    throw new ClassNotFoundException(variable.getType().getLexeme());
+                }
+            }
+        }
+    }
+
     public void checkCircularInheritance(Class currentClass) {
         validateInheritanceChain(currentClass, new HashSet<>());
     }
@@ -152,6 +175,7 @@ public class SymbolTable implements JsonSerializable {
     public void consolidate() {
         init();
         checkClasses();
+        checkStart();
     }
 
     @Override

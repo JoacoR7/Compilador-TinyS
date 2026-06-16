@@ -4,6 +4,8 @@ import uncuyo.compiladores.exceptions.lexical.LexerFileReadException;
 import uncuyo.compiladores.exceptions.lexical.LexicalException;
 import uncuyo.compiladores.exceptions.semantic.SemanticException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.ConstructorRedefinitionException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.LocalVariableNotFoundException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.VariableNotFoundException;
 import uncuyo.compiladores.exceptions.syntactic.MethodOutsideImplException;
 import uncuyo.compiladores.exceptions.syntactic.SyntacticException;
 import uncuyo.compiladores.lexer.Lexer;
@@ -828,7 +830,13 @@ public class SemanticAnalyzer {
         } else if (checkType(TokenType.OPERATOR_ASSIGN)) {
             // Primeros(⟨Encadenado-SimpleK⟩) contiene λ, por lo tanto checkeo siguientes
             // Siguientes de accesoVarSimpleF, cierro
-            simpleAccessNode = new SimpleVariableNode(token, this.getSymbolTable().getCurrentMethod().getVariables().get(token.getLexeme()).getType(), null);
+            Variable variable = this.getSymbolTable().getCurrentMethod().getVariables().get(token.getLexeme());
+
+            if (variable == null){
+                throw new LocalVariableNotFoundException(token.getRowIndex(), token.getColumnIndex(), token.getLexeme(), symbolTable.getCurrentMethod().getName());
+            }
+
+            simpleAccessNode = new SimpleVariableNode(token, variable.getType(), null);
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
@@ -1360,7 +1368,17 @@ public class SemanticAnalyzer {
                 TokenType.OPERATOR_NEQ, TokenType.OPERATOR_AND, TokenType.OPERATOR_OR,
                 TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
                 TokenType.SPECIAL_SYMBOL_CM)) {
-            chainedNode = new VariableNode(token, symbolTable.getCurrentMethod().getVariables().get(token.getLexeme()).getType(), null, symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null,
+
+            Variable variable = this.getSymbolTable().getCurrentMethod().getVariables().get(token.getLexeme());
+            Parameter parameter = this.getSymbolTable().getCurrentMethod().getParameters().get(token.getLexeme());
+
+            if (variable == null && parameter == null){
+                throw new LocalVariableNotFoundException(token.getRowIndex(), token.getColumnIndex(), token.getLexeme(), symbolTable.getCurrentMethod().getName());
+            }
+
+            Type type = variable != null ? variable.getType() : parameter.getType();
+
+            chainedNode = new VariableNode(token, type, null, symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null,
                     symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start");
         } else{
             throw new SyntacticException(currentToken.getRowIndex(),
