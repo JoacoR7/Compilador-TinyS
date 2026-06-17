@@ -16,6 +16,13 @@ impl Persona {
     fn Mascota obtenerMascota() {
         ret self.mascota;
     }
+
+    /*
+    fn nuevoSaludo(Str nombre) {
+        Str nombre;
+        (IO.str_out(nombre));
+    }
+    */
 }
 
 class Mascota {
