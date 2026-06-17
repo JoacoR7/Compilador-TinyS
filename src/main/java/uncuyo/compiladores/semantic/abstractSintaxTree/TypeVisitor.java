@@ -120,14 +120,38 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(SimpleChainedNode simpleChainedNode) {
-        return null;
+
+        if (simpleChainedNode.getClassName() == null){
+            return null;
+        }
+
+        Class currentClass = symbolTable.getClasses().get(simpleChainedNode.getClassName());
+        if (currentClass == null){
+            return null;
+        }
+
+        String attributeName = simpleChainedNode.getToken().getLexeme();
+
+        if (!currentClass.getAttributes().containsKey(attributeName)) {
+            throw new AttributeNotFoundException(attributeName, currentClass.getName());
+        }
+
+        Type attributeType = currentClass.getAttributes().get(attributeName).getType();
+        simpleChainedNode.setType(attributeType);
+
+        if (simpleChainedNode.getSimpleChainedNode() != null) {
+            simpleChainedNode.getSimpleChainedNode().setClassName(attributeType.getLexeme());
+            return simpleChainedNode.getSimpleChainedNode().accept(this);
+        }
+
+        return attributeType;
+
     }
 
     public Type visit(SimpleSelfNode simpleSelfNode) {
         if (simpleSelfNode.getSimpleChainedNode() == null) {
             return null;
         } else {
-            System.out.println("Hola");
             return simpleSelfNode.getSimpleChainedNode().accept(this);
         }
     }

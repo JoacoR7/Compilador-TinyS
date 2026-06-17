@@ -1,18 +1,25 @@
 class Persona {
     pub Int edad;
+    pub Str nombre;
     pub Persona padre;
     pub Mascota mascota;
 }
 
 impl Persona {
+
     .(){}
+    /*
+    .(Str nombre){
+        self.nombre = "Victor";
+    }
+
     fn saludar(Str nombre) {
         Str saludo;
         Auto auto;
         saludo = "Hola " + nombre;
         (IO.str_out(saludo));
     }
-
+    */
     fn Mascota obtenerMascota() {
         ret self.mascota;
     }
@@ -23,6 +30,11 @@ impl Persona {
         (IO.str_out(nombre));
     }
     */
+
+    fn mascotaPadre(){
+        self.padre.mascota.edad = 10;
+    }
+
 }
 
 class Mascota {
@@ -45,7 +57,7 @@ start {
     hijo = new Persona();
     padre = new Persona();
     mascota = new Mascota();
-    hijo.padre.mascota.edad = 10;
+    //hijo.padre.mascota.edad = 10;
     /*
     edadMascota = hijo.padre.obtenerMascota().edad;
     edadMascota = hijo.padre.edad;
