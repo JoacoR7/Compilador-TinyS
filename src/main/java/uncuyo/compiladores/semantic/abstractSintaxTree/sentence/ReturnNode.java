@@ -1,12 +1,16 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree.sentence;
 
+import uncuyo.compiladores.lexer.Token;
+import uncuyo.compiladores.lexer.TokenType;
 import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ExpressionNode;
 
 public class ReturnNode extends SentenceNode {
+    private Token token;
     private ExpressionNode expression;
 
-    public ReturnNode(ExpressionNode expression) {
+    public ReturnNode(Token token, ExpressionNode expression) {
+        this.token = token;
         this.expression = expression;
     }
 
@@ -18,6 +22,13 @@ public class ReturnNode extends SentenceNode {
         this.expression = expression;
     }
 
+    public Token getToken() {
+        return token;
+    }
+
+    public void setToken(Token token) {
+        this.token = token;
+    }
 
     @Override
     public String toJson(String indent) {

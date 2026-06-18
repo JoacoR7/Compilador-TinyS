@@ -704,8 +704,9 @@ public class SemanticAnalyzer {
             matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
             sentenceNode = new IfElseNode(expressionNode, sentencia(), sentenciaF1());
         } else if (checkType(TokenType.KW_RET)) {
+            Token auxToken = currentToken;
             matchTokenType(TokenType.KW_RET);
-            sentenceNode = sentenciaF2();
+            sentenceNode = sentenciaF2(auxToken);
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
@@ -742,8 +743,8 @@ public class SemanticAnalyzer {
 	⟨SentenciaF2⟩ ::= ;
 		| ⟨Expresión⟩;
     */
-    public ReturnNode sentenciaF2() throws LexicalException, SyntacticException {
-        ReturnNode returnNode = new ReturnNode(null);
+    public ReturnNode sentenciaF2(Token token) throws LexicalException, SyntacticException {
+        ReturnNode returnNode = new ReturnNode(token,null);
         if(checkType(TokenType.SPECIAL_SYMBOL_S)) {
             matchTokenType(TokenType.SPECIAL_SYMBOL_S);
         } else if (checkType(TokenType.OPERATOR_ADD, TokenType.OPERATOR_SUB, TokenType.OPERATOR_NOT,
