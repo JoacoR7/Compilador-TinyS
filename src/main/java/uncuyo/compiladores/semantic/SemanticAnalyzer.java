@@ -830,13 +830,22 @@ public class SemanticAnalyzer {
         } else if (checkType(TokenType.OPERATOR_ASSIGN)) {
             // Primeros(⟨Encadenado-SimpleK⟩) contiene λ, por lo tanto checkeo siguientes
             // Siguientes de accesoVarSimpleF, cierro
+
+            Type type;
             Variable variable = this.getSymbolTable().getCurrentMethod().getVariables().get(token.getLexeme());
 
             if (variable == null){
-                throw new LocalVariableNotFoundException(token.getRowIndex(), token.getColumnIndex(), token.getLexeme(), symbolTable.getCurrentMethod().getName());
+                Parameter parameter = this.getSymbolTable().getCurrentMethod().getParameters().get(token.getLexeme());
+                if (parameter == null){
+                    throw new LocalVariableNotFoundException(token.getRowIndex(), token.getColumnIndex(), token.getLexeme(), symbolTable.getCurrentMethod().getName());
+                }else {
+                    type = parameter.getType();
+                }
+            }else {
+                type = variable.getType();
             }
 
-            simpleAccessNode = new SimpleVariableNode(token, variable.getType(), null);
+            simpleAccessNode = new SimpleVariableNode(token, type, null);
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),

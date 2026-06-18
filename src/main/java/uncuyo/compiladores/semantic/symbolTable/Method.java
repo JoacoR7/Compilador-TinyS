@@ -1,5 +1,6 @@
 package uncuyo.compiladores.semantic.symbolTable;
 
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.VariableAlreadyDefined;
 import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.semantic.JsonSerializable;
 
@@ -95,6 +96,12 @@ public class Method implements JsonSerializable {
     }
 
     public void insertVariable(Variable newVariable) {
+        if (this.getParameters().containsKey(newVariable.getName())){
+            throw new VariableAlreadyDefined(newVariable.getToken().getRowIndex(),
+                    newVariable.getToken().getColumnIndex(),
+                    newVariable.getName(),
+                    this.getName());
+        }
         newVariable.setPosition(this.getVariables().size());
         this.getVariables().put(newVariable.getName(), newVariable);
     }

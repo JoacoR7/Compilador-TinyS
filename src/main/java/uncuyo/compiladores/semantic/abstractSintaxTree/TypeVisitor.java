@@ -11,10 +11,8 @@ import uncuyo.compiladores.lexer.TokenDefinitions;
 import uncuyo.compiladores.lexer.TokenType;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.*;
 import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.*;
+import uncuyo.compiladores.semantic.symbolTable.*;
 import uncuyo.compiladores.semantic.symbolTable.Class;
-import uncuyo.compiladores.semantic.symbolTable.SymbolTable;
-import uncuyo.compiladores.semantic.symbolTable.Type;
-import uncuyo.compiladores.semantic.symbolTable.Variable;
 
 import java.util.List;
 
@@ -50,11 +48,11 @@ public class TypeVisitor implements Visitor<Type> {
         if (!intTokenTypes.contains(leftNodeType.getTokenType())){
             throw new TypeMismatchException(binaryOperationToken.getRowIndex(),
                     binaryOperationToken.getColumnIndex(),
-                    "Int", binaryExpressionNode.getLeftNode().getType().getLexeme());
+                    "Int", binaryExpressionNode.getLeftNode().getType().getTokenType().toString());
         }
         if (!intTokenTypes.contains(rightNodeType.getTokenType())){
             throw new TypeMismatchException(binaryOperationToken.getRowIndex(), binaryOperationToken.getColumnIndex(),
-                    "Int", binaryExpressionNode.getRightNode().getType().getLexeme());
+                    "Int", binaryExpressionNode.getRightNode().getType().getTokenType().toString());
         }
 
         if (leftNodeType == rightNodeType) {
@@ -122,14 +120,38 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(SimpleChainedNode simpleChainedNode) {
-        return null;
+
+        if (simpleChainedNode.getClassName() == null){
+            return null;
+        }
+
+        Class currentClass = symbolTable.getClasses().get(simpleChainedNode.getClassName());
+        if (currentClass == null){
+            return null;
+        }
+
+        String attributeName = simpleChainedNode.getToken().getLexeme();
+
+        if (!currentClass.getAttributes().containsKey(attributeName)) {
+            throw new AttributeNotFoundException(attributeName, currentClass.getName());
+        }
+
+        Type attributeType = currentClass.getAttributes().get(attributeName).getType();
+        simpleChainedNode.setType(attributeType);
+
+        if (simpleChainedNode.getSimpleChainedNode() != null) {
+            simpleChainedNode.getSimpleChainedNode().setClassName(attributeType.getLexeme());
+            return simpleChainedNode.getSimpleChainedNode().accept(this);
+        }
+
+        return attributeType;
+
     }
 
     public Type visit(SimpleSelfNode simpleSelfNode) {
         if (simpleSelfNode.getSimpleChainedNode() == null) {
             return null;
         } else {
-            System.out.println("Hola");
             return simpleSelfNode.getSimpleChainedNode().accept(this);
         }
     }
@@ -185,7 +207,23 @@ public class TypeVisitor implements Visitor<Type> {
                 TokenDefinitions tokenDefinitions = new TokenDefinitions();
                 type = new Type(tokenDefinitions.getPrimitiveTypes().get(variableNode.getClassName()), variableNode.getClassName());
             } else {
-                type = AST.getSymbolTable().getClasses().get(variableNode.getClassName()).getAttributes().get(variableNode.getToken().getLexeme()).getType();
+
+                Class currentClass = AST.getSymbolTable().getClasses().get(variableNode.getClassName());
+
+                if (currentClass != null){
+                    Method currentMethod = currentClass.getMethods().get(variableNode.getMethodName());
+
+                    if (currentMethod != null){
+                        if (currentMethod.getParameters().containsKey(variableNode.getToken().getLexeme())){
+                            type = currentMethod.getParameters().get(variableNode.getToken().getLexeme()).getType();
+                        } else if (currentMethod.getVariables().containsKey(variableNode.getToken().getLexeme())){
+                            type = currentMethod.getVariables().get(variableNode.getToken().getLexeme()).getType();
+                        } else {
+                            type = currentClass.getAttributes().get(variableNode.getToken().getLexeme()).getType();
+                        }
+                    }
+                }
+
             }
 
         }else {
