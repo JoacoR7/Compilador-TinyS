@@ -9,12 +9,12 @@ import uncuyo.compiladores.semantic.symbolTable.*;
 import uncuyo.compiladores.semantic.symbolTable.Class;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class Pruebas {
     public static void main(String[] args) throws IOException, LexicalException, SyntacticException {
-        int a;
-        (a) = 3;
-        Lexer lexer = new Lexer("C:\\Users\\victo\\IdeaProjects\\Compilador\\testFiles\\semanticFiles\\success\\startVariables.s");
+        Map<String, String> env = System.getenv();
+        Lexer lexer = new Lexer(env.get("TEST_PATH") + "\\semanticFiles\\success\\startVariables.s");
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(lexer, lexer.getNextToken());
         semanticAnalyzer.program();
         SymbolTable symbolTable = semanticAnalyzer.getSymbolTable();
