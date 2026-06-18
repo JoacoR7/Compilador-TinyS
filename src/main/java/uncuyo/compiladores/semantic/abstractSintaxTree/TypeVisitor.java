@@ -1,6 +1,8 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree;
 
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.ASTException;
 import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.InvalidLiteralNodeException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.InvalidReturnException;
 import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.TypeMismatchException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.AttributeNotFoundException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.ClassNotFoundException;
@@ -108,7 +110,8 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(SelfNode selfNode) {
-        return null;
+        selfNode.setType(selfNode.getChainedNode().accept(this));
+        return selfNode.getType();
     }
 
     public Type visit(SimpleAccessNode simpleAccessNode) {
@@ -275,6 +278,15 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(BlockNode blockNode) {
+        Class currentClass = blockNode.getClassName() != null ? symbolTable.getClasses().get(blockNode.getClassName()) : null;
+        symbolTable.setCurrentClass(currentClass);
+        if (currentClass != null) {
+            symbolTable.setCurrentMethod(currentClass.getMethods().get(blockNode.getMethodName()));
+        } else {
+            if (blockNode.getMethodName().equals("start")) {
+                symbolTable.setCurrentMethod(symbolTable.getStart());
+            }
+        }
         for (SentenceNode sentence : blockNode.getSentences()) {
             sentence.accept(this);
         }
@@ -290,7 +302,12 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(ReturnNode returnNode) {
-        return null;
+        Type returnType = returnNode.getExpression() != null ?
+                returnNode.getExpression().accept(this) : null;
+        if (!Type.areCompatible(returnType, symbolTable.getCurrentMethod().getType())) {
+            throw new InvalidReturnException(returnNode.getToken(), symbolTable.getCurrentMethod(), returnType);
+        }
+        return returnType;
     }
 
     public Type visit(SentenceNode sentenceNode) {

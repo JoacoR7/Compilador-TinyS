@@ -32,8 +32,8 @@ public class Type {
     }
 
     public static boolean areCompatible(Type t1, Type t2) {
-        TokenType a = t1.getTokenType();
-        TokenType b = t2.getTokenType();
+        TokenType a = t1 != null ? t1.getTokenType() : null;
+        TokenType b = t2 != null ? t2.getTokenType() : null;
 
         return a == b
                 || (a == TokenType.STR_CLASS && b == TokenType.STRING_CONSTANT)
@@ -41,6 +41,18 @@ public class Type {
                 || (a == TokenType.INT_CLASS && b == TokenType.INT_CONSTANT)
                 || (a == TokenType.INT_CONSTANT && b == TokenType.INT_CLASS)
                 || (a == TokenType.BOOL_CLASS && b == TokenType.BOOLEAN_CONSTANT)
-                || (a == TokenType.BOOLEAN_CONSTANT && b == TokenType.BOOL_CLASS);
+                || (a == TokenType.BOOLEAN_CONSTANT && b == TokenType.BOOL_CLASS)
+                || (a == TokenType.KW_VOID && b == null)
+                || (a == null && b == TokenType.KW_VOID);
+    }
+
+    public String getTypeName() {
+        return switch (tokenType) {
+            case INT_CONSTANT, INT_CLASS -> "Int";
+            case STRING_CONSTANT, STR_CLASS -> "Str";
+            case BOOLEAN_CONSTANT, BOOL_CLASS -> "Bool";
+            case KW_VOID -> "void";
+            default -> lexeme;
+        };
     }
 }
