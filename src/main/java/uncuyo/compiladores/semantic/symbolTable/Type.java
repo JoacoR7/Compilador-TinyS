@@ -55,4 +55,14 @@ public class Type {
             default -> lexeme;
         };
     }
+
+    public static Type promote(Type t1, Type t2) {
+        if (t1.getTokenType().name().endsWith("_CLASS")) {
+            return t1;
+        } else if (!t2.getTokenType().name().endsWith("_class")) {
+            return t1;
+        }
+
+        return t2;
+    }
 }

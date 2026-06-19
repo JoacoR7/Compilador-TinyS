@@ -698,11 +698,12 @@ public class SemanticAnalyzer {
         } else if (checkType(TokenType.SPECIAL_SYMBOL_LCB)) {
             sentenceNode = bloque();
         } else if (checkType(TokenType.KW_IF)) {
+            Token auxToken = currentToken;
             matchTokenType(TokenType.KW_IF);
             matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
             ExpressionNode expressionNode = expresion();
             matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
-            sentenceNode = new IfElseNode(expressionNode, sentencia(), sentenciaF1());
+            sentenceNode = new IfElseNode(auxToken, expressionNode, sentencia(), sentenciaF1());
         } else if (checkType(TokenType.KW_RET)) {
             Token auxToken = currentToken;
             matchTokenType(TokenType.KW_RET);
