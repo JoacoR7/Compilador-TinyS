@@ -1,17 +1,28 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree.sentence;
 
+import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ExpressionNode;
 
 public class IfElseNode extends SentenceNode {
+    private Token token;
     private ExpressionNode expression;
     private SentenceNode sentenceNodeIf;
     private SentenceNode sentenceNodeElse;
 
-    public IfElseNode(ExpressionNode expression, SentenceNode sentenceNodeIf, SentenceNode sentenceNodeElse) {
+    public IfElseNode(Token token, ExpressionNode expression, SentenceNode sentenceNodeIf, SentenceNode sentenceNodeElse) {
+        this.token = token;
         this.expression = expression;
         this.sentenceNodeIf = sentenceNodeIf;
         this.sentenceNodeElse = sentenceNodeElse;
+    }
+
+    public Token getToken() {
+        return token;
+    }
+
+    public void setToken(Token token) {
+        this.token = token;
     }
 
     public ExpressionNode getExpression() {

@@ -298,6 +298,10 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(IfElseNode ifElseNode) {
+        Type expressionType = ifElseNode.getExpression().accept(this);
+        if(!expressionType.getTypeName().equals("Bool")) {
+            throw new TypeMismatchException(ifElseNode.getToken().getRowIndex(), ifElseNode.getToken().getColumnIndex(), "Bool", expressionType.getTypeName());
+        }
         return null;
     }
 
