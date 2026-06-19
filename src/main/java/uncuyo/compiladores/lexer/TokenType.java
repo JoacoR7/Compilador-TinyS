@@ -125,4 +125,16 @@ public enum TokenType {
             default -> name();
         };
     }
+
+    public boolean isInt() {
+        return this == INT_CLASS || this == INT_CONSTANT;
+    }
+
+    public boolean isBool() {
+        return this == BOOL_CLASS || this == BOOLEAN_CONSTANT;
+    }
+
+    public boolean isStr() {
+        return this == STR_CLASS || this  == STRING_CONSTANT;
+    }
 }

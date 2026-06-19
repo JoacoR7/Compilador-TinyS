@@ -42,33 +42,71 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(BinaryExpressionNode binaryExpressionNode) {
-        Type type;
+        Type type = null;
         Type leftNodeType = binaryExpressionNode.getLeftNode().accept(this);
         Type rightNodeType = binaryExpressionNode.getRightNode().accept(this);
         Token binaryOperationToken = binaryExpressionNode.getBinaryOperatorToken();
-        List<TokenType> intTokenTypes = List.of(TokenType.INT_CLASS, TokenType.INT_CONSTANT);
-        if (!intTokenTypes.contains(leftNodeType.getTokenType())){
-            throw new TypeMismatchException(binaryOperationToken.getRowIndex(),
-                    binaryOperationToken.getColumnIndex(),
-                    "Int", binaryExpressionNode.getLeftNode().getType().getTokenType().toString());
-        }
-        if (!intTokenTypes.contains(rightNodeType.getTokenType())){
-            throw new TypeMismatchException(binaryOperationToken.getRowIndex(), binaryOperationToken.getColumnIndex(),
-                    "Int", binaryExpressionNode.getRightNode().getType().getTokenType().toString());
-        }
+        TokenType binaryOperationTokenType = binaryOperationToken.getTokenType();
+        if (binaryOperationTokenType == TokenType.OPERATOR_AND ||
+                binaryOperationTokenType == TokenType.OPERATOR_OR) {
 
-        if (leftNodeType == rightNodeType) {
-            binaryExpressionNode.setType(leftNodeType);
-            type = leftNodeType;
-        } else {
-            if(leftNodeType.getTokenType() == TokenType.INT_CLASS) {
-                binaryExpressionNode.setType(leftNodeType);
-                type = leftNodeType;
-            } else {
-                binaryExpressionNode.setType(rightNodeType);
-                type = rightNodeType;
+            if (!leftNodeType.getTokenType().isBool()){
+                throw new TypeMismatchException(binaryOperationToken.getRowIndex(),
+                        binaryOperationToken.getColumnIndex(),
+                        "Bool", leftNodeType.getTypeName());
             }
+            if (!rightNodeType.getTokenType().isBool()){
+                throw new TypeMismatchException(binaryOperationToken.getRowIndex(), binaryOperationToken.getColumnIndex(),
+                        "Bool", rightNodeType.getTypeName());
+            }
+
+            type = Type.promote(leftNodeType, rightNodeType);
+
+        } else if (binaryOperationTokenType == TokenType.OPERATOR_ADD ||
+                binaryOperationTokenType == TokenType.OPERATOR_SUB ||
+                binaryOperationTokenType == TokenType.OPERATOR_MUL ||
+                binaryOperationTokenType == TokenType.OPERATOR_DIV) {
+
+            if (!leftNodeType.getTokenType().isInt()){
+                throw new TypeMismatchException(binaryOperationToken.getRowIndex(),
+                        binaryOperationToken.getColumnIndex(),
+                        "Int", leftNodeType.getTypeName());
+            }
+            if (!rightNodeType.getTokenType().isInt()){
+                throw new TypeMismatchException(binaryOperationToken.getRowIndex(), binaryOperationToken.getColumnIndex(),
+                        "Int", rightNodeType.getTypeName());
+            }
+
+            type = Type.promote(leftNodeType, rightNodeType);
+
+        } else if (binaryOperationTokenType == TokenType.OPERATOR_EQ ||
+                binaryOperationTokenType == TokenType.OPERATOR_NEQ) {
+
+            if (!Type.areCompatible(leftNodeType, rightNodeType)){
+                throw new TypeMismatchException(binaryOperationToken.getRowIndex(),
+                        binaryOperationToken.getColumnIndex(),
+                        leftNodeType.getTypeName(), rightNodeType.getTypeName());
+            }
+
+            type = new Type(TokenType.BOOL_CLASS, "Bool");
+        } else if (binaryOperationTokenType == TokenType.OPERATOR_GT ||
+                binaryOperationTokenType == TokenType.OPERATOR_LT ||
+                binaryOperationTokenType == TokenType.OPERATOR_GTE ||
+                binaryOperationTokenType == TokenType.OPERATOR_LTE) {
+
+            if (!leftNodeType.getTokenType().isInt()){
+                throw new TypeMismatchException(binaryOperationToken.getRowIndex(),
+                        binaryOperationToken.getColumnIndex(),
+                        "Int", leftNodeType.getTypeName());
+            }
+            if (!rightNodeType.getTokenType().isInt()){
+                throw new TypeMismatchException(binaryOperationToken.getRowIndex(), binaryOperationToken.getColumnIndex(),
+                        "Int", rightNodeType.getTypeName());
+            }
+
+            type = new Type(TokenType.BOOL_CLASS, "Bool");
         }
+        binaryExpressionNode.setType(type);
 
         return type;
     }
@@ -319,7 +357,7 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(SimpleSentenceNode simpleSentenceNode) {
-        return null;
+        return simpleSentenceNode.getExpressionNode().accept(this);
     }
 
     public Type visit(WhileNode whileNode) {
