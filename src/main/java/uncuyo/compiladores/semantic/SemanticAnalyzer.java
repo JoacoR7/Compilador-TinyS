@@ -679,11 +679,12 @@ public class SemanticAnalyzer {
             sentenceNode = sentenciaSimple();
             matchTokenType(TokenType.SPECIAL_SYMBOL_S);
         } else if (checkType(TokenType.KW_WHILE)) {
+            Token auxToken = currentToken;
             matchTokenType(TokenType.KW_WHILE);
             matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
             ExpressionNode expressionNode = expresion();
             matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
-            sentenceNode = new WhileNode(expressionNode, sentencia());
+            sentenceNode = new WhileNode(auxToken, expressionNode, sentencia());
         } else if (checkType(TokenType.KW_FOR)) {
             matchTokenType(TokenType.KW_FOR);
             matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
@@ -1595,7 +1596,7 @@ public class SemanticAnalyzer {
             ChainedNode chainedNode = llamadaConclassorF2();
             conclassorCallNode = new ClassConstructorNode(type, expressionNodes, chainedNode);
         } else if (checkType(TokenType.INT_CLASS, TokenType.BOOL_CLASS, TokenType.STR_CLASS)) {
-            Type type = tipoPrimitivo();
+            Type type = new ArrayType(tipoPrimitivo());
             matchTokenType(TokenType.SPECIAL_SYMBOL_LB);
             ExpressionNode expressionNode = expresion();
             matchTokenType(TokenType.SPECIAL_SYMBOL_RB);
