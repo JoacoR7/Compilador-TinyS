@@ -1596,7 +1596,7 @@ public class SemanticAnalyzer {
             ChainedNode chainedNode = llamadaConclassorF2();
             conclassorCallNode = new ClassConstructorNode(type, expressionNodes, chainedNode);
         } else if (checkType(TokenType.INT_CLASS, TokenType.BOOL_CLASS, TokenType.STR_CLASS)) {
-            Type type = tipoPrimitivo();
+            Type type = new ArrayType(tipoPrimitivo());
             matchTokenType(TokenType.SPECIAL_SYMBOL_LB);
             ExpressionNode expressionNode = expresion();
             matchTokenType(TokenType.SPECIAL_SYMBOL_RB);

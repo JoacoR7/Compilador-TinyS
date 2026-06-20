@@ -33,7 +33,7 @@ public class TypeVisitor implements Visitor<Type> {
     // #################################################################
 
     public Type visit(ArrayConstructorNode arrayConstructorNode) {
-        return null;
+        return arrayConstructorNode.getType();
     }
 
     public Type visit(ArrayNode arrayNode) {
@@ -198,8 +198,6 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(SimpleVariableNode simpleVariableNode) {
-        // hijo.getPadre().getMascota().edad
-        // persona
         if (simpleVariableNode.getSimpleChainedNode() == null) {
             return simpleVariableNode.getType();
         } else {
@@ -332,6 +330,28 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(ForNode forNode) {
+        Type var1Type = forNode.getType();
+        Type var2Type = forNode.getVarNode2().accept(this);
+
+        if (!var2Type.getTokenType().equals(TokenType.ARRAY_CLASS)){
+            throw new TypeMismatchException(
+                    forNode.getVarNode2().getToken().getRowIndex(),
+                    forNode.getVarNode2().getToken().getColumnIndex(),
+                    "Array",
+                    var2Type.getTypeName()
+            );
+        }
+
+        if (!Type.areCompatible(var1Type, ((ArrayType) var2Type).getSubType())){
+            throw new TypeMismatchException(
+                    forNode.getVarNode1().getToken().getRowIndex(),
+                    forNode.getVarNode1().getToken().getColumnIndex(),
+                    ((ArrayType) var2Type).getSubType().getTypeName(),
+                    var1Type.getTypeName()
+            );
+        }
+
+        forNode.getSentenceNode().accept(this);
         return null;
     }
 
@@ -339,6 +359,10 @@ public class TypeVisitor implements Visitor<Type> {
         Type expressionType = ifElseNode.getExpression().accept(this);
         if(!expressionType.getTypeName().equals("Bool")) {
             throw new TypeMismatchException(ifElseNode.getToken().getRowIndex(), ifElseNode.getToken().getColumnIndex(), "Bool", expressionType.getTypeName());
+        }
+        ifElseNode.getSentenceNodeIf().accept(this);
+        if (ifElseNode.getSentenceNodeElse() != null) {
+            ifElseNode.getSentenceNodeElse().accept(this);
         }
         return null;
     }
@@ -365,6 +389,7 @@ public class TypeVisitor implements Visitor<Type> {
         if(!expressionType.getTypeName().equals("Bool")) {
             throw new TypeMismatchException(whileNode.getToken().getRowIndex(), whileNode.getToken().getColumnIndex(), "Bool", expressionType.getTypeName());
         }
+        whileNode.getSentenceNode().accept(this);
         return null;
     }
 

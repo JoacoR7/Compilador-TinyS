@@ -32,7 +32,19 @@ impl Persona {
     */
 
     fn mascotaPadre(){
-        self.padre.mascota.edad = 10;
+        Array Int arrayPersona;
+        arrayPersona = new Int [5];
+
+        for (Int edad in arrayPersona){
+        }
+        for (Str edad in arrayPersona){
+        }
+        /*
+        while (self.padre.mascota.edad > 10){
+            self.padre.mascota.edad = 10;
+        }
+        */
+
     }
 
 }
