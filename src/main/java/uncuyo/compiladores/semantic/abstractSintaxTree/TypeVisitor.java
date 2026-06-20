@@ -361,6 +361,10 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(WhileNode whileNode) {
+        Type expressionType = whileNode.getExpressionNode().accept(this);
+        if(!expressionType.getTypeName().equals("Bool")) {
+            throw new TypeMismatchException(whileNode.getToken().getRowIndex(), whileNode.getToken().getColumnIndex(), "Bool", expressionType.getTypeName());
+        }
         return null;
     }
 
