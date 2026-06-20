@@ -386,4 +386,50 @@ public class Class implements JsonSerializable {
 
         return sb.toString();
     }
+
+    public boolean isSubtypeOf(Class possibleParent, Map<String, Class> classes) {
+
+        Class current = this;
+
+        while (current != null) {
+
+            if (current.getName().equals(possibleParent.getName())) {
+                return true;
+            }
+
+            String parentName = current.getParent();
+
+            if (parentName == null || parentName.equals("Object")) {
+                break;
+            }
+
+            current = classes.get(parentName);
+        }
+
+        return false;
+    }
+
+    public Method getMethodInHierarchy(String methodName, Map<String, Class> classes) {
+
+        Class current = this;
+
+        while (current != null) {
+
+            Method method = current.getMethods().get(methodName);
+
+            if (method != null) {
+                return method;
+            }
+
+            String parentName = current.getParent();
+
+            if (parentName == null || parentName.equals("Object")) {
+                break;
+            }
+
+            current = classes.get(parentName);
+        }
+
+        return null;
+    }
 }

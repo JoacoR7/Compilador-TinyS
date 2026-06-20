@@ -1,9 +1,6 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree;
 
-import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.ASTException;
-import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.InvalidLiteralNodeException;
-import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.InvalidReturnException;
-import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.TypeMismatchException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.*;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.AttributeNotFoundException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.ClassNotFoundException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.MethodNotFoundException;
@@ -112,11 +109,45 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(ChainedCallNode chainedCallNode) {
-        return null;
+        Type type;
+        Token chainedCallNodeToken = chainedCallNode.getToken();
+        Method method = symbolTable.getCurrentClass().getMethodInHierarchy(chainedCallNodeToken.getLexeme(), symbolTable.getClasses());
+        if (method == null) {
+            throw new InvalidMethodAccessException(chainedCallNodeToken.getRowIndex(), chainedCallNodeToken.getColumnIndex(),
+                    chainedCallNodeToken.getLexeme(), symbolTable.getCurrentClass().getName());
+        }
+        for(ExpressionNode expressionNode : chainedCallNode.getExpressionNodes()) {
+            expressionNode.accept(this);
+        }
+        type = method.getType();
+        if (chainedCallNode.getChainedNode() != null) {
+            Class currentClass = symbolTable.getClasses().get(type.getLexeme());
+            Token chainedNodeToken = chainedCallNode.getChainedNode().getToken();
+            Attribute attribute = currentClass.getAttributes().get(chainedNodeToken.getLexeme());
+            if (attribute != null && attribute.isPrivate()) {
+                if (!attribute.getClassName().equals(currentClass.getName())) {
+                    throw new InvalidAttributeAccessException(
+                            chainedNodeToken.getRowIndex(),
+                            chainedNodeToken.getColumnIndex(),
+                            chainedNodeToken.getLexeme(),
+                            currentClass.getName()
+                    );
+                }
+            }
+            if (chainedCallNode.getChainedNode() instanceof VariableNode) {
+                VariableNode variableNode = (VariableNode) chainedCallNode.getChainedNode();
+                variableNode.setType(attribute != null ? attribute.getType() : null);
+                variableNode.setClassName(currentClass.getName());
+                variableNode.setIsChainedNode(true);
+            }
+            type = chainedCallNode.getChainedNode().accept(this);
+        }
+        chainedCallNode.setType(type);
+        return type;
     }
 
     public Type visit(ChainedNode chainedNode) {
-        return null;
+        return chainedNode.accept(this);
     }
 
     public Type visit(ClassConstructorNode classConstructorNode) {
@@ -124,11 +155,11 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(ConclassorCallNode conclassorCallNode) {
-        return null;
+        return conclassorCallNode.accept(this);
     }
 
     public Type visit(ExpressionNode expressionNode) {
-        return null;
+        return expressionNode.accept(this);
     }
 
     public Type visit(LiteralNode literalNode) {
@@ -140,16 +171,59 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(OperandNode operandNode) {
-        return null;
+        return operandNode.accept(this);
     }
 
     public Type visit(ParenthesizedExpressionNode parenthesizedExpressionNode) {
-        return null;
+        Type type = parenthesizedExpressionNode.getExpresion().accept(this);
+        if (parenthesizedExpressionNode.getChainedNode() != null) {
+            Token chainedNodeToken = parenthesizedExpressionNode.getChainedNode().getToken();
+            Class currentClass = symbolTable.getClasses().get(type.getLexeme());
+            Attribute attribute = currentClass.getAttributes().get(chainedNodeToken.getLexeme());
+            if (attribute != null && attribute.isPrivate()) {
+                if (!attribute.getClassName().equals(currentClass.getName())) {
+                    throw new InvalidAttributeAccessException(
+                            chainedNodeToken.getRowIndex(),
+                            chainedNodeToken.getColumnIndex(),
+                            chainedNodeToken.getLexeme(),
+                            currentClass.getName()
+                    );
+                }
+            }
+            type = parenthesizedExpressionNode.getChainedNode().accept(this);
+            parenthesizedExpressionNode.setType(type);
+        }
+        return type;
     }
 
     public Type visit(SelfNode selfNode) {
-        selfNode.setType(selfNode.getChainedNode().accept(this));
-        return selfNode.getType();
+
+        Class currentClass = symbolTable.getCurrentClass();
+
+        Type type = new Type(
+                currentClass.getToken().getTokenType(),
+                currentClass.getName()
+        );
+
+        if (selfNode.getChainedNode() == null) {
+            selfNode.setType(type);
+        } else {
+            Token chainedNodeToken = selfNode.getChainedNode().getToken();
+            Attribute attribute = currentClass.getAttributes().get(chainedNodeToken.getLexeme());
+            if (attribute != null && attribute.isPrivate()) {
+                if (!attribute.getClassName().equals(currentClass.getName())) {
+                    throw new InvalidAttributeAccessException(
+                            chainedNodeToken.getRowIndex(),
+                            chainedNodeToken.getColumnIndex(),
+                            chainedNodeToken.getLexeme(),
+                            currentClass.getName()
+                    );
+                }
+            }
+            type = selfNode.getChainedNode().accept(this);
+            selfNode.setType(type);
+        }
+        return type;
     }
 
     public Type visit(SimpleAccessNode simpleAccessNode) {
@@ -228,6 +302,7 @@ public class TypeVisitor implements Visitor<Type> {
         Type type = null;
         if(variableNode.getClassName() == null) {
             variableNode.setClassName(AST.getSymbolTable().getStart().getVariables().get(variableNode.getToken().getLexeme()).getType().getLexeme());
+            symbolTable.setCurrentClass(symbolTable.getClasses().get(variableNode.getClassName()));
         }
         if (variableNode.getChainedNode() == null) {
             if (!AST.getSymbolTable().getClasses().containsKey(variableNode.getClassName())) {
@@ -251,6 +326,7 @@ public class TypeVisitor implements Visitor<Type> {
 
                 if (currentClass != null){
                     Method currentMethod = currentClass.getMethods().get(variableNode.getMethodName());
+                    Attribute attribute = currentClass.getAttributes().get(variableNode.getToken().getLexeme());
 
                     if (currentMethod != null){
                         if (currentMethod.getParameters().containsKey(variableNode.getToken().getLexeme())){
@@ -260,6 +336,8 @@ public class TypeVisitor implements Visitor<Type> {
                         } else {
                             type = currentClass.getAttributes().get(variableNode.getToken().getLexeme()).getType();
                         }
+                    } else if (attribute != null) {
+                        type = attribute.getType();
                     }
                 }
 
@@ -287,6 +365,9 @@ public class TypeVisitor implements Visitor<Type> {
                 if (!AST.getSymbolTable().getClasses().get(variableNode.getClassName()).getMethods().containsKey(token.getLexeme())) {
                     throw new MethodNotFoundException(token.getLexeme());
                 }
+                String variableType = symbolTable.getCurrentClass().getAttributes().get(variableNode.getToken().getLexeme()).getType().getLexeme();
+                symbolTable.setCurrentClass(
+                        symbolTable.getClasses().get(variableType));
             }
             type = chainedNode.accept(this);
         }
@@ -377,7 +458,7 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(SentenceNode sentenceNode) {
-        return null;
+        return sentenceNode.accept(this);
     }
 
     public Type visit(SimpleSentenceNode simpleSentenceNode) {
@@ -392,11 +473,5 @@ public class TypeVisitor implements Visitor<Type> {
         whileNode.getSentenceNode().accept(this);
         return null;
     }
-
-
-    // #################################################################
-    // #                     Funciones auxiliares                      #
-    // #################################################################
-
 
 }
