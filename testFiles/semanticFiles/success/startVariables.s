@@ -2,7 +2,7 @@ class Persona {
     pub Int edad;
     pub Str nombre;
     pub Persona padre;
-    pub Mascota mascota;
+    Mascota mascota;
 }
 
 impl Persona {
@@ -24,6 +24,10 @@ impl Persona {
         ret self.mascota;
     }
 
+    fn Mascota obtenerMascotaPadre() {
+            ret (self.padre).mascota;
+        }
+
     /*
     fn nuevoSaludo(Str nombre) {
         Str nombre;
@@ -31,6 +35,7 @@ impl Persona {
     }
     */
 
+    /*
     fn mascotaPadre(){
         Array Int arrayPersona;
         arrayPersona = new Int [5];
@@ -39,13 +44,14 @@ impl Persona {
         }
         for (Str edad in arrayPersona){
         }
-        /*
+
         while (self.padre.mascota.edad > 10){
             self.padre.mascota.edad = 10;
         }
-        */
+
 
     }
+    */
 
 }
 
@@ -62,18 +68,10 @@ start {
     Persona hijo;
     Persona padre;
     Mascota mascota;
-    /*
-    Int edadMascota , edadAux;
-    edadAux = 10;
-    */
+    Int edadMascota;
     hijo = new Persona();
     padre = new Persona();
     mascota = new Mascota();
-    //hijo.padre.mascota.edad = 10;
-    /*
     edadMascota = hijo.padre.obtenerMascota().edad;
-    edadMascota = hijo.padre.edad;
-    hijo = padre;
-    edadMascota = edadAux + 5;
-    */
+
 }
