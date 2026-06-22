@@ -34,8 +34,46 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(ArrayNode arrayNode) {
+        Type indexType = arrayNode.getExpression().accept(this);
+        if (!indexType.getTokenType().isInt()) {
+            throw new TypeMismatchException(
+                    arrayNode.getToken().getRowIndex(),
+                    arrayNode.getToken().getColumnIndex(),
+                    "Int", indexType.getTypeName());
+        }
 
-        return null;
+        String varName = arrayNode.getToken().getLexeme();
+        Type type = null;
+
+        if (arrayNode.getClassName() != null) {
+            Class currentClass = symbolTable.getClasses().get(arrayNode.getClassName());
+            if (currentClass != null && currentClass.getAttributes().containsKey(varName)) {
+                type = currentClass.getAttributes().get(varName).getType();
+            }
+        }
+        if (type == null) {
+            Method currentMethod = symbolTable.getCurrentMethod();
+            if (currentMethod != null) {
+                if (currentMethod.getVariables().containsKey(varName)) {
+                    type = currentMethod.getVariables().get(varName).getType();
+                } else if (currentMethod.getParameters().containsKey(varName)) {
+                    type = currentMethod.getParameters().get(varName).getType();
+                }
+            }
+        }
+
+        if (!(type instanceof ArrayType)) {
+            throw new TypeMismatchException(
+                    arrayNode.getToken().getRowIndex(),
+                    arrayNode.getToken().getColumnIndex(),
+                    "Array",
+                    type != null ? type.getTypeName() : varName);
+        }
+
+        Type subType = ((ArrayType) type).getSubType();
+        arrayNode.setType(subType);
+
+        return subType;
     }
 
     public Type visit(BinaryExpressionNode binaryExpressionNode) {
@@ -231,7 +269,37 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(SimpleArrayNode simpleArrayNode) {
-        return null;
+        Type indexType = simpleArrayNode.getExpressionNode().accept(this);
+        if (!indexType.getTokenType().isInt()) {
+            throw new TypeMismatchException(
+                    simpleArrayNode.getToken().getRowIndex(),
+                    simpleArrayNode.getToken().getColumnIndex(),
+                    "Int", indexType.getTypeName());
+        }
+
+        String varName = simpleArrayNode.getToken().getLexeme();
+        Type type = null;
+
+        Method currentMethod = symbolTable.getCurrentMethod();
+        if (currentMethod != null) {
+            if (currentMethod.getVariables().containsKey(varName)) {
+                type = currentMethod.getVariables().get(varName).getType();
+            } else if (currentMethod.getParameters().containsKey(varName)) {
+                type = currentMethod.getParameters().get(varName).getType();
+            }
+        }
+
+        if (!(type instanceof ArrayType)) {
+            throw new TypeMismatchException(
+                    simpleArrayNode.getToken().getRowIndex(),
+                    simpleArrayNode.getToken().getColumnIndex(),
+                    "Array",
+                    type != null ? type.getTypeName() : varName);
+        }
+
+        Type subType = ((ArrayType) type).getSubType();
+        simpleArrayNode.setType(subType);
+        return subType;
     }
 
     public Type visit(SimpleChainedNode simpleChainedNode) {
