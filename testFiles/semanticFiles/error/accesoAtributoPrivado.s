@@ -1,8 +1,8 @@
 class Caja {
-    Int secreto;
+    pub Int secreto;
 }
 impl Caja {
-    .() { secreto = 42; }
+    .() { self.secreto = 42; }
 }
 start {
     Caja c;

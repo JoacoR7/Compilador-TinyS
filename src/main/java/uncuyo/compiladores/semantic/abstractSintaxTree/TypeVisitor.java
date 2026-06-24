@@ -1,5 +1,6 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree;
 
+import org.w3c.dom.Attr;
 import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.*;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.AttributeNotFoundException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.ClassNotFoundException;
@@ -344,7 +345,14 @@ public class TypeVisitor implements Visitor<Type> {
             return simpleVariableNode.getType();
         } else {
             Class currentClass = symbolTable.getClasses().get(simpleVariableNode.getType().getLexeme());
-
+            Token auxToken = simpleVariableNode.getSimpleChainedNode().getToken();
+            Attribute attribute = currentClass.getAttributes().get(auxToken.getLexeme());
+            if (attribute != null) {
+                if (attribute.isPrivate()) {
+                    throw new InvalidAttributeAccessException(auxToken.getRowIndex(), auxToken.getColumnIndex(), auxToken.getLexeme(), currentClass.getName());
+                }
+            }
+            simpleVariableNode.getSimpleChainedNode().setClassName(currentClass.getName());
             return simpleVariableNode.getSimpleChainedNode().accept(this);
         }
     }
