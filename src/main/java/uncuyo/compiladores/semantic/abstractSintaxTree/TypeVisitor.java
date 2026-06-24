@@ -14,6 +14,7 @@ import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.*;
 import uncuyo.compiladores.semantic.symbolTable.*;
 import uncuyo.compiladores.semantic.symbolTable.Class;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TypeVisitor implements Visitor<Type> {
@@ -190,6 +191,22 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(ClassConstructorNode classConstructorNode) {
+        Method constructor = symbolTable.getClasses().get(classConstructorNode.getType().getLexeme()).getConstructor();
+        if(classConstructorNode.getExpressionNodes().size() != constructor.getParameters().size()) {
+            throw new InvalidConstructorArgumentsCountException(classConstructorNode.getToken().getRowIndex(), classConstructorNode.getToken().getColumnIndex(),
+                    classConstructorNode.getToken().getLexeme(), constructor.getParameters().size(), classConstructorNode.getExpressionNodes().size());
+        }
+        int paramIndex = 0;
+        List<Parameter> parameters =
+                new ArrayList<>(constructor.getParameters().values());
+        for (ExpressionNode expressionNode : classConstructorNode.getExpressionNodes()) {
+            Type type = expressionNode.accept(this);
+            if (!Type.areCompatible(parameters.get(paramIndex).getType(), type)) {
+                throw new InvalidConstructorArgumentTypeException(classConstructorNode.getToken().getRowIndex(), classConstructorNode.getToken().getColumnIndex(),
+                        classConstructorNode.getToken().getLexeme(), paramIndex, parameters.get(paramIndex).getType().getTypeName(), type.getTypeName());
+            }
+            paramIndex++;
+        }
         return classConstructorNode.getType();
     }
 
@@ -351,6 +368,8 @@ public class TypeVisitor implements Visitor<Type> {
                 if (attribute.isPrivate()) {
                     throw new InvalidAttributeAccessException(auxToken.getRowIndex(), auxToken.getColumnIndex(), auxToken.getLexeme(), currentClass.getName());
                 }
+            } else {
+
             }
             simpleVariableNode.getSimpleChainedNode().setClassName(currentClass.getName());
             return simpleVariableNode.getSimpleChainedNode().accept(this);
@@ -386,7 +405,9 @@ public class TypeVisitor implements Visitor<Type> {
             }
             if(!variableNode.getMethodName().equals("start")) {
                 if (!AST.getSymbolTable().getClasses().get(variableNode.getClassName()).getMethods().containsKey(variableNode.getMethodName())) {
-                    throw new MethodNotFoundException(variableNode.getMethodName());
+                    if (!variableNode.getMethodName().equals(".")) {
+                        throw new MethodNotFoundException(variableNode.getMethodName());
+                    }
                 }
             } else {
                 if (!variableNode.isChainedNode() && !AST.getSymbolTable().getStart().getVariables().containsKey(variableNode.getToken().getLexeme())) {

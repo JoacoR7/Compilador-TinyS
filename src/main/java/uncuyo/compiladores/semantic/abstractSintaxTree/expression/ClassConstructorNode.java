@@ -12,8 +12,8 @@ public class ClassConstructorNode extends ConclassorCallNode {
     private LinkedList<ExpressionNode> expressionNodes;
     private ChainedNode chainedNode;
 
-    public ClassConstructorNode(Type type, LinkedList<ExpressionNode> expressionNodes, ChainedNode chainedNode) {
-        super(type, chainedNode);
+    public ClassConstructorNode(Token token, Type type, LinkedList<ExpressionNode> expressionNodes, ChainedNode chainedNode) {
+        super(token, type, chainedNode);
         this.expressionNodes = expressionNodes;
     }
 

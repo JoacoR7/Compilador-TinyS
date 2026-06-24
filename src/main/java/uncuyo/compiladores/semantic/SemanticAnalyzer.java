@@ -1588,20 +1588,20 @@ public class SemanticAnalyzer {
     */
     public ConclassorCallNode llamadaConclassorF1() throws LexicalException, SyntacticException {
         ConclassorCallNode conclassorCallNode;
+        Token auxToken = currentToken;
         if (checkType(TokenType.IDENTIFIER_CLASS)){
-            Token auxToken = currentToken;
             matchTokenType(TokenType.IDENTIFIER_CLASS);
             Type type = new Type(auxToken.getTokenType(), auxToken.getLexeme());
             LinkedList<ExpressionNode> expressionNodes = argumentosActuales();
             ChainedNode chainedNode = llamadaConclassorF2();
-            conclassorCallNode = new ClassConstructorNode(type, expressionNodes, chainedNode);
+            conclassorCallNode = new ClassConstructorNode(auxToken, type, expressionNodes, chainedNode);
         } else if (checkType(TokenType.INT_CLASS, TokenType.BOOL_CLASS, TokenType.STR_CLASS)) {
             Type type = new ArrayType(tipoPrimitivo());
             matchTokenType(TokenType.SPECIAL_SYMBOL_LB);
             ExpressionNode expressionNode = expresion();
             matchTokenType(TokenType.SPECIAL_SYMBOL_RB);
             ChainedNode chainedNode = llamadaConclassorF2();
-            conclassorCallNode = new ArrayConstructorNode(type, chainedNode, expressionNode);
+            conclassorCallNode = new ArrayConstructorNode(auxToken, type, chainedNode, expressionNode);
         }else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
