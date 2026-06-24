@@ -2,7 +2,7 @@ class Punto {
     Int x;
 }
 impl Punto {
-    .(Int x) { self.x = x; }
+    .(Int x, Str a) { self.x = x; }
 }
 start {
     Punto p;

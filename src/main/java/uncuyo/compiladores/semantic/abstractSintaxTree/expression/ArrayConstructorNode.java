@@ -1,5 +1,6 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree.expression;
 
+import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.symbolTable.Type;
 
@@ -7,8 +8,8 @@ public class ArrayConstructorNode extends ConclassorCallNode {
 
     private ExpressionNode expression;
 
-    public ArrayConstructorNode(Type type, ChainedNode chainedNode, ExpressionNode expression) {
-        super(type, chainedNode);
+    public ArrayConstructorNode(Token token, Type type, ChainedNode chainedNode, ExpressionNode expression) {
+        super(token, type, chainedNode);
         this.expression = expression;
     }
 
