@@ -368,9 +368,8 @@ public class TypeVisitor implements Visitor<Type> {
                 if (attribute.isPrivate()) {
                     throw new InvalidAttributeAccessException(auxToken.getRowIndex(), auxToken.getColumnIndex(), auxToken.getLexeme(), currentClass.getName());
                 }
-            } else {
-
             }
+            
             simpleVariableNode.getSimpleChainedNode().setClassName(currentClass.getName());
             return simpleVariableNode.getSimpleChainedNode().accept(this);
         }
