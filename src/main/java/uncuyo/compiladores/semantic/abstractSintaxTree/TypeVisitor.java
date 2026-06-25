@@ -486,7 +486,7 @@ public class TypeVisitor implements Visitor<Type> {
         if(!Type.areCompatible(leftNodeType, rightNodeType)) {
             Token token = assignmentNode.getSimpleAccessNode().getToken();
             throw new TypeMismatchException(token.getRowIndex(),token.getColumnIndex(),
-                    leftNodeType.getLexeme(), rightNodeType.getTokenType().toString());
+                    leftNodeType.getTypeName(), rightNodeType.getTypeName());
         }
         return leftNodeType;
     }
