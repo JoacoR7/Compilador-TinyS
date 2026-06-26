@@ -32,8 +32,12 @@ public class Type {
     }
 
     public static boolean areCompatible(Type t1, Type t2) {
-        TokenType a = t1 != null ? t1.getTokenType() : null;
-        TokenType b = t2 != null ? t2.getTokenType() : null;
+        TokenType a = t1 != null ?
+                (t1.getTokenType() != TokenType.ARRAY_CLASS ? t1.getTokenType() : ((ArrayType) t1).getSubType().getTokenType())
+                : null;
+        TokenType b = t2 != null ?
+                (t2.getTokenType() != TokenType.ARRAY_CLASS ? t2.getTokenType() : ((ArrayType) t2).getSubType().getTokenType())
+                : null;
 
         return a == b
                 || (a == TokenType.STR_CLASS && b == TokenType.STRING_CONSTANT)
@@ -52,6 +56,7 @@ public class Type {
             case STRING_CONSTANT, STR_CLASS -> "Str";
             case BOOLEAN_CONSTANT, BOOL_CLASS -> "Bool";
             case KW_VOID -> "void";
+            case ARRAY_CLASS -> "Array " + ((ArrayType) this).getSubType().getTypeName();
             default -> lexeme;
         };
     }

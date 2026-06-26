@@ -151,36 +151,47 @@ public class TypeVisitor implements Visitor<Type> {
     public Type visit(ChainedCallNode chainedCallNode) {
         Type type;
         Token chainedCallNodeToken = chainedCallNode.getToken();
-        Method method = symbolTable.getCurrentClass().getMethodInHierarchy(chainedCallNodeToken.getLexeme(), symbolTable.getClasses());
-        if (method == null) {
-            throw new InvalidMethodAccessException(chainedCallNodeToken.getRowIndex(), chainedCallNodeToken.getColumnIndex(),
-                    chainedCallNodeToken.getLexeme(), symbolTable.getCurrentClass().getName());
-        }
-        for(ExpressionNode expressionNode : chainedCallNode.getExpressionNodes()) {
-            expressionNode.accept(this);
-        }
-        type = method.getType();
-        if (chainedCallNode.getChainedNode() != null) {
-            Class currentClass = symbolTable.getClasses().get(type.getLexeme());
-            Token chainedNodeToken = chainedCallNode.getChainedNode().getToken();
-            Attribute attribute = currentClass.getAttributes().get(chainedNodeToken.getLexeme());
-            if (attribute != null && attribute.isPrivate()) {
-                if (!attribute.getClassName().equals(currentClass.getName())) {
-                    throw new InvalidAttributeAccessException(
-                            chainedNodeToken.getRowIndex(),
-                            chainedNodeToken.getColumnIndex(),
-                            chainedNodeToken.getLexeme(),
-                            currentClass.getName()
-                    );
-                }
-            }
-            if (chainedCallNode.getChainedNode() instanceof VariableNode) {
-                VariableNode variableNode = (VariableNode) chainedCallNode.getChainedNode();
-                variableNode.setType(attribute != null ? attribute.getType() : null);
-                variableNode.setClassName(currentClass.getName());
-                variableNode.setIsChainedNode(true);
+        if (chainedCallNodeToken.getTokenType() == TokenType.IDENTIFIER_CLASS) {
+            symbolTable.setCurrentClass(symbolTable.getClasses().get(chainedCallNodeToken.getLexeme()));
+            if (symbolTable.getCurrentClass() == null) {
+                throw new ClassNotFoundException(chainedCallNodeToken.getLexeme());
             }
             type = chainedCallNode.getChainedNode().accept(this);
+        } else {
+            Method method = symbolTable.getCurrentClass().getMethodInHierarchy(chainedCallNodeToken.getLexeme(), symbolTable.getClasses());
+            if (method == null) {
+                throw new InvalidMethodAccessException(chainedCallNodeToken.getRowIndex(), chainedCallNodeToken.getColumnIndex(),
+                        chainedCallNodeToken.getLexeme(), symbolTable.getCurrentClass().getName());
+            }
+            type = method.getType();
+
+
+            for (ExpressionNode expressionNode : chainedCallNode.getExpressionNodes()) {
+                expressionNode.accept(this);
+            }
+
+            if (chainedCallNode.getChainedNode() != null) {
+                Class currentClass = symbolTable.getClasses().get(type.getLexeme());
+                Token chainedNodeToken = chainedCallNode.getChainedNode().getToken();
+                Attribute attribute = currentClass.getAttributes().get(chainedNodeToken.getLexeme());
+                if (attribute != null && attribute.isPrivate()) {
+                    if (!attribute.getClassName().equals(currentClass.getName())) {
+                        throw new InvalidAttributeAccessException(
+                                chainedNodeToken.getRowIndex(),
+                                chainedNodeToken.getColumnIndex(),
+                                chainedNodeToken.getLexeme(),
+                                currentClass.getName()
+                        );
+                    }
+                }
+                if (chainedCallNode.getChainedNode() instanceof VariableNode) {
+                    VariableNode variableNode = (VariableNode) chainedCallNode.getChainedNode();
+                    variableNode.setType(attribute != null ? attribute.getType() : null);
+                    variableNode.setClassName(currentClass.getName());
+                    variableNode.setIsChainedNode(true);
+                }
+                type = chainedCallNode.getChainedNode().accept(this);
+            }
         }
         chainedCallNode.setType(type);
         return type;
@@ -448,7 +459,19 @@ public class TypeVisitor implements Visitor<Type> {
                     throw new AttributeNotFoundException(token.getLexeme(), variableNode.getClassName());
                 }
                 if (((VariableNode) chainedNode).getClassName() == null) {
-                    ((VariableNode) chainedNode).setClassName(variableNode.getClassName());
+                    Attribute attribute = symbolTable.getCurrentClass().searchAttribute(chainedNode.getToken().getLexeme());
+                    Method method = symbolTable.getCurrentClass().getMethods().get(chainedNode.getToken().getLexeme());
+                    String className;
+                    if (attribute != null) {
+                        className = attribute.getType().getTypeName();
+                    } else if (method != null) {
+                        className = method.getType().getTypeName();
+                    } else {
+                        throw new ASTException(1,1,"todo");
+                    }
+                    ((VariableNode) chainedNode).setClassName(className);
+                    symbolTable.setCurrentClass(symbolTable.getClasses().get(className));
+                    //((VariableNode) chainedNode).setClassName(variableNode.getClassName());
                 }
             } else if (chainedNode instanceof ArrayNode) {
                 if (!AST.getSymbolTable().getClasses().get(variableNode.getClassName()).getAttributes().containsKey(token.getLexeme())) {
@@ -458,12 +481,14 @@ public class TypeVisitor implements Visitor<Type> {
                     ((ArrayNode) chainedNode).setClassName(variableNode.getClassName());
                 }
             } else {
-                if (!AST.getSymbolTable().getClasses().get(variableNode.getClassName()).getMethods().containsKey(token.getLexeme())) {
+                Class currentClass = AST.getSymbolTable().getClasses().get(variableNode.getClassName());
+                if (!currentClass.getMethods().containsKey(token.getLexeme())) {
                     throw new MethodNotFoundException(token.getLexeme());
                 }
+                /*
                 String variableType = symbolTable.getCurrentClass().getAttributes().get(variableNode.getToken().getLexeme()).getType().getLexeme();
                 symbolTable.setCurrentClass(
-                        symbolTable.getClasses().get(variableType));
+                        symbolTable.getClasses().get(variableType));*/
             }
             type = chainedNode.accept(this);
         }
@@ -485,7 +510,7 @@ public class TypeVisitor implements Visitor<Type> {
         if(!Type.areCompatible(leftNodeType, rightNodeType)) {
             Token token = assignmentNode.getSimpleAccessNode().getToken();
             throw new TypeMismatchException(token.getRowIndex(),token.getColumnIndex(),
-                    leftNodeType.getLexeme(), rightNodeType.getTokenType().toString());
+                    leftNodeType.getTypeName(), rightNodeType.getTypeName());
         }
         return leftNodeType;
     }
