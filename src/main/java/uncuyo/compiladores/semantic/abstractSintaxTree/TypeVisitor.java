@@ -200,37 +200,39 @@ public class TypeVisitor implements Visitor<Type> {
                             chainedCallNodeToken.getColumnIndex(),
                             method.getName()
                     );
-                } else if (Type.isPrimitiveType(type.getTypeName())) {
-                    // Si es de tipo primitivo no tiene atributos, pero si tiene metodos
-                    if (!(chainedCallNode.getChainedNode() instanceof ChainedCallNode)) {
-                        throw new InvalidPrimitiveAccessException(
-                                chainedCallNodeToken.getRowIndex(),
-                                chainedCallNodeToken.getColumnIndex(),
-                                method.getName(),
-                                type.getTypeName()
-                        );
-                    }
-
+                } else if (Type.isPrimitiveType(type.getTypeName())
+                        && !(chainedCallNode.getChainedNode() instanceof ChainedCallNode)) {
+                    throw new InvalidPrimitiveAccessException(
+                            chainedCallNodeToken.getRowIndex(),
+                            chainedCallNodeToken.getColumnIndex(),
+                            method.getName(),
+                            type.getTypeName()
+                    );
                 }
 
                 Class currentClass = symbolTable.getClasses().get(type.getLexeme());
-                Token chainedNodeToken = chainedCallNode.getChainedNode().getToken();
-                Attribute attribute = currentClass.getAttributes().get(chainedNodeToken.getLexeme());
-                if (attribute != null && attribute.isPrivate()) {
-                    if (!attribute.getClassName().equals(currentClass.getName())) {
-                        throw new InvalidAttributeAccessException(
-                                chainedNodeToken.getRowIndex(),
-                                chainedNodeToken.getColumnIndex(),
-                                chainedNodeToken.getLexeme(),
-                                currentClass.getName()
-                        );
-                    }
+                if (currentClass != null) {
+                    symbolTable.setCurrentClass(currentClass);
                 }
-                if (chainedCallNode.getChainedNode() instanceof VariableNode) {
-                    VariableNode variableNode = (VariableNode) chainedCallNode.getChainedNode();
-                    variableNode.setType(attribute != null ? attribute.getType() : null);
-                    variableNode.setClassName(currentClass.getName());
-                    variableNode.setIsChainedNode(true);
+                if (currentClass != null && !(chainedCallNode.getChainedNode() instanceof ChainedCallNode)) {
+                    Token chainedNodeToken = chainedCallNode.getChainedNode().getToken();
+                    Attribute attribute = currentClass.getAttributes().get(chainedNodeToken.getLexeme());
+                    if (attribute != null && attribute.isPrivate()) {
+                        if (!attribute.getClassName().equals(currentClass.getName())) {
+                            throw new InvalidAttributeAccessException(
+                                    chainedNodeToken.getRowIndex(),
+                                    chainedNodeToken.getColumnIndex(),
+                                    chainedNodeToken.getLexeme(),
+                                    currentClass.getName()
+                            );
+                        }
+                    }
+                    if (chainedCallNode.getChainedNode() instanceof VariableNode) {
+                        VariableNode variableNode = (VariableNode) chainedCallNode.getChainedNode();
+                        variableNode.setType(attribute != null ? attribute.getType() : null);
+                        variableNode.setClassName(currentClass.getName());
+                        variableNode.setIsChainedNode(true);
+                    }
                 }
                 type = chainedCallNode.getChainedNode().accept(this);
             }
