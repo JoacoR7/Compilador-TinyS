@@ -156,6 +156,16 @@ public class TypeVisitor implements Visitor<Type> {
             if (symbolTable.getCurrentClass() == null) {
                 throw new ClassNotFoundException(chainedCallNodeToken.getLexeme());
             }
+            if (chainedCallNode.getChainedNode() instanceof ChainedCallNode) {
+                Method nextMethod = symbolTable.getCurrentClass().getMethods().get(chainedCallNode.getChainedNode().getToken().getLexeme());
+                Token chainedNodeToken = chainedCallNode.getChainedNode().getToken();
+                if (nextMethod == null) {
+                    throw new InvalidMethodAccessException(chainedNodeToken.getRowIndex(), chainedNodeToken.getColumnIndex(), chainedNodeToken.getLexeme(), symbolTable.getCurrentClass().getName());
+                }
+                if (!nextMethod.isStatic()) {
+                    throw new NonStaticMethodCalledFromClassException(chainedNodeToken.getRowIndex(), chainedNodeToken.getColumnIndex(), nextMethod.getToken().getLexeme(), symbolTable.getCurrentClass().getName());
+                }
+            }
             type = chainedCallNode.getChainedNode().accept(this);
         } else {
             Method method = symbolTable.getCurrentClass().getMethodInHierarchy(chainedCallNodeToken.getLexeme(), symbolTable.getClasses());
