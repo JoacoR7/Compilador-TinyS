@@ -526,8 +526,12 @@ public class TypeVisitor implements Visitor<Type> {
                 }
             } else {
                 Class currentClass = AST.getSymbolTable().getClasses().get(variableNode.getClassName());
-                if (!currentClass.getMethods().containsKey(token.getLexeme())) {
+                Method chainedMethod = currentClass.getMethods().get(token.getLexeme());
+                if (chainedMethod == null) {
                     throw new MethodNotFoundException(token.getLexeme());
+                }
+                if (variableNode.getToken().getTokenType() == TokenType.IDENTIFIER_VAR_METHOD && chainedMethod.isStatic()) {
+                    throw new StaticMethodCalledFromInstanceException(token.getRowIndex(), token.getColumnIndex(), chainedMethod.getName(), currentClass.getName());
                 }
                 /*
                 String variableType = symbolTable.getCurrentClass().getAttributes().get(variableNode.getToken().getLexeme()).getType().getLexeme();
