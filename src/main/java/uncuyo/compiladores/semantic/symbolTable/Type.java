@@ -2,6 +2,9 @@ package uncuyo.compiladores.semantic.symbolTable;
 
 import uncuyo.compiladores.lexer.TokenType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Type {
 
     private TokenType tokenType;
@@ -69,5 +72,10 @@ public class Type {
         }
 
         return t2;
+    }
+
+    public static boolean isPrimitiveType(String typeName) {
+        List<String> primitiveTypes = List.of("Int", "Str", "Bool", "Array");
+        return primitiveTypes.contains(typeName);
     }
 }
