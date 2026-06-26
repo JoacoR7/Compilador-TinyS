@@ -1,6 +1,5 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree;
 
-import org.w3c.dom.Attr;
 import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.*;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.AttributeNotFoundException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.ClassNotFoundException;
@@ -15,6 +14,7 @@ import uncuyo.compiladores.semantic.symbolTable.*;
 import uncuyo.compiladores.semantic.symbolTable.Class;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class TypeVisitor implements Visitor<Type> {
@@ -165,30 +165,74 @@ public class TypeVisitor implements Visitor<Type> {
             }
             type = method.getType();
 
+            LinkedHashMap<String,Parameter> parameters = method.getParameters();
+            int expectedParametersSize = parameters.size();
+            int recivedParametersSize = chainedCallNode.getExpressionNodes().size();
 
-            for (ExpressionNode expressionNode : chainedCallNode.getExpressionNodes()) {
-                expressionNode.accept(this);
+            if (expectedParametersSize != recivedParametersSize) {
+                throw new InvalidMethodArgumentCountException(chainedCallNodeToken.getRowIndex(),
+                        chainedCallNodeToken.getColumnIndex(),
+                        method.getName(),
+                        expectedParametersSize,
+                        recivedParametersSize
+                );
+            }
+
+            List<Parameter> parameterList = new ArrayList<>(parameters.values());
+            for (int i = 0; i < parameterList.size(); i++) {
+                ExpressionNode expressionNode = chainedCallNode.getExpressionNodes().get(i);
+                Type argType = expressionNode.accept(this);
+                Parameter parameter = parameterList.get(i);
+
+                if (!Type.areCompatible(argType , parameter.getType())){
+                    throw new InvalidMethodArgumentTypeException(chainedCallNodeToken.getRowIndex(),
+                            chainedCallNodeToken.getColumnIndex(),
+                            method.getName(),
+                            i, parameter.getType().getTypeName() , argType.getTypeName());
+                }
+
             }
 
             if (chainedCallNode.getChainedNode() != null) {
-                Class currentClass = symbolTable.getClasses().get(type.getLexeme());
-                Token chainedNodeToken = chainedCallNode.getChainedNode().getToken();
-                Attribute attribute = currentClass.getAttributes().get(chainedNodeToken.getLexeme());
-                if (attribute != null && attribute.isPrivate()) {
-                    if (!attribute.getClassName().equals(currentClass.getName())) {
-                        throw new InvalidAttributeAccessException(
-                                chainedNodeToken.getRowIndex(),
-                                chainedNodeToken.getColumnIndex(),
-                                chainedNodeToken.getLexeme(),
-                                currentClass.getName()
-                        );
-                    }
+                if (type.getTypeName().equals("void")){
+                    throw new InvalidVoidAccessException(
+                            chainedCallNodeToken.getRowIndex(),
+                            chainedCallNodeToken.getColumnIndex(),
+                            method.getName()
+                    );
+                } else if (Type.isPrimitiveType(type.getTypeName())
+                        && !(chainedCallNode.getChainedNode() instanceof ChainedCallNode)) {
+                    throw new InvalidPrimitiveAccessException(
+                            chainedCallNodeToken.getRowIndex(),
+                            chainedCallNodeToken.getColumnIndex(),
+                            method.getName(),
+                            type.getTypeName()
+                    );
                 }
-                if (chainedCallNode.getChainedNode() instanceof VariableNode) {
-                    VariableNode variableNode = (VariableNode) chainedCallNode.getChainedNode();
-                    variableNode.setType(attribute != null ? attribute.getType() : null);
-                    variableNode.setClassName(currentClass.getName());
-                    variableNode.setIsChainedNode(true);
+
+                Class currentClass = symbolTable.getClasses().get(type.getLexeme());
+                if (currentClass != null) {
+                    symbolTable.setCurrentClass(currentClass);
+                }
+                if (currentClass != null && !(chainedCallNode.getChainedNode() instanceof ChainedCallNode)) {
+                    Token chainedNodeToken = chainedCallNode.getChainedNode().getToken();
+                    Attribute attribute = currentClass.getAttributes().get(chainedNodeToken.getLexeme());
+                    if (attribute != null && attribute.isPrivate()) {
+                        if (!attribute.getClassName().equals(currentClass.getName())) {
+                            throw new InvalidAttributeAccessException(
+                                    chainedNodeToken.getRowIndex(),
+                                    chainedNodeToken.getColumnIndex(),
+                                    chainedNodeToken.getLexeme(),
+                                    currentClass.getName()
+                            );
+                        }
+                    }
+                    if (chainedCallNode.getChainedNode() instanceof VariableNode) {
+                        VariableNode variableNode = (VariableNode) chainedCallNode.getChainedNode();
+                        variableNode.setType(attribute != null ? attribute.getType() : null);
+                        variableNode.setClassName(currentClass.getName());
+                        variableNode.setIsChainedNode(true);
+                    }
                 }
                 type = chainedCallNode.getChainedNode().accept(this);
             }
