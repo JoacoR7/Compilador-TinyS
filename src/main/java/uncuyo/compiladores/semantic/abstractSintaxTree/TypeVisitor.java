@@ -470,7 +470,7 @@ public class TypeVisitor implements Visitor<Type> {
             if(!variableNode.getMethodName().equals("start")) {
                 if (!AST.getSymbolTable().getClasses().get(variableNode.getClassName()).getMethods().containsKey(variableNode.getMethodName())) {
                     if (!variableNode.getMethodName().equals(".")) {
-                        throw new MethodNotFoundException(variableNode.getMethodName());
+                        throw new MethodNotFoundException(variableNode.getToken().getRowIndex(), variableNode.getToken().getColumnIndex(), symbolTable.getCurrentClass().getName(), variableNode.getMethodName());
                     }
                 }
             } else {
@@ -538,7 +538,7 @@ public class TypeVisitor implements Visitor<Type> {
                 Class currentClass = AST.getSymbolTable().getClasses().get(variableNode.getClassName());
                 Method chainedMethod = currentClass.getMethods().get(token.getLexeme());
                 if (chainedMethod == null) {
-                    throw new MethodNotFoundException(token.getLexeme());
+                    throw new MethodNotFoundException(token.getRowIndex(), token.getColumnIndex(), currentClass.getName(), token.getLexeme());
                 }
                 if (variableNode.getToken().getTokenType() == TokenType.IDENTIFIER_VAR_METHOD && chainedMethod.isStatic()) {
                     throw new StaticMethodCalledFromInstanceException(token.getRowIndex(), token.getColumnIndex(), chainedMethod.getName(), currentClass.getName());
