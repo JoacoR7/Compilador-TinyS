@@ -11,7 +11,7 @@ public class InvalidMethodAccessException extends ASTException {
         super(
                 rowIndex,
                 columnIndex,
-                "No se puede invocar el método '" +
+                "No se puede invocar el metodo '" +
                         methodName +
                         "' de la clase '" +
                         className +
