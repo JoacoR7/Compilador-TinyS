@@ -688,14 +688,23 @@ public class SemanticAnalyzer {
         } else if (checkType(TokenType.KW_FOR)) {
             matchTokenType(TokenType.KW_FOR);
             matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
+            Block block = new Block(symbolTable.getCurrentMethod());
+            if (symbolTable.getCurrentBlock() == null) {
+                symbolTable.getCurrentMethod().getBlocks().add(block);
+                symbolTable.setCurrentBlock(block);
+            } else {
+                symbolTable.getCurrentBlock().setSubBlock(block);
+            }
             Type type = tipoPrimitivo();
             VariableNode variableNode1 = new VariableNode(currentToken,null,symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null, symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start");
+            block.getVariables().put(currentToken.getLexeme() , new Variable(currentToken,type));
             matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
             matchTokenType(TokenType.KW_IN);
             VariableNode variableNode2 = new VariableNode(currentToken,null,symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null, symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start");
             matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
             matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
             sentenceNode = new ForNode(type, variableNode1, variableNode2, sentencia());
+            symbolTable.setCurrentBlock(null);
         } else if (checkType(TokenType.SPECIAL_SYMBOL_LCB)) {
             sentenceNode = bloque();
         } else if (checkType(TokenType.KW_IF)) {
@@ -1385,7 +1394,12 @@ public class SemanticAnalyzer {
             Parameter parameter = this.getSymbolTable().getCurrentMethod().getParameters().get(token.getLexeme());
 
             if (variable == null && parameter == null){
-                throw new LocalVariableNotFoundException(token.getRowIndex(), token.getColumnIndex(), token.getLexeme(), symbolTable.getCurrentMethod().getName());
+                if (symbolTable.getCurrentBlock() != null) {
+                    variable = symbolTable.getCurrentBlock().findVariable(token.getLexeme());
+                }
+                if (variable == null) {
+                    throw new LocalVariableNotFoundException(token.getRowIndex(), token.getColumnIndex(), token.getLexeme(), symbolTable.getCurrentMethod().getName());
+                }
             }
 
             Type type = variable != null ? variable.getType() : parameter.getType();
