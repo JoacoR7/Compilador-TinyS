@@ -25,6 +25,9 @@ public class TypeVisitor implements Visitor<Type> {
             TokenType.INT_CONSTANT, TokenType.STRING_CONSTANT);
 
     private final List<String> predefinedClasses = List.of("Int", "Str", "Bool", "Array");
+    private boolean isForBlock = false;
+    private int forBlockIndex = 0;
+    private Block currentBlock;
 
 
     // #################################################################
@@ -460,7 +463,16 @@ public class TypeVisitor implements Visitor<Type> {
     public Type visit(VariableNode variableNode){
         Type type = null;
         if(variableNode.getClassName() == null) {
-            variableNode.setClassName(AST.getSymbolTable().getStart().getVariables().get(variableNode.getToken().getLexeme()).getType().getLexeme());
+            Variable variable = AST.getSymbolTable().getStart().getVariables().get(variableNode.getToken().getLexeme());
+            if (isForBlock) {
+                Variable blockVariable = currentBlock.findVariable(variableNode.getToken().getLexeme());
+                if (variable != null && blockVariable != null) {
+                    throw new ASTException(0,0,"TODO");
+                } else if (variable == null && blockVariable != null) {
+                    variable = blockVariable;
+                }
+            }
+            variableNode.setClassName((variable).getType().getLexeme());
             symbolTable.setCurrentClass(symbolTable.getClasses().get(variableNode.getClassName()));
         }
         if (variableNode.getChainedNode() == null) {
@@ -475,12 +487,19 @@ public class TypeVisitor implements Visitor<Type> {
                 }
             } else {
                 if (!variableNode.isChainedNode() && !AST.getSymbolTable().getStart().getVariables().containsKey(variableNode.getToken().getLexeme())) {
-                    throw new VariableNotFoundException(variableNode.getToken().getLexeme());
+                    if (isForBlock && currentBlock.findVariable(variableNode.getToken().getLexeme()) == null) {
+                        throw new VariableNotFoundException(variableNode.getToken().getLexeme());
+                    }
                 }
             }
             if (predefinedClasses.contains(variableNode.getClassName())) {
                 TokenDefinitions tokenDefinitions = new TokenDefinitions();
-                type = new Type(tokenDefinitions.getPrimitiveTypes().get(variableNode.getClassName()), variableNode.getClassName());
+                if (!variableNode.getClassName().equals("Array")) {
+                    type = new Type(tokenDefinitions.getPrimitiveTypes().get(variableNode.getClassName()), variableNode.getClassName());
+                } else {
+                    type = symbolTable.getCurrentMethod().getVariables().get(variableNode.getToken().getLexeme()).getType();
+                }
+
             } else {
 
                 Class currentClass = AST.getSymbolTable().getClasses().get(variableNode.getClassName());
@@ -611,7 +630,17 @@ public class TypeVisitor implements Visitor<Type> {
             );
         }
 
+        isForBlock = true;
+        if (currentBlock == null) {
+            currentBlock = symbolTable.getCurrentMethod().getBlocks().get(forBlockIndex);
+        } else {
+            currentBlock = currentBlock.getSubBlock();
+        }
+
         forNode.getSentenceNode().accept(this);
+        forBlockIndex++;
+        currentBlock = null;
+        isForBlock = false;
         return null;
     }
 
