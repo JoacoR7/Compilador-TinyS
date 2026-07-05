@@ -5,12 +5,14 @@ import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.semantic.JsonSerializable;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 public class Method implements JsonSerializable {
 
     private Token token;
-    private LinkedHashMap<String, Parameter> parameters = new LinkedHashMap<>();;
-    private LinkedHashMap<String, Variable> variables = new LinkedHashMap<>();;
+    private LinkedHashMap<String, Parameter> parameters = new LinkedHashMap<>();
+    private LinkedHashMap<String, Variable> variables = new LinkedHashMap<>();
+    private LinkedList<Block> blocks = new LinkedList<>();
     private Type type;
     private boolean isStatic;
     private String className;
@@ -18,14 +20,6 @@ public class Method implements JsonSerializable {
 
     public Method(Token token, Type type, boolean isStatic) {
         this.token = token;
-        this.type = type;
-        this.isStatic = isStatic;
-    }
-
-    public Method(Token token, LinkedHashMap<String, Parameter> parameters, LinkedHashMap<String, Variable> variables, Type type, boolean isStatic) {
-        this.token = token;
-        this.parameters = parameters;
-        this.variables = variables;
         this.type = type;
         this.isStatic = isStatic;
     }
@@ -88,6 +82,14 @@ public class Method implements JsonSerializable {
 
     public String getName() {
         return token.getLexeme();
+    }
+
+    public LinkedList<Block> getBlocks() {
+        return blocks;
+    }
+
+    public void setBlocks(LinkedList<Block> blocks) {
+        this.blocks = blocks;
     }
 
     public void insertParameter(Type type, String name) {

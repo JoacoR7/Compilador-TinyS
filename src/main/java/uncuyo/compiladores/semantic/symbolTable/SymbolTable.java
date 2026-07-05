@@ -14,21 +14,17 @@ public class SymbolTable implements JsonSerializable {
     private LinkedHashMap<String, Class> classes;
     private Class currentClass;
     private Method currentMethod;
+    private Block currentBlock;
     private Method start;
 
     public SymbolTable() {
         this.classes = new LinkedHashMap<>();
         this.currentClass = null;
         this.currentMethod = null;
+        this.currentBlock = null;
         this.start = null;
     }
 
-    public SymbolTable(LinkedHashMap<String, Class> classes, Class currentClass, Method currentMethod, Method start) {
-        this.classes = classes;
-        this.currentClass = currentClass;
-        this.currentMethod = currentMethod;
-        this.start = start;
-    }
 
     public LinkedHashMap<String, Class> getClasses() {
         return classes;
@@ -60,6 +56,14 @@ public class SymbolTable implements JsonSerializable {
 
     public void setStart(Method start) {
         this.start = start;
+    }
+
+    public Block getCurrentBlock() {
+        return currentBlock;
+    }
+
+    public void setCurrentBlock(Block currentBlock) {
+        this.currentBlock = currentBlock;
     }
 
     public Class searchOriginalClass(String idclass) {
