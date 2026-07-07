@@ -4,6 +4,7 @@ import uncuyo.compiladores.exceptions.lexical.LexerFileReadException;
 import uncuyo.compiladores.exceptions.lexical.LexicalException;
 import uncuyo.compiladores.exceptions.semantic.SemanticException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.ConstructorRedefinitionException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.ForVariableOutOfScopeException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.LocalVariableNotFoundException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.VariableNotFoundException;
 import uncuyo.compiladores.exceptions.syntactic.MethodOutsideImplException;
@@ -688,13 +689,11 @@ public class SemanticAnalyzer {
         } else if (checkType(TokenType.KW_FOR)) {
             matchTokenType(TokenType.KW_FOR);
             matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
+            Block previousBlock = symbolTable.getCurrentBlock();
             Block block = new Block(symbolTable.getCurrentMethod());
-            if (symbolTable.getCurrentBlock() == null) {
-                symbolTable.getCurrentMethod().getBlocks().add(block);
-                symbolTable.setCurrentBlock(block);
-            } else {
-                symbolTable.getCurrentBlock().setSubBlock(block);
-            }
+            symbolTable.getCurrentMethod().getBlocks().add(block);
+            block.setParent(previousBlock);
+            symbolTable.setCurrentBlock(block);
             Type type = tipoPrimitivo();
             VariableNode variableNode1 = new VariableNode(currentToken,null,symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null, symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start");
             block.getVariables().put(currentToken.getLexeme() , new Variable(currentToken,type));
@@ -704,7 +703,7 @@ public class SemanticAnalyzer {
             matchTokenType(TokenType.IDENTIFIER_VAR_METHOD);
             matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
             sentenceNode = new ForNode(type, variableNode1, variableNode2, sentencia());
-            symbolTable.setCurrentBlock(null);
+            symbolTable.setCurrentBlock(previousBlock);
         } else if (checkType(TokenType.SPECIAL_SYMBOL_LCB)) {
             sentenceNode = bloque();
         } else if (checkType(TokenType.KW_IF)) {
@@ -1398,6 +1397,9 @@ public class SemanticAnalyzer {
                     variable = symbolTable.getCurrentBlock().findVariable(token.getLexeme());
                 }
                 if (variable == null) {
+                    if (symbolTable.getCurrentBlock() != null) {
+                        throw new ForVariableOutOfScopeException(token.getRowIndex(), token.getColumnIndex(), token.getLexeme(), symbolTable.getCurrentMethod().getName());
+                    }
                     throw new LocalVariableNotFoundException(token.getRowIndex(), token.getColumnIndex(), token.getLexeme(), symbolTable.getCurrentMethod().getName());
                 }
             }
