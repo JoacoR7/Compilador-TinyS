@@ -25,7 +25,6 @@ public class TypeVisitor implements Visitor<Type> {
             TokenType.INT_CONSTANT, TokenType.STRING_CONSTANT);
 
     private final List<String> predefinedClasses = List.of("Int", "Str", "Bool", "Array");
-    private boolean isForBlock = false;
     private int forBlockIndex = 0;
     private Block currentBlock;
 
@@ -464,7 +463,7 @@ public class TypeVisitor implements Visitor<Type> {
         Type type = null;
         if(variableNode.getClassName() == null) {
             Variable variable = AST.getSymbolTable().getStart().getVariables().get(variableNode.getToken().getLexeme());
-            if (isForBlock) {
+            if (currentBlock != null) {
                 Variable blockVariable = currentBlock.findVariable(variableNode.getToken().getLexeme());
                 if (variable != null && blockVariable != null) {
                     throw new ASTException(0,0,"TODO");
@@ -487,7 +486,7 @@ public class TypeVisitor implements Visitor<Type> {
                 }
             } else {
                 if (!variableNode.isChainedNode() && !AST.getSymbolTable().getStart().getVariables().containsKey(variableNode.getToken().getLexeme())) {
-                    if (isForBlock && currentBlock.findVariable(variableNode.getToken().getLexeme()) == null) {
+                    if (currentBlock != null && currentBlock.findVariable(variableNode.getToken().getLexeme()) == null) {
                         throw new VariableNotFoundException(variableNode.getToken().getLexeme());
                     }
                 }
@@ -630,17 +629,11 @@ public class TypeVisitor implements Visitor<Type> {
             );
         }
 
-        isForBlock = true;
-        if (currentBlock == null) {
-            currentBlock = symbolTable.getCurrentMethod().getBlocks().get(forBlockIndex);
-        } else {
-            currentBlock = currentBlock.getSubBlock();
-        }
+        Block savedBlock = currentBlock;
+        currentBlock = symbolTable.getCurrentMethod().getBlocks().get(forBlockIndex++);
 
         forNode.getSentenceNode().accept(this);
-        forBlockIndex++;
-        currentBlock = null;
-        isForBlock = false;
+        currentBlock = savedBlock;
         return null;
     }
 

@@ -8,7 +8,7 @@ public class Block implements JsonSerializable {
 
 
     private LinkedHashMap<String, Variable> variables = new LinkedHashMap<>();
-    private Block subBlock;
+    private Block parent;
     private Method method;
 
     public Block(Method method) {
@@ -23,12 +23,12 @@ public class Block implements JsonSerializable {
         this.variables = variables;
     }
 
-    public Block getSubBlock() {
-        return subBlock;
+    public Block getParent() {
+        return parent;
     }
 
-    public void setSubBlock(Block subBlock) {
-        this.subBlock = subBlock;
+    public void setParent(Block parent) {
+        this.parent = parent;
     }
 
     public Method getMethod() {
@@ -46,8 +46,8 @@ public class Block implements JsonSerializable {
             return variable;
         }
 
-        if (subBlock != null) {
-            return subBlock.findVariable(variableName);
+        if (parent != null) {
+            return parent.findVariable(variableName);
         }
 
         return null;
