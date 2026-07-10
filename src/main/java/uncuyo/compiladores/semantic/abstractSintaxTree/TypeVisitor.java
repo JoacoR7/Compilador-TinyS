@@ -466,7 +466,12 @@ public class TypeVisitor implements Visitor<Type> {
             if (currentBlock != null) {
                 Variable blockVariable = currentBlock.findVariable(variableNode.getToken().getLexeme());
                 if (variable != null && blockVariable != null) {
-                    throw new ASTException(0,0,"TODO");
+                    throw new VariableRedeclarationInForLoopException(
+                            variableNode.getToken().getRowIndex(),
+                            variableNode.getToken().getColumnIndex(),
+                            variableNode.getToken().getLexeme(),
+                            variableNode.getMethodName()
+                    );
                 } else if (variable == null && blockVariable != null) {
                     variable = blockVariable;
                 }
@@ -509,11 +514,38 @@ public class TypeVisitor implements Visitor<Type> {
 
                     if (currentMethod != null){
                         if (currentMethod.getParameters().containsKey(variableNode.getToken().getLexeme())){
+                            if (currentBlock != null && currentBlock.findVariable(variableNode.getToken().getLexeme()) != null) {
+                                throw new VariableRedeclarationInForLoopException(
+                                        variableNode.getToken().getRowIndex(),
+                                        variableNode.getToken().getColumnIndex(),
+                                        variableNode.getToken().getLexeme(),
+                                        variableNode.getMethodName()
+                                );
+                            }
                             type = currentMethod.getParameters().get(variableNode.getToken().getLexeme()).getType();
                         } else if (currentMethod.getVariables().containsKey(variableNode.getToken().getLexeme())){
+                            if (currentBlock != null && currentBlock.findVariable(variableNode.getToken().getLexeme()) != null) {
+                                throw new VariableRedeclarationInForLoopException(
+                                        variableNode.getToken().getRowIndex(),
+                                        variableNode.getToken().getColumnIndex(),
+                                        variableNode.getToken().getLexeme(),
+                                        variableNode.getMethodName()
+                                );
+                            }
                             type = currentMethod.getVariables().get(variableNode.getToken().getLexeme()).getType();
                         } else {
-                            type = currentClass.getAttributes().get(variableNode.getToken().getLexeme()).getType();
+                            if (currentBlock != null) {
+                                Variable blockVariable = currentBlock.findVariable(variableNode.getToken().getLexeme());
+                                if (blockVariable != null) {
+                                    type = blockVariable.getType();
+                                }
+                            }
+                            if (type == null) {
+                                Attribute attr = currentClass.getAttributes().get(variableNode.getToken().getLexeme());
+                                if (attr != null) {
+                                    type = attr.getType();
+                                }
+                            }
                         }
                     } else if (attribute != null) {
                         type = attribute.getType();
