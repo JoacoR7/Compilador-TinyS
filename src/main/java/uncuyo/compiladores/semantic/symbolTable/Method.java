@@ -104,6 +104,12 @@ public class Method implements JsonSerializable {
                     newVariable.getName(),
                     this.getName());
         }
+        if (this.getVariables().containsKey(newVariable.getName())) {
+            throw new VariableAlreadyDefined(newVariable.getToken().getRowIndex(),
+                    newVariable.getToken().getColumnIndex(),
+                    newVariable.getName(),
+                    this.getName());
+        }
         newVariable.setPosition(this.getVariables().size());
         this.getVariables().put(newVariable.getName(), newVariable);
     }
