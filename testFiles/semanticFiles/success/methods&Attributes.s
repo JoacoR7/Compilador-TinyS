@@ -2,7 +2,9 @@ impl A {
     .(){}
     fn m1(){}
     st fn m2(){}
-    st fn Int m3(){}
+    st fn Int m3(){
+        ret 1;
+    }
 }
 
 impl A {

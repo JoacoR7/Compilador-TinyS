@@ -9,7 +9,10 @@ impl Base {
         i1 = 1 + 1;
     }
     fn m1(Int i1) {}
-    fn Array Int m3() {}
+    fn Array Int m3() {
+        Array Int a;
+        ret a;
+    }
 }
 
 class Sub : Base {

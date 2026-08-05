@@ -635,6 +635,14 @@ public class TypeVisitor implements Visitor<Type> {
         }
         for (SentenceNode sentence : blockNode.getSentences()) {
             sentence.accept(this);
+            blockNode.setHasReturn(blockNode.isHasReturn() || sentence.isHasReturn());
+        }
+        if (symbolTable.getCurrentMethod() != null) {
+            if (!symbolTable.getCurrentMethod().getType().getLexeme().equals("void")) {
+                if (!blockNode.isHasReturn()) {
+                    throw new MissingReturnException(symbolTable.getCurrentMethod());
+                }
+            }
         }
         return null;
     }
@@ -665,6 +673,7 @@ public class TypeVisitor implements Visitor<Type> {
         currentBlock = symbolTable.getCurrentMethod().getBlocks().get(forBlockIndex++);
 
         forNode.getSentenceNode().accept(this);
+        forNode.setHasReturn(forNode.getSentenceNode().isHasReturn());
         currentBlock = savedBlock;
         return null;
     }
@@ -678,6 +687,15 @@ public class TypeVisitor implements Visitor<Type> {
         if (ifElseNode.getSentenceNodeElse() != null) {
             ifElseNode.getSentenceNodeElse().accept(this);
         }
+
+        // Casos para verificar si el nodo tiene retorno
+        // Caso A: Sólo hay nodo if
+        if (ifElseNode.getSentenceNodeElse() == null) {
+            ifElseNode.setHasReturn(ifElseNode.getSentenceNodeIf().isHasReturn());
+        } else {
+            // Caso B: Tiene nodo if y else
+            ifElseNode.setHasReturn(ifElseNode.getSentenceNodeIf().isHasReturn() && ifElseNode.getSentenceNodeElse().isHasReturn());
+        }
         return null;
     }
 
@@ -687,6 +705,7 @@ public class TypeVisitor implements Visitor<Type> {
         if (!Type.areCompatible(returnType, symbolTable.getCurrentMethod().getType())) {
             throw new InvalidReturnException(returnNode.getToken(), symbolTable.getCurrentMethod(), returnType);
         }
+        returnNode.setHasReturn(true);
         return returnType;
     }
 
@@ -704,6 +723,7 @@ public class TypeVisitor implements Visitor<Type> {
             throw new TypeMismatchException(whileNode.getToken().getRowIndex(), whileNode.getToken().getColumnIndex(), "Bool", expressionType.getTypeName());
         }
         whileNode.getSentenceNode().accept(this);
+        whileNode.setHasReturn(whileNode.getSentenceNode().isHasReturn());
         return null;
     }
 

@@ -3,7 +3,7 @@ impl A {
     .() {}
     fn Int metodo(Bool b) {
         if (b)
-            ret 1;
+            ret b;
         // error: si b es false no hay ret
     }
 }
