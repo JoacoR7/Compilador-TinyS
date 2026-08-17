@@ -1,9 +1,13 @@
+class A {
+}
+impl A {
+    .() {}
+}
 start {
-    Int x;
-    x = 5;
-    if (x > 3) {
-        (IO.out_str("mayor"));
-    } else {
-        (IO.out_str("menor"));
-    }
+    A a;
+    a = new A();
+    if (true)
+        (IO.out_str("si"));
+    else
+        (IO.out_str("no"));
 }

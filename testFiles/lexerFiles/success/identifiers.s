@@ -1,0 +1,1 @@
+Foo bar x nombre1 fooBar Class1 foo_bar x1

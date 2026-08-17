@@ -1,0 +1,1 @@
+"hola\nmundo" "tab\there" "comillas\"dobles" "barra\\invertida" "retorno\rcarro"

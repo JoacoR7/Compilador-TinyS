@@ -691,7 +691,9 @@ public class TypeVisitor implements Visitor<Type> {
         // Casos para verificar si el nodo tiene retorno
         // Caso A: Sólo hay nodo if
         if (ifElseNode.getSentenceNodeElse() == null) {
-            ifElseNode.setHasReturn(ifElseNode.getSentenceNodeIf().isHasReturn());
+            //ifElseNode.setHasReturn(ifElseNode.getSentenceNodeIf().isHasReturn());
+            // Debería ser siempre falso ya que si el método es solo un if con un return, solo retornará en caso de que se cumpla la condición
+            ifElseNode.setHasReturn(false);
         } else {
             // Caso B: Tiene nodo if y else
             ifElseNode.setHasReturn(ifElseNode.getSentenceNodeIf().isHasReturn() && ifElseNode.getSentenceNodeElse().isHasReturn());
