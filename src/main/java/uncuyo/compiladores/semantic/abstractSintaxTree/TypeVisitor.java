@@ -331,6 +331,15 @@ public class TypeVisitor implements Visitor<Type> {
         if (selfNode.getChainedNode() == null) {
             selfNode.setType(type);
         } else {
+            Method method = symbolTable.getCurrentMethod();
+            if (method != null && method.isStatic()){
+                Token token = selfNode.getToken();
+                throw new SelfUsedInStaticMehthodException(token.getRowIndex(),
+                        token.getColumnIndex(),
+                        method.getName(),
+                        method.getClassName());
+            }
+
             Token chainedNodeToken = selfNode.getChainedNode().getToken();
             Attribute attribute = currentClass.getAttributes().get(chainedNodeToken.getLexeme());
             if (attribute != null && attribute.isPrivate()) {
@@ -420,6 +429,14 @@ public class TypeVisitor implements Visitor<Type> {
         if (simpleSelfNode.getSimpleChainedNode() == null) {
             return null;
         } else {
+            Method method = symbolTable.getCurrentMethod();
+            if (method != null && method.isStatic()){
+                Token token = simpleSelfNode.getToken();
+                throw new SelfUsedInStaticMehthodException(token.getRowIndex(),
+                        token.getColumnIndex(),
+                        method.getName(),
+                        method.getClassName());
+            }
             return simpleSelfNode.getSimpleChainedNode().accept(this);
         }
     }
@@ -436,7 +453,7 @@ public class TypeVisitor implements Visitor<Type> {
                     throw new InvalidAttributeAccessException(auxToken.getRowIndex(), auxToken.getColumnIndex(), auxToken.getLexeme(), currentClass.getName());
                 }
             }
-            
+
             simpleVariableNode.getSimpleChainedNode().setClassName(currentClass.getName());
             return simpleVariableNode.getSimpleChainedNode().accept(this);
         }

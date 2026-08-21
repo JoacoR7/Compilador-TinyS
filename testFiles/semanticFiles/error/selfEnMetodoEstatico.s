@@ -3,7 +3,7 @@ class A {
 }
 impl A {
     .() {}
-    st fn void metodo() {
+    st fn void funcionA() {
         self.x = 5;
     }
 }

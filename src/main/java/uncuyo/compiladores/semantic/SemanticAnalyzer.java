@@ -1457,8 +1457,9 @@ public class SemanticAnalyzer {
     ⟨AccesoSelf⟩ ::= self ⟨AccesoSelfF⟩
     */
     public SelfNode accesoSelf() throws LexicalException, SyntacticException {
+        Token auxToken = currentToken;
         matchTokenType(TokenType.KW_SELF);
-        return new SelfNode(accesoSelfF());
+        return new SelfNode(auxToken, accesoSelfF());
     }
 
     /*

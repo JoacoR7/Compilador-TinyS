@@ -14,7 +14,7 @@ import java.util.Map;
 public class Pruebas {
     public static void main(String[] args) throws IOException, LexicalException, SyntacticException {
         Map<String, String> env = System.getenv();
-        Lexer lexer = new Lexer(env.get("TEST_PATH") + "\\semanticFiles\\success\\forInsideMethod.s");
+        Lexer lexer = new Lexer(env.get("TEST_PATH") + "\\semanticFiles\\error\\selfEnMetodoEstatico2.s");
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(lexer, lexer.getNextToken());
         semanticAnalyzer.program();
         SymbolTable symbolTable = semanticAnalyzer.getSymbolTable();

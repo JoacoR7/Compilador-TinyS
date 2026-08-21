@@ -6,7 +6,7 @@ impl A {
     .(){}
     fn m1(){}
     st fn m2(){}
-    st fn Int m3(){
+    fn Int m3(){
         ret self.i1;
     }
 }
