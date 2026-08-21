@@ -411,6 +411,15 @@ public class TypeVisitor implements Visitor<Type> {
 
         if (!currentClass.getAttributes().containsKey(attributeName)) {
             throw new AttributeNotFoundException(attributeName, currentClass.getName());
+        } else {
+            Attribute attribute = currentClass.getAttributes().get(attributeName);
+            if ( !attribute.getClassName().equals(currentClass.getName()) &&
+                attribute.isPrivate()){
+                throw new InvalidAttributeAccessException(attribute.getToken().getRowIndex(),
+                        attribute.getToken().getColumnIndex(),
+                        attributeName,
+                        attribute.getClassName());
+            }
         }
 
         Type attributeType = currentClass.getAttributes().get(attributeName).getType();
