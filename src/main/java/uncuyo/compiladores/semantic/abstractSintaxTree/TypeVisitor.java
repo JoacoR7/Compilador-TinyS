@@ -660,8 +660,10 @@ public class TypeVisitor implements Visitor<Type> {
             }
         }
         for (SentenceNode sentence : blockNode.getSentences()) {
-            sentence.accept(this);
-            blockNode.setHasReturn(blockNode.isHasReturn() || sentence.isHasReturn());
+            if (sentence != null) {
+                sentence.accept(this);
+                blockNode.setHasReturn(blockNode.isHasReturn() || sentence.isHasReturn());
+            }
         }
         if (symbolTable.getCurrentMethod() != null) {
             if (!symbolTable.getCurrentMethod().getType().getLexeme().equals("void")) {
