@@ -216,8 +216,7 @@ public class TokenClassifier {
                 lexer.incrementPosition();
                 buffer.append("\"");
                 endString = true;
-            }
-            else if (c == '\\') {
+            } else if (c == '\\') {
 
                 lexer.incrementPosition();
 
