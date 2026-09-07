@@ -1,0 +1,3 @@
+start {
+    while ("no") { ; }
+}

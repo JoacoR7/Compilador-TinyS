@@ -89,6 +89,7 @@ public class SemanticAnalyzer {
         symbolTable.consolidate();
         AST.setSymbolTable(symbolTable);
         ast.consolidate();
+        ast.generate();
     }
 
     /*
