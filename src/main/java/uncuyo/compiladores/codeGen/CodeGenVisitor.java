@@ -1,9 +1,16 @@
-package uncuyo.compiladores.semantic.abstractSintaxTree;
+package uncuyo.compiladores.codeGen;
 
+import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.*;
 import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.*;
 
 public class CodeGenVisitor implements Visitor<Void> {
+
+    private CodeGenerator codeGenerator;
+    public CodeGenVisitor() {
+        this.codeGenerator = new CodeGenerator();
+    }
+
     // #################################################################
     // #               Visitor codeGen de expresiones                  #
     // #################################################################
@@ -135,7 +142,12 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(BlockNode blockNode) {
-        // TODO: Generar el codigo MIPS para las sentencias de un bloque.
+        for (SentenceNode sentence : blockNode.getSentences()) {
+            if (sentence != null) {
+                sentence.accept(this);
+                blockNode.setHasReturn(blockNode.isHasReturn() || sentence.isHasReturn());
+            }
+        }
         return null;
     }
 
@@ -165,7 +177,7 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(SimpleSentenceNode simpleSentenceNode) {
-        // TODO: Generar el codigo MIPS para una sentencia simple.
+        simpleSentenceNode.getExpressionNode().accept(this);
         return null;
     }
 
