@@ -26,8 +26,8 @@
         .word out_str
         .word out_int
         .word out_bool
-        .word out_array_str
         .word out_array_int
+        .word out_array_str
         .word out_array_bool
         .word in_str
         .word in_int

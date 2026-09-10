@@ -1,6 +1,7 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree;
 
 import uncuyo.compiladores.codeGen.CodeGenVisitor;
+import uncuyo.compiladores.codeGen.CodeGenerator;
 import uncuyo.compiladores.semantic.JsonSerializable;
 import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.BlockNode;
 import uncuyo.compiladores.semantic.symbolTable.Method;
@@ -14,6 +15,7 @@ public class AST implements JsonSerializable {
     private LinkedList<BlockNode> blockNodes = new LinkedList<>();
     private BlockNode startBlockNode;
     private static SymbolTable symbolTable;
+    private CodeGenerator codeGenerator;
 
     public AST() {
     }
@@ -72,6 +74,11 @@ public class AST implements JsonSerializable {
             codeGenVisitor.visit(blockNode);
         }
         codeGenVisitor.visit(startBlockNode);
+        this.codeGenerator = codeGenVisitor.getCodeGenerator();
+    }
+
+    public CodeGenerator getCodeGenerator() {
+        return codeGenerator;
     }
 
 

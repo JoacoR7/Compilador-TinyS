@@ -1,4 +1,20 @@
 .text
+    out_str:
+        # Empiezo out_str
+        move $fp $sp
+        sw $ra 0($fp)
+        addiu $sp $sp -4
+
+        # Se carga la direccion de memoria del string en $a0
+        lw $a0 4($fp)
+        li $v0 4
+        syscall
+
+        # Se restaura el $ra
+        lw $ra 0($fp)
+        addiu $sp $sp 4
+        jr $ra
+
     out_int:
         # Empiezo out_int
         move $fp $sp
@@ -16,7 +32,7 @@
         jr $ra
 
     out_bool:
-        # Empiezo out_int
+        # Empiezo out_bool
         move $fp $sp
         sw $ra 0($fp)
         addiu $sp $sp -4

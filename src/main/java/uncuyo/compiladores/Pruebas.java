@@ -14,7 +14,7 @@ import java.util.Map;
 public class Pruebas {
     public static void main(String[] args) throws IOException, LexicalException, SyntacticException {
         Map<String, String> env = System.getenv();
-        Lexer lexer = new Lexer(env.get("TEST_PATH") + "\\semanticFiles\\error\\accesoAtributoPrivadoHerencia.s");
+        Lexer lexer = new Lexer(env.get("TEST_PATH") + "\\codeGenFiles\\success\\literalesStrRepetidos.s");
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(lexer, lexer.getNextToken());
         semanticAnalyzer.program();
         SymbolTable symbolTable = semanticAnalyzer.getSymbolTable();
@@ -26,5 +26,7 @@ public class Pruebas {
         System.out.println(symbolTable.toJson(""));
         System.out.println("###### AST ######");
         System.out.println(ast.toJson(""));
+        System.out.println("###### CODIGO GENERADO ######");
+        System.out.println(ast.getCodeGenerator().generate());
     }
 }
