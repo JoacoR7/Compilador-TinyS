@@ -1,4 +1,3 @@
-.text
     out_str:
         # Empiezo out_str
         move $fp $sp

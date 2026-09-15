@@ -1,5 +1,6 @@
 package uncuyo.compiladores.codeGen;
 
+import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.lexer.TokenType;
 import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.*;
@@ -71,13 +72,23 @@ public class CodeGenVisitor implements Visitor<Void> {
     @Override
     public Void visit(LiteralNode literalNode) {
 
-        TokenType tokenType = literalNode.getToken().getTokenType();
-        if (tokenType == TokenType.STRING_CONSTANT) {
-            String label = codeGenerator.emitString(literalNode.getToken().getLexeme());
-            codeGenerator.emitText("la $a0 " + label);
-        } else if (tokenType == TokenType.INT_CONSTANT) {
-            codeGenerator.emitText("la $a0 " + literalNode.getToken().getLexeme());
+        Token token = literalNode.getToken();
+        switch (token.getTokenType()){
+            case TokenType.STRING_CONSTANT:
+                codeGenerator.emitText("la $a0 " + codeGenerator.emitString(token.getLexeme()));
+                break;
+            case TokenType.INT_CONSTANT:
+                codeGenerator.emitText("li $a0 " + token.getLexeme());
+                break;
+            case TokenType.BOOLEAN_CONSTANT:
+                codeGenerator.emitText("li $a0 " + (token.getLexeme().equals("true") ? 1 : 0));
+                break;
+            case KW_NIL:
+                codeGenerator.emitText("li $a0 0");
+            default:
+                break;
         }
+
         // TODO: Generar el codigo MIPS para los literales BOOLEAN_CONSTANT y KW_NIL.
         return null;
     }
@@ -156,6 +167,7 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(BlockNode blockNode) {
+        codeGenerator.setInMain("start".equals(blockNode.getMethodName()));
         for (SentenceNode sentence : blockNode.getSentences()) {
             if (sentence != null) {
                 sentence.accept(this);
