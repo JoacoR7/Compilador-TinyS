@@ -1,3 +1,7 @@
+#############################
+#       COMIENZO INIT       #
+#############################
+
 empty_str: .asciiz ""
 true_str: .asciiz "true"
 false_str: .asciiz "false"
@@ -31,3 +35,7 @@ vtable_IO:
     .word in_str
     .word in_int
     .word in_bool
+
+#############################
+#          FIN INIT         #
+#############################

@@ -1,5 +1,7 @@
 package uncuyo.compiladores.codeGen;
 
+import uncuyo.compiladores.semantic.symbolTable.Method;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -185,6 +187,10 @@ public class CodeGenerator {
                 + "\n"
 
                 + ".text\n"
+
+                + indentBlock(baseText, 4)
+                + text
+
                 + "    .globl main\n"
                 + "\n"
 
@@ -192,10 +198,7 @@ public class CodeGenerator {
                 + main
                 + "        li $v0 10\n"
                 + "        syscall\n"
-                + "\n"
-
-                + indentBlock(baseText, 4)
-                + text;
+                + "\n";
     }
 
     /**
@@ -206,5 +209,11 @@ public class CodeGenerator {
                 Path.of(path),
                 generate()
         );
+    }
+
+    public void generateStackFrame(Method method) {
+        int variableCount = method.getVariables().size();
+        int parameterCount = method.getParameters().size();
+
     }
 }

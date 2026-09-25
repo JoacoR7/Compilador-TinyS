@@ -1,4 +1,8 @@
 .data
+    #############################
+    #       COMIENZO INIT       #
+    #############################
+
     empty_str: .asciiz ""
     true_str: .asciiz "true"
     false_str: .asciiz "false"
@@ -32,19 +36,18 @@
         .word in_str
         .word in_int
         .word in_bool
+
+    #############################
+    #          FIN INIT         #
+    #############################
+
     str_0:
         .asciiz "hola mundo"
 
 .text
-    .globl main
-
-    main:
-        li $a0 42
-        li $a0 1
-        la $a0 str_0
-        la $a0 empty_str
-        li $v0 10
-        syscall
+    #############################
+    #       COMIENZO INIT       #
+    #############################
 
     out_str:
         # Empiezo out_str
@@ -100,4 +103,18 @@
         la $a0 false_str
         jr $ra
 
+    #############################
+    #          FIN INIT         #
+    #############################
+
+
+    .globl main
+
+    main:
+        li $a0 42
+        li $a0 1
+        la $a0 str_0
+        la $a0 empty_str
+        li $v0 10
+        syscall
 

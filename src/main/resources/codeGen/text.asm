@@ -1,3 +1,7 @@
+#############################
+#       COMIENZO INIT       #
+#############################
+
 out_str:
     # Empiezo out_str
     move $fp $sp
@@ -51,4 +55,8 @@ out_bool:
 load_false:
     la $a0 false_str
     jr $ra
+
+#############################
+#          FIN INIT         #
+#############################
 
