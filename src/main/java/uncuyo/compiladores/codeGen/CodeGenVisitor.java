@@ -1,5 +1,7 @@
 package uncuyo.compiladores.codeGen;
 
+import uncuyo.compiladores.lexer.Token;
+import uncuyo.compiladores.lexer.TokenType;
 import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.*;
 import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.*;
@@ -9,6 +11,10 @@ public class CodeGenVisitor implements Visitor<Void> {
     private CodeGenerator codeGenerator;
     public CodeGenVisitor() {
         this.codeGenerator = new CodeGenerator();
+    }
+
+    public CodeGenerator getCodeGenerator() {
+        return codeGenerator;
     }
 
     // #################################################################
@@ -65,7 +71,25 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(LiteralNode literalNode) {
-        // TODO: Generar el codigo MIPS para cargar un literal.
+
+        Token token = literalNode.getToken();
+        switch (token.getTokenType()){
+            case TokenType.STRING_CONSTANT:
+                codeGenerator.emitText("la $a0 " + codeGenerator.emitString(token.getLexeme()));
+                break;
+            case TokenType.INT_CONSTANT:
+                codeGenerator.emitText("li $a0 " + token.getLexeme());
+                break;
+            case TokenType.BOOLEAN_CONSTANT:
+                codeGenerator.emitText("li $a0 " + (token.getLexeme().equals("true") ? 1 : 0));
+                break;
+            case KW_NIL:
+                codeGenerator.emitText("li $a0 0");
+            default:
+                break;
+        }
+
+        // TODO: Generar el codigo MIPS para los literales BOOLEAN_CONSTANT y KW_NIL.
         return null;
     }
 
@@ -136,12 +160,14 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(AssignmentNode assignmentNode) {
-        // TODO: Generar el codigo MIPS para una asignacion.
+        assignmentNode.getExpressionNode().accept(this);
+        // TODO: Falta hacer el lado izquiero para guardar lo que hay en $a0
         return null;
     }
 
     @Override
     public Void visit(BlockNode blockNode) {
+        codeGenerator.setInMain("start".equals(blockNode.getMethodName()));
         for (SentenceNode sentence : blockNode.getSentences()) {
             if (sentence != null) {
                 sentence.accept(this);
