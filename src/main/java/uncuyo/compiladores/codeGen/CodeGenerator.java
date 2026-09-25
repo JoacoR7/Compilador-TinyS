@@ -1,6 +1,8 @@
 package uncuyo.compiladores.codeGen;
 
 import uncuyo.compiladores.semantic.symbolTable.Method;
+import uncuyo.compiladores.semantic.symbolTable.Type;
+import uncuyo.compiladores.semantic.symbolTable.Variable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -211,9 +213,72 @@ public class CodeGenerator {
         );
     }
 
-    public void generateStackFrame(Method method) {
-        int variableCount = method.getVariables().size();
-        int parameterCount = method.getParameters().size();
+    public void generateMethodPrologue(Method method) {
 
+        int variableSpace = method.getVariables().size() * 4;
+
+        emitText("# Prologue de " + method.getName());
+
+        emitText("move $fp, $sp");
+        emitText("sw $ra, 0($fp)");
+
+        int frameSpace = 4 + variableSpace;
+
+        emitText("addiu $sp, $sp, -" + frameSpace);
+
+        initializeLocalVariables(method);
+
+        emitText("# Fin Prologue de " + method.getName());
     }
+
+    /*
+        Según el tipo:
+            Int  -> referencia a CIR Int(0)
+            Bool -> referencia a CIR Bool(false)
+            Str  -> referencia a CIR Str("")
+            Clase -> nil
+            Array -> nil
+     */
+    public void initializeLocalVariables(Method method) {
+        emitText("# Inicializacion variables locales de " + method.getName());
+        for (Variable variable : method.getVariables().values()) {
+            emitText("# Inicializacion de " + variable.getName());
+            int offset = -((variable.getPosition() + 1) * 4);
+            switch (variable.getType().getTypeName()) {
+                case "Int":
+                case "Bool":
+                    emitText("li $a0, 8");
+                    emitText("li $v0, 9");
+                    emitText("syscall");
+                    emitText("sw $zero, 0($v0)");
+                    emitText("sw $zero, 4($v0)");
+                    break;
+                case "Str":
+                    emitText("li $a0, 8");
+                    emitText("li $v0, 9");
+                    emitText("syscall");
+                    emitText("la $t0, empty_str");
+                    emitText("sw $t0, 4($v0)");
+                    emitText("la $t0, vtable_str");
+                    emitText("sw $t0, 0($v0)");
+                    break;
+            }
+
+            emitText("addiu $a0, $fp, " + offset);
+            emitText("sw $v0, 0($a0)");
+        }
+    }
+
+    public void generateMethodEpilogue(Method method) {
+        int parameterSpace = method.getParameters().size() * 4;
+        int variableSpace = method.getVariables().size() * 4;
+
+        int frameSpace = 16 + parameterSpace + variableSpace;
+
+        emitText("# Epilogue de " + method.getName());
+        emitText("addiu $sp, $sp, " + frameSpace);
+        emitText("jr $ra");
+    }
+
+
 }

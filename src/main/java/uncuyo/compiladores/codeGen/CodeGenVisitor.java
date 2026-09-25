@@ -2,9 +2,11 @@ package uncuyo.compiladores.codeGen;
 
 import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.lexer.TokenType;
+import uncuyo.compiladores.semantic.abstractSintaxTree.AST;
 import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.*;
 import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.*;
+import uncuyo.compiladores.semantic.symbolTable.Method;
 
 public class CodeGenVisitor implements Visitor<Void> {
 
@@ -165,8 +167,23 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(BlockNode blockNode) {
-        codeGenerator.setInMain("start".equals(blockNode.getMethodName()));
+        if (blockNode.isMethod()) {
+            codeGenerator.setInMain("start".equals(blockNode.getMethodName()));
+            String className = blockNode.getClassName();
+            String methodName = blockNode.getMethodName();
+            Method method;
+            if (methodName.equals("start")) {
+                method = AST.getSymbolTable().getStart();
+
+            } else {
+                method = AST.getSymbolTable().getClasses().get(className).getMethods().get(methodName);
+                codeGenerator.emitLabel(methodName);
+            }
+            codeGenerator.generateMethodPrologue(method);
+            codeGenerator.emitText("# Body de " + methodName);
+        }
         for (SentenceNode sentence : blockNode.getSentences()) {
+
             if (sentence != null) {
                 sentence.accept(this);
                 blockNode.setHasReturn(blockNode.isHasReturn() || sentence.isHasReturn());
