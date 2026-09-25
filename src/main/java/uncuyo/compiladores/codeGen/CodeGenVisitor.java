@@ -88,8 +88,6 @@ public class CodeGenVisitor implements Visitor<Void> {
             default:
                 break;
         }
-
-        // TODO: Generar el codigo MIPS para los literales BOOLEAN_CONSTANT y KW_NIL.
         return null;
     }
 
