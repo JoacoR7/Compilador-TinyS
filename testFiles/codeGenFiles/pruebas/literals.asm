@@ -41,8 +41,6 @@
     #          FIN INIT         #
     #############################
 
-    str_0:
-        .asciiz "hola mundo"
 
 .text
     .globl main
@@ -51,7 +49,7 @@
         # Prologue de start
         move $fp, $sp
         sw $ra, 0($fp)
-        addiu $sp, $sp, -20
+        addiu $sp, $sp, -8
         # Inicializacion variables locales de start
         # Inicializacion de a
         li $a0, 8
@@ -61,47 +59,16 @@
         sw $zero, 4($v0)
         addiu $a0, $fp, -4
         sw $v0, 0($a0)
-        # Inicializacion de b
-        li $a0, 8
-        li $v0, 9
-        syscall
-        sw $zero, 0($v0)
-        sw $zero, 4($v0)
-        addiu $a0, $fp, -8
-        sw $v0, 0($a0)
-        # Inicializacion de c
-        li $a0, 8
-        li $v0, 9
-        syscall
-        la $t0, empty_str
-        sw $t0, 4($v0)
-        la $t0, vtable_str
-        sw $t0, 0($v0)
-        addiu $a0, $fp, -12
-        sw $v0, 0($a0)
-        # Inicializacion de d
-        li $a0, 8
-        li $v0, 9
-        syscall
-        la $t0, empty_str
-        sw $t0, 4($v0)
-        la $t0, vtable_str
-        sw $t0, 0($v0)
-        addiu $a0, $fp, -16
-        sw $v0, 0($a0)
         # Fin Prologue de start
         # Body de start
-        li $a0 42
-        lw $t0, -4($fp)
-        sw $a0, 4($t0)
         li $a0 1
-        lw $t0, -8($fp)
-        sw $a0, 4($t0)
-        la $a0 str_0
-        lw $t0, -12($fp)
-        sw $a0, 4($t0)
-        la $a0 empty_str
-        lw $t0, -16($fp)
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        li $a0 1
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        add $a0, $t0, $a0
+        lw $t0, -4($fp)
         sw $a0, 4($t0)
         li $v0 10
         syscall

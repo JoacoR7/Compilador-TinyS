@@ -38,6 +38,25 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(BinaryExpressionNode binaryExpressionNode) {
+        // El valor del nodo izquierdo queda en $a0
+        binaryExpressionNode.getLeftNode().accept(this);
+
+        // Guardo en stack el $a0
+        codeGenerator.push("$a0");
+
+        // El valor del nodo derecho queda en $a0
+        binaryExpressionNode.getRightNode().accept(this);
+
+        // Cargo el valor del nodo izquierdo en $t0 y recupero la pila
+        codeGenerator.pop();
+
+        // Guardo en $a0 el valor de la operación
+        switch (binaryExpressionNode.getBinaryOperatorToken().getTokenType()) {
+            case TokenType.OPERATOR_ADD:
+                codeGenerator.emitText("add $a0, $t0, $a0");
+                break;
+        }
+
         // TODO: Generar el codigo MIPS para una expresion binaria.
         return null;
     }
@@ -181,6 +200,7 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(BlockNode blockNode) {
+        Method currentMethod = null;
         if (blockNode.isMethod()) {
             codeGenerator.setInMain("start".equals(blockNode.getMethodName()));
             String className = blockNode.getClassName();
@@ -192,6 +212,7 @@ public class CodeGenVisitor implements Visitor<Void> {
                 AST.getSymbolTable().setCurrentMethod(AST.getSymbolTable().getClasses().get(className).getMethods().get(methodName));
                 codeGenerator.emitLabel(methodName);
             }
+            currentMethod = AST.getSymbolTable().getCurrentMethod();
             codeGenerator.generateMethodPrologue(AST.getSymbolTable().getCurrentMethod());
             codeGenerator.emitText("# Body de " + methodName);
         }
@@ -201,6 +222,9 @@ public class CodeGenVisitor implements Visitor<Void> {
                 sentence.accept(this);
                 blockNode.setHasReturn(blockNode.isHasReturn() || sentence.isHasReturn());
             }
+        }
+        if (blockNode.isMethod()) {
+            codeGenerator.generateMethodEpilogue(currentMethod);
         }
         return null;
     }

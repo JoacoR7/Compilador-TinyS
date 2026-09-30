@@ -195,8 +195,6 @@ public class CodeGenerator {
 
                 + "    main:\n"
                 + main
-                + "        li $v0 10\n"
-                + "        syscall\n"
                 + "\n"
 
                 + indentBlock(baseText, 4)
@@ -271,18 +269,34 @@ public class CodeGenerator {
     }
 
     public void generateMethodEpilogue(Method method) {
-        int parameterSpace = method.getParameters().size() * 4;
-        int variableSpace = method.getVariables().size() * 4;
+        if (method.getName().equals("start")) {
+            emitText("li $v0 10");
+            emitText("syscall");
+        } else {
+            int parameterSpace = method.getParameters().size() * 4;
+            int variableSpace = method.getVariables().size() * 4;
 
-        int frameSpace = 16 + parameterSpace + variableSpace;
+            int frameSpace = 16 + parameterSpace + variableSpace;
 
-        emitText("# Epilogue de " + method.getName());
-        emitText("addiu $sp, $sp, " + frameSpace);
-        emitText("jr $ra");
+            emitText("# Epilogue de " + method.getName());
+            emitText("addiu $sp, $sp, " + frameSpace);
+            emitText("jr $ra");
+        }
+
     }
 
     public int getVariableOffset(Variable variable) {
         return -((variable.getPosition() + 1) * 4);
+    }
+
+    public void push(String register) {
+        emitText("sw " + register + " 0($sp)");
+        emitText("addiu $sp $sp -4");
+    }
+
+    public void pop() {
+        emitText("lw $t0 4($sp)");
+        emitText("addiu $sp $sp 4");
     }
 
 
