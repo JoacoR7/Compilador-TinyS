@@ -53,11 +53,25 @@ public class CodeGenVisitor implements Visitor<Void> {
         // Guardo en $a0 el valor de la operación
         switch (binaryExpressionNode.getBinaryOperatorToken().getTokenType()) {
             case TokenType.OPERATOR_ADD:
-                codeGenerator.emitText("add $a0, $t0, $a0");
+                codeGenerator.emitText("add $a0 $t0 $a0");
+                break;
+
+            case TokenType.OPERATOR_SUB:
+                codeGenerator.emitText("sub $a0 $t0 $a0");
+                break;
+
+            case TokenType.OPERATOR_MUL:
+                codeGenerator.emitText("mul $a0 $t0 $a0");
+                break;
+
+            case TokenType.OPERATOR_DIV:
+                codeGenerator.emitText("# Checkeo division por 0");
+                codeGenerator.emitText("beqz $a0 runtime_div_zero");
+                codeGenerator.emitText("div $a0 $t0 $a0");
                 break;
         }
 
-        // TODO: Generar el codigo MIPS para una expresion binaria.
+        // TODO: Generar el codigo MIPS para &&, ||, <, <=, ==, >=, >, !=
         return null;
     }
 

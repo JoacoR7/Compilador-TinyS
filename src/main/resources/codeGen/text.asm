@@ -95,6 +95,25 @@ in_int:
 in_bool:
     jr $ra
 
+
+# ========================= #
+#          UTILS            #
+# ========================= #
+exit:
+    li $v0, 10
+    syscall
+
+# ========================= #
+#     RUNTIME EXCEPTIONS    #
+# ========================= #
+
+runtime_div_zero:
+    la $a0, runtime_div_zero_msg
+    li $v0, 4
+    syscall
+
+    j exit
+
 #############################
 #          FIN INIT         #
 #############################
