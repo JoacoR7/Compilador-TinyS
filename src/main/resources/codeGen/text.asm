@@ -56,6 +56,45 @@ load_false:
     la $a0 false_str
     jr $ra
 
+length_str:
+    jr $ra
+
+concat_str:
+    jr $ra
+
+length_array:
+    jr $ra
+
+has_next_array:
+    jr $ra
+
+next_int_array:
+    jr $ra
+
+next_str_array:
+    jr $ra
+
+next_bool_array:
+    jr $ra
+
+out_array_int:
+    jr $ra
+
+out_array_str:
+    jr $ra
+
+out_array_bool:
+    jr $ra
+
+in_str:
+    jr $ra
+
+in_int:
+    jr $ra
+
+in_bool:
+    jr $ra
+
 #############################
 #          FIN INIT         #
 #############################

@@ -190,9 +190,6 @@ public class CodeGenerator {
 
                 + ".text\n"
 
-                + indentBlock(baseText, 4)
-                + text
-
                 + "    .globl main\n"
                 + "\n"
 
@@ -200,7 +197,12 @@ public class CodeGenerator {
                 + main
                 + "        li $v0 10\n"
                 + "        syscall\n"
-                + "\n";
+                + "\n"
+
+                + indentBlock(baseText, 4)
+                + text;
+
+
     }
 
     /**
@@ -243,7 +245,6 @@ public class CodeGenerator {
         emitText("# Inicializacion variables locales de " + method.getName());
         for (Variable variable : method.getVariables().values()) {
             emitText("# Inicializacion de " + variable.getName());
-            int offset = -((variable.getPosition() + 1) * 4);
             switch (variable.getType().getTypeName()) {
                 case "Int":
                 case "Bool":
@@ -264,7 +265,7 @@ public class CodeGenerator {
                     break;
             }
 
-            emitText("addiu $a0, $fp, " + offset);
+            emitText("addiu $a0, $fp, " + getVariableOffset(variable));
             emitText("sw $v0, 0($a0)");
         }
     }
@@ -278,6 +279,10 @@ public class CodeGenerator {
         emitText("# Epilogue de " + method.getName());
         emitText("addiu $sp, $sp, " + frameSpace);
         emitText("jr $ra");
+    }
+
+    public int getVariableOffset(Variable variable) {
+        return -((variable.getPosition() + 1) * 4);
     }
 
 

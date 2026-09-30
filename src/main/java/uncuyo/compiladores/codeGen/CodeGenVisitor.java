@@ -7,6 +7,7 @@ import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.*;
 import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.*;
 import uncuyo.compiladores.semantic.symbolTable.Method;
+import uncuyo.compiladores.semantic.symbolTable.Variable;
 
 public class CodeGenVisitor implements Visitor<Void> {
 
@@ -137,6 +138,13 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(SimpleVariableNode simpleVariableNode) {
+        Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(simpleVariableNode.getToken().getLexeme());
+        if (simpleVariableNode.getSimpleChainedNode() == null) {
+            // Cargo la dirección del objeto en el stack frame
+            codeGenerator.emitText("lw $t0, " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
+            // Cargo el valor en la posicion del value del CIR
+            codeGenerator.emitText("sw $a0, 4($t0)");
+        }
         // TODO: Generar el codigo MIPS para un acceso simple a una variable.
         return null;
     }
@@ -160,7 +168,13 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(AssignmentNode assignmentNode) {
+        // Genero lado derecho de la igualdad
+        // Al terminar, $a0 contiene el valor de la expresión
         assignmentNode.getExpressionNode().accept(this);
+
+        // Guardo $a0 en la ubicación correspondiente
+        // Si es local, guardo en offset($fp)
+        assignmentNode.getSimpleAccessNode().accept(this);
         // TODO: Falta hacer el lado izquiero para guardar lo que hay en $a0
         return null;
     }
@@ -171,15 +185,14 @@ public class CodeGenVisitor implements Visitor<Void> {
             codeGenerator.setInMain("start".equals(blockNode.getMethodName()));
             String className = blockNode.getClassName();
             String methodName = blockNode.getMethodName();
-            Method method;
             if (methodName.equals("start")) {
-                method = AST.getSymbolTable().getStart();
+                AST.getSymbolTable().setCurrentMethod(AST.getSymbolTable().getStart());
 
             } else {
-                method = AST.getSymbolTable().getClasses().get(className).getMethods().get(methodName);
+                AST.getSymbolTable().setCurrentMethod(AST.getSymbolTable().getClasses().get(className).getMethods().get(methodName));
                 codeGenerator.emitLabel(methodName);
             }
-            codeGenerator.generateMethodPrologue(method);
+            codeGenerator.generateMethodPrologue(AST.getSymbolTable().getCurrentMethod());
             codeGenerator.emitText("# Body de " + methodName);
         }
         for (SentenceNode sentence : blockNode.getSentences()) {
