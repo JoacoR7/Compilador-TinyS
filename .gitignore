@@ -38,3 +38,4 @@ build/
 src/etapa1/main/java/uncuyo/compiladores/Pruebas.java
 src/etapa1/main/java/uncuyo/compiladores/prueba.txt
 manual_tinyS.pdf
+testFiles/codeGenFiles/pruebas
