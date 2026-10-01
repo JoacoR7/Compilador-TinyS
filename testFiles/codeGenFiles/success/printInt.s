@@ -1,3 +1,3 @@
 start {
-    (IO.out_int(1));
+    (IO.out_int(50));
 }

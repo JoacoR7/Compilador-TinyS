@@ -1,6 +1,7 @@
 package uncuyo.compiladores.codeGen;
 
 import uncuyo.compiladores.semantic.symbolTable.Method;
+import uncuyo.compiladores.semantic.symbolTable.Parameter;
 import uncuyo.compiladores.semantic.symbolTable.Type;
 import uncuyo.compiladores.semantic.symbolTable.Variable;
 
@@ -213,18 +214,37 @@ public class CodeGenerator {
         );
     }
 
+    public void generateMethodPreCall(Method method) {
+        emitText("# Precall de " + method.getName());
+        // Calculo espacio necesario para parámetros, return, $fp llamador y self
+        int callSpace = getSelfOffset(method);
+        emitText("addiu $sp $sp -" + callSpace);
+
+        // En $a0 está la vtable de la clase (si es estática la llamada) o el objeto llamador
+        emitText("sw $a0 " + getSelfOffset(method) + "($sp)");
+
+        // Calculo el offset del $fp anterior y lo coloco en el RA
+        emitText("sw $fp " + getCallerFpOffset(method) + "($sp)");
+
+        // Calculo el offset del return y lo inicializo en 0 (null)
+        emitText("sw $zero " + getReturnOffset(method) + "($sp)");
+
+        emitText("# Fin de precall de " + method.getName());
+    }
+
     public void generateMethodPrologue(Method method) {
 
         int variableSpace = method.getVariables().size() * 4;
 
         emitText("# Prologue de " + method.getName());
 
-        emitText("move $fp, $sp");
-        emitText("sw $ra, 0($fp)");
+        // Guardo el $fp del RA actual
+        emitText("move $fp $sp");
+        emitText("sw $ra 0($fp)");
 
         int frameSpace = 4 + variableSpace;
 
-        emitText("addiu $sp, $sp, -" + frameSpace);
+        emitText("addiu $sp $sp -" + frameSpace);
 
         initializeLocalVariables(method);
 
@@ -246,25 +266,25 @@ public class CodeGenerator {
             switch (variable.getType().getTypeName()) {
                 case "Int":
                 case "Bool":
-                    emitText("li $a0, 8");
-                    emitText("li $v0, 9");
+                    emitText("li $a0 8");
+                    emitText("li $v0 9");
                     emitText("syscall");
-                    emitText("sw $zero, 0($v0)");
-                    emitText("sw $zero, 4($v0)");
+                    emitText("sw $zero 0($v0)");
+                    emitText("sw $zero 4($v0)");
                     break;
                 case "Str":
-                    emitText("li $a0, 8");
-                    emitText("li $v0, 9");
+                    emitText("li $a0 8");
+                    emitText("li $v0 9");
                     emitText("syscall");
-                    emitText("la $t0, empty_str");
-                    emitText("sw $t0, 4($v0)");
-                    emitText("la $t0, vtable_str");
-                    emitText("sw $t0, 0($v0)");
+                    emitText("la $t0 empty_str");
+                    emitText("sw $t0 4($v0)");
+                    emitText("la $t0 vtable_str");
+                    emitText("sw $t0 0($v0)");
                     break;
             }
 
-            emitText("addiu $a0, $fp, " + getVariableOffset(variable));
-            emitText("sw $v0, 0($a0)");
+            emitText("addiu $a0 $fp " + getVariableOffset(variable));
+            emitText("sw $v0 0($a0)");
         }
     }
 
@@ -279,7 +299,7 @@ public class CodeGenerator {
             int frameSpace = 16 + parameterSpace + variableSpace;
 
             emitText("# Epilogue de " + method.getName());
-            emitText("addiu $sp, $sp, " + frameSpace);
+            emitText("addiu $sp $sp " + frameSpace);
             emitText("jr $ra");
         }
 
@@ -287,6 +307,22 @@ public class CodeGenerator {
 
     public int getVariableOffset(Variable variable) {
         return -((variable.getPosition() + 1) * 4);
+    }
+
+    public int getParameterOffset(Parameter parameter) {
+        return -((parameter.getPosition() + 1) * 4);
+    }
+
+    public int getReturnOffset(Method method) {
+        return (method.getParameters().size() + 1) * 4;
+    }
+
+    public int getCallerFpOffset(Method method) {
+        return (method.getParameters().size() + 2) * 4;
+    }
+
+    public int getSelfOffset(Method method) {
+        return (method.getParameters().size() + 3) * 4;
     }
 
     public void push(String register) {

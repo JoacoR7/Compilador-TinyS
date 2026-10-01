@@ -78,8 +78,50 @@ public class CodeGenVisitor implements Visitor<Void> {
     @Override
     public Void visit(ChainedCallNode chainedCallNode) {
         // ExpressionNodes son los argumentos
+        Token currentToken = chainedCallNode.getToken();
+        if (!chainedCallNode.isChainedNode()) {
+            if (chainedCallNode.getToken().getTokenType() == TokenType.IDENTIFIER_CLASS) {
+
+                String className = currentToken.getLexeme();
+                AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(className));
+                codeGenerator.emitText("# Llamada estática sobre " + className);
+                codeGenerator.emitText("# Guardo la vtable de " + className);
+                codeGenerator.emitText("la $a0, vtable_" + className);
 
 
+            } else if (chainedCallNode.getToken().getTokenType() == TokenType.IDENTIFIER_VAR_METHOD &&
+                    AST.getSymbolTable().getCurrentMethod().getVariables().containsKey(currentToken.getLexeme())) {
+
+            }
+            ChainedNode nextNode = chainedCallNode.getChainedNode();
+            if (nextNode != null) {
+                nextNode.setIsChainedNode(true);
+                nextNode.accept(this);
+            }
+        } else {
+            // Obtengo el método de la clase actual (la clase actual se define cuando se hace llamada estática o directamente cuando obtenemos un objeto buscamos su clase)
+            Method currentMethodCall = AST.getSymbolTable().getCurrentClass().getMethods().get(currentToken.getLexeme());
+            // Genero el precall para reservar espacio para self, $fp llamador, return y parámetros
+            codeGenerator.generateMethodPreCall(currentMethodCall);
+
+            // En este punto el $sp apunta donde debería estar el $fp del RA, pero no hemos generado el prólogo
+            // Empieza en offset 4 ya que ahí está el primer parámetro, si es que tiene
+            int parameterOffset = 4;
+            for(ExpressionNode expressionNode : chainedCallNode.getExpressionNodes()) {
+                // Retorna en $a0 el valor
+                expressionNode.accept(this);
+
+                codeGenerator.emitText("sw $a0 " + parameterOffset + "($sp)");
+                parameterOffset += 4;
+            }
+
+            if (currentMethodCall.isStatic()) {
+                codeGenerator.emitText("lw $a0 " + codeGenerator.getSelfOffset(currentMethodCall) + "($sp)");
+                codeGenerator.emitText("lw $a0 " + (currentMethodCall.getPosition()*4) + "($a0)");
+                codeGenerator.emitText("jalr $a0");
+            }
+
+        }
 
 
         // TODO: Generar el codigo MIPS para una llamada encadenada.

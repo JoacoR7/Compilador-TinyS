@@ -20,18 +20,18 @@ out_str:
 
 out_int:
     # Empiezo out_int
+
     move $fp $sp
     sw $ra 0($fp)
-    addiu $sp $sp -4
 
     # Se carga el parámetro int en $a0
     lw $a0 4($fp)
     li $v0 1
     syscall
 
-    # Se restaura el $ra
     lw $ra 0($fp)
-    addiu $sp $sp 4
+    addiu $sp $fp 16
+    lw $fp 12($fp)
     jr $ra
 
 out_bool:
