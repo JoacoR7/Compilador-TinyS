@@ -77,6 +77,11 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(ChainedCallNode chainedCallNode) {
+        // ExpressionNodes son los argumentos
+
+
+
+
         // TODO: Generar el codigo MIPS para una llamada encadenada.
         return null;
     }
@@ -191,6 +196,11 @@ public class CodeGenVisitor implements Visitor<Void> {
     @Override
     public Void visit(VariableNode variableNode) {
         // TODO: Generar el codigo MIPS para el acceso a una variable.
+        if (!variableNode.isChainedNode() && variableNode.getChainedNode() == null) {
+            Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(variableNode.getToken().getLexeme());
+            codeGenerator.emitText("lw $a0, " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
+            codeGenerator.emitText("lw $a0, 4($a0)");
+        }
         return null;
     }
 
