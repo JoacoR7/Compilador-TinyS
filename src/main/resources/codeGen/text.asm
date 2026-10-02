@@ -3,35 +3,109 @@
 #############################
 
 out_str:
-    # Empiezo out_str
-    move $fp $sp
-    sw $ra 0($fp)
-    addiu $sp $sp -4
+    # ========================================
+    # PROLOGUE out_str
+    # ========================================
 
-    # Se carga la direccion de memoria del string en $a0
-    lw $a0 4($fp)
-    li $v0 4
+    # Fijo $fp en la posicion donde se guardara el $ra
+    move $fp, $sp
+
+    # Guardo la direccion de retorno de la llamada
+    sw $ra, 0($fp)
+
+    # $sp apunta al siguiente word libre del frame
+    addiu $sp, $sp, -4
+
+
+    # ========================================
+    # BODY out_str
+    # ========================================
+
+    # Cargo el Param 1.
+    # En out_str, Param 1 contiene la direccion del string a imprimir
+    lw $a0, 4($fp)
+
+    # Syscall 4: imprimir string
+    li $v0, 4
     syscall
 
-    # Se restaura el $ra
-    lw $ra 0($fp)
-    addiu $sp $sp 4
+
+    # ========================================
+    # EPILOGUE out_str
+    # ========================================
+
+    # Recupero la direccion de retorno
+    lw $ra, 0($fp)
+
+    # out_str tiene 1 parametro:
+    #
+    # 16($fp) -> Self
+    # 12($fp) -> $fp llamador
+    #  8($fp) -> return
+    #  4($fp) -> Param 1
+    #  0($fp) -> $ra
+    #
+    # Restauro $sp al primer word libre del caller
+    addiu $sp, $fp, 16
+
+    # Restauro el frame pointer del caller
+    lw $fp, 12($fp)
+
+    # Vuelvo a la instruccion siguiente al jalr
     jr $ra
 
+
+
 out_int:
-    # Empiezo out_int
+    # ========================================
+    # PROLOGUE out_int
+    # ========================================
 
-    move $fp $sp
-    sw $ra 0($fp)
+    # Fijo $fp en la posicion donde se guardara el $ra
+    move $fp, $sp
 
-    # Se carga el parámetro int en $a0
-    lw $a0 4($fp)
-    li $v0 1
+    # Guardo la direccion de retorno de la llamada
+    sw $ra, 0($fp)
+
+    # $sp apunta al siguiente word libre del frame
+    addiu $sp, $sp, -4
+
+
+    # ========================================
+    # BODY out_int
+    # ========================================
+
+    # Cargo el Param 1.
+    # En out_int, Param 1 contiene el entero a imprimir
+    lw $a0, 4($fp)
+
+    # Syscall 1: imprimir entero
+    li $v0, 1
     syscall
 
-    lw $ra 0($fp)
-    addiu $sp $fp 16
-    lw $fp 12($fp)
+
+    # ========================================
+    # EPILOGUE out_int
+    # ========================================
+
+    # Recupero la direccion de retorno
+    lw $ra, 0($fp)
+
+    # out_int tiene 1 parametro:
+    #
+    # 16($fp) -> Self
+    # 12($fp) -> $fp llamador
+    #  8($fp) -> return
+    #  4($fp) -> Param 1
+    #  0($fp) -> $ra
+    #
+    # Restauro $sp al primer word libre del caller
+    addiu $sp, $fp, 16
+
+    # Restauro el frame pointer del caller
+    lw $fp, 12($fp)
+
+    # Vuelvo a la instruccion siguiente al jalr
     jr $ra
 
 out_bool:
