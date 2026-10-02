@@ -109,26 +109,64 @@ out_int:
     jr $ra
 
 out_bool:
-    # Empiezo out_bool
+    # ========================================
+    # PROLOGUE out_bool
+    # ========================================
+
+    # Fijo $fp en la posicion donde se guardara el $ra
     move $fp $sp
+
+    #Guardo la direccion de retorno de la llamada
     sw $ra 0($fp)
+
+    # $sp apunta al siguiente word libre del frame
     addiu $sp $sp -4
 
-    # Se carga el parámetro bool en $a0
+    # ========================================
+    # BODY out_bool
+    # ========================================
+
+    # Cargo el Param 1.
+    # En out_int, Param 1 contiene el booleano (0 o 1) a imprimir
     lw $t0 4($fp)
+
+    # Se evalua si es 0 o 1 para cargar el string correcto a imprimir
     la $a0 true_str
     beqz $t0 load_false
+
+    out_bool_syscall:
+
+    # Syscall 4: imprimir string
     li $v0 4
     syscall
 
-    # Se restaura el $ra
-    lw $ra 0($fp)
-    addiu $sp $sp 4
+    # ========================================
+    # EPILOGUE out_bool
+    # ========================================
+
+    # Recupero la direccion de retorno
+    lw $ra, 0($fp)
+
+    # out_bool tiene 1 parametro:
+    #
+    # 16($fp) -> Self
+    # 12($fp) -> $fp llamador
+    #  8($fp) -> return
+    #  4($fp) -> Param 1
+    #  0($fp) -> $ra
+    #
+    # Restauro $sp al primer word libre del caller
+    addiu $sp, $fp, 16
+
+    # Restauro el frame pointer del caller
+    lw $fp, 12($fp)
+
+    # Vuelvo a la instruccion siguiente al jalr
     jr $ra
 
 load_false:
     la $a0 false_str
-    jr $ra
+    j out_bool_syscall
 
 length_str:
     jr $ra
