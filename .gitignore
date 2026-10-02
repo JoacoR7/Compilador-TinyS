@@ -38,4 +38,9 @@ build/
 src/etapa1/main/java/uncuyo/compiladores/Pruebas.java
 src/etapa1/main/java/uncuyo/compiladores/prueba.txt
 manual_tinyS.pdf
+MIPS32_QRC.pdf
+mips_book.pdf
+Mars4_5.jar
+abrir_entorno.cmd
+abrir_entorno.ps1
 testFiles/codeGenFiles/pruebas
