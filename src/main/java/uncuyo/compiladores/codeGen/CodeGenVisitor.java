@@ -69,9 +69,17 @@ public class CodeGenVisitor implements Visitor<Void> {
                 codeGenerator.emitText("beqz $a0 runtime_div_zero");
                 codeGenerator.emitText("div $a0 $t0 $a0");
                 break;
+
+            case TokenType.OPERATOR_EQ:
+                codeGenerator.emitText("seq $a0 $t0 $a0");
+                break;
+
+            case TokenType.OPERATOR_LT:
+                codeGenerator.emitText("slt $a0 $t0 $a0");
+                break;
         }
 
-        // TODO: Generar el codigo MIPS para &&, ||, <, <=, ==, >=, >, !=
+        // TODO: Generar el codigo MIPS para &&, ||, <, <=, >=, >, !=
         return null;
     }
 
