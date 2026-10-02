@@ -215,40 +215,86 @@ public class CodeGenerator {
     }
 
     public void generateMethodPreCall(Method method) {
-        emitText("# Precall de " + method.getName());
-        // Calculo espacio necesario para parámetros, return, $fp llamador y self
-        int callSpace = getSelfOffset(method);
-        emitText("addiu $sp $sp -" + callSpace);
 
-        // En $a0 está la vtable de la clase (si es estática la llamada) o el objeto llamador
-        emitText("sw $a0 " + getSelfOffset(method) + "($sp)");
+        int parameterCount = method.getParameters().size();
+        int selfOffset = getSelfOffset(method);
+        int callerFpOffset = getCallerFpOffset(method);
+        int returnOffset = getReturnOffset(method);
 
-        // Calculo el offset del $fp anterior y lo coloco en el RA
-        emitText("sw $fp " + getCallerFpOffset(method) + "($sp)");
+        emitSection("PRECALL " + method.getName());
 
-        // Calculo el offset del return y lo inicializo en 0 (null)
-        emitText("sw $zero " + getReturnOffset(method) + "($sp)");
+        emitComment("Layout del registro de activacion:");
+        emitComment("Self        -> " + selfOffset + "($sp)");
+        emitComment("$fp llamador -> " + callerFpOffset + "($sp)");
+        emitComment("return      -> " + returnOffset + "($sp)");
 
-        emitText("# Fin de precall de " + method.getName());
+        for (int i = parameterCount; i >= 1; i--) {
+            emitComment("Param " + i + "     -> " + (i * 4) + "($sp)");
+        }
+
+        emitComment("$ra          -> 0($sp) [lo guarda el callee]");
+
+        int callSpace = selfOffset;
+
+        emitBlankLine();
+
+        emitComment("Reservo el registro de activacion del caller");
+        emitText("addiu $sp, $sp, -" + callSpace);
+
+        emitComment("Guardo Self/contexto");
+        emitText("sw $a0, " + selfOffset + "($sp)");
+
+        emitComment("Guardo $fp del llamador");
+        emitText("sw $fp, " + callerFpOffset + "($sp)");
+
+        emitComment("Inicializo return");
+        emitText("sw $zero, " + returnOffset + "($sp)");
+
+        emitBlankLine();
     }
 
     public void generateMethodPrologue(Method method) {
 
-        int variableSpace = method.getVariables().size() * 4;
-
-        emitText("# Prologue de " + method.getName());
-
-        // Guardo el $fp del RA actual
-        emitText("move $fp $sp");
-        emitText("sw $ra 0($fp)");
-
+        int variableCount = method.getVariables().size();
+        int variableSpace = variableCount * 4;
         int frameSpace = 4 + variableSpace;
 
-        emitText("addiu $sp $sp -" + frameSpace);
+        emitSection("PROLOGUE " + method.getName());
 
-        initializeLocalVariables(method);
+        emitComment("Registro de activacion del metodo:");
+        emitComment("$ra          -> 0($fp)");
 
-        emitText("# Fin Prologue de " + method.getName());
+        for (int i = 1; i <= variableCount; i++) {
+            emitComment("Var " + i + "        -> -" + (i * 4) + "($fp)");
+        }
+
+        emitBlankLine();
+
+        emitComment("Fijo $fp en la posicion donde se guardo $ra");
+        emitText("move $fp, $sp");
+
+        emitComment("Guardo la direccion del return address");
+        emitText("sw $ra, 0($fp)");
+
+        emitBlankLine();
+
+        emitComment("Reservo " + frameSpace +
+                        " bytes para $ra, variables locales y el siguiente word libre");
+        emitText("addiu $sp, $sp, -" + frameSpace);
+
+        emitBlankLine();
+
+        if (variableCount > 0) {
+            emitSubsection("INICIALIZACION DE VARIABLES LOCALES");
+            initializeLocalVariables(method);
+            emitBlankLine();
+        }
+
+        emitComment(
+                "$sp queda apuntando al primer word libre del frame"
+        );
+
+        emitBlankLine();
     }
 
     /*
@@ -333,6 +379,28 @@ public class CodeGenerator {
     public void pop() {
         emitText("lw $t0 4($sp)");
         emitText("addiu $sp $sp 4");
+    }
+
+    public void emitComment(String comment) {
+        current.append("        # ")
+                .append(comment)
+                .append("\n");
+    }
+
+    public void emitBlankLine() {
+        current.append("\n");
+    }
+
+    public void emitSection(String title) {
+        current.append("\n");
+        current.append("        # ========================================\n");
+        current.append("        # ").append(title).append("\n");
+        current.append("        # ========================================\n");
+    }
+
+    public void emitSubsection(String title) {
+        current.append("\n");
+        current.append("        # --- ").append(title).append(" ---\n");
     }
 
 
