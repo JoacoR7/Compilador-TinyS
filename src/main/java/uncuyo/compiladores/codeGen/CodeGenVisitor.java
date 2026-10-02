@@ -77,9 +77,24 @@ public class CodeGenVisitor implements Visitor<Void> {
             case TokenType.OPERATOR_LT:
                 codeGenerator.emitText("slt $a0 $t0 $a0");
                 break;
+
+            case TokenType.OPERATOR_LTE:
+                codeGenerator.emitText("sle $a0 $t0 $a0");
+                break;
+
+            case TokenType.OPERATOR_GT:
+                codeGenerator.emitText("sgt $a0 $t0 $a0");
+                break;
+
+            case TokenType.OPERATOR_GTE:
+                codeGenerator.emitText("sge $a0 $t0 $a0");
+                break;
+
+
+
         }
 
-        // TODO: Generar el codigo MIPS para &&, ||, <, <=, >=, >, !=
+        // TODO: Generar el codigo MIPS para &&, ||, !=
         return null;
     }
 
