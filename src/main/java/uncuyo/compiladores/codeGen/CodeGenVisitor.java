@@ -74,6 +74,10 @@ public class CodeGenVisitor implements Visitor<Void> {
                 codeGenerator.emitText("seq $a0 $t0 $a0");
                 break;
 
+            case TokenType.OPERATOR_NEQ:
+                codeGenerator.emitText("sne $a0 $t0 $a0");
+                break;
+
             case TokenType.OPERATOR_LT:
                 codeGenerator.emitText("slt $a0 $t0 $a0");
                 break;
@@ -90,8 +94,13 @@ public class CodeGenVisitor implements Visitor<Void> {
                 codeGenerator.emitText("sge $a0 $t0 $a0");
                 break;
 
+            case TokenType.OPERATOR_OR:
+                codeGenerator.emitText("or $a0 $t0 $a0");
+                break;
 
-
+            case TokenType.OPERATOR_AND:
+                codeGenerator.emitText("and $a0 $t0 $a0");
+                break;
         }
 
         // TODO: Generar el codigo MIPS para &&, ||, !=
