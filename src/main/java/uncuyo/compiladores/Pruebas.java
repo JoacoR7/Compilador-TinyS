@@ -15,7 +15,7 @@ import java.util.Map;
 public class Pruebas {
     public static void main(String[] args) throws IOException, LexicalException, SyntacticException {
         Map<String, String> env = System.getenv();
-        String inputPath = env.get("TEST_PATH") + "\\codeGenFiles\\success\\greaterThanEqual.s";
+        String inputPath = env.get("TEST_PATH") + "\\codeGenFiles\\success\\binaryOperations.s";
         Lexer lexer = new Lexer(inputPath);
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(lexer, lexer.getNextToken());
         semanticAnalyzer.program();
@@ -37,7 +37,7 @@ public class Pruebas {
                 env.get("TEST_PATH"),
                 "codeGenFiles",
                 "pruebas",
-                outputName
+                "prueba.asm"
         ).toString();
 
         ast.getCodeGenerator().writeOutput(outputPath);

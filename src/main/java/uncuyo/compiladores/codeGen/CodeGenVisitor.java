@@ -214,7 +214,11 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(ParenthesizedExpressionNode parenthesizedExpressionNode) {
-        // TODO: Generar el codigo MIPS para una expresion entre parentesis.
+        parenthesizedExpressionNode.getExpresion().accept(this);
+        if (parenthesizedExpressionNode.getChainedNode() != null) {
+            parenthesizedExpressionNode.getChainedNode().accept(this);
+        }
+        // TODO: Contemplar caso en que expresion parentizada tiene chained node
         return null;
     }
 
