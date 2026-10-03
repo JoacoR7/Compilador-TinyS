@@ -132,12 +132,13 @@ public class CodeGenVisitor implements Visitor<Void> {
         // ExpressionNodes son los argumentos
         Token currentToken = chainedCallNode.getToken();
         if (!chainedCallNode.isChainedNode()) {
+            codeGenerator.emitSubsection("Comienzo llamada " + currentToken.getRowIndex() + "_"  + currentToken.getColumnIndex());
             if (chainedCallNode.getToken().getTokenType() == TokenType.IDENTIFIER_CLASS) {
 
                 String className = currentToken.getLexeme();
                 AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(className));
-                codeGenerator.emitText("# Llamada estática sobre " + className);
-                codeGenerator.emitText("# Guardo la vtable de " + className);
+                codeGenerator.emitComment("Llamada estática sobre " + className);
+                codeGenerator.emitComment("Guardo la vtable de " + className);
                 codeGenerator.emitText("la $a0, vtable_" + className);
 
 
@@ -348,7 +349,7 @@ public class CodeGenVisitor implements Visitor<Void> {
     public Void visit(AssignmentNode assignmentNode) {
 
         Token currentToken = assignmentNode.getSimpleAccessNode().getToken();
-        codeGenerator.emitComment("Asignacion a " + currentToken.getLexeme() + " en " + currentToken.getRowIndex() + "_" + currentToken.getColumnIndex());
+        codeGenerator.emitComment("Asignacion a \"" + currentToken.getLexeme() + "\" en " + currentToken.getRowIndex() + "_" + currentToken.getColumnIndex());
 
         // Genero lado derecho de la igualdad
         // Al terminar, $a0 contiene el valor de la expresión
@@ -400,8 +401,6 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(IfElseNode ifElseNode) {
-        // TODO: Generar el codigo MIPS para una sentencia if/else.
-
         String rowColumnLabel = ifElseNode.getToken().getRowIndex() + "_" + ifElseNode.getToken().getColumnIndex();
 
         codeGenerator.emitSection("if_" + rowColumnLabel);
@@ -412,17 +411,17 @@ public class CodeGenVisitor implements Visitor<Void> {
         codeGenerator.emitText("beqz $a0 " + (ifElseNode.getSentenceNodeElse() != null ? "else_" : "endif_") + rowColumnLabel);
 
         codeGenerator.emitComment("Cuerpo de if_" + rowColumnLabel);
-        codeGenerator.emitIfElseLabel("if_" + rowColumnLabel);
+        codeGenerator.emitSubLabel("if_" + rowColumnLabel);
         ifElseNode.getSentenceNodeIf().accept(this);
         if (ifElseNode.getSentenceNodeElse() != null) {
             codeGenerator.emitText("j endif_" + rowColumnLabel);
         }
         if (ifElseNode.getSentenceNodeElse() != null) {
             codeGenerator.emitComment("Cuerpo de else_" + rowColumnLabel);
-            codeGenerator.emitIfElseLabel("else_" + rowColumnLabel);
+            codeGenerator.emitSubLabel("else_" + rowColumnLabel);
             ifElseNode.getSentenceNodeElse().accept(this);
         }
-        codeGenerator.emitIfElseLabel("endif_" + rowColumnLabel);
+        codeGenerator.emitSubLabel("endif_" + rowColumnLabel);
 
 
         return null;
@@ -448,7 +447,24 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(WhileNode whileNode) {
-        // TODO: Generar el codigo MIPS para una sentencia while.
+        String rowColumnLabel = whileNode.getToken().getRowIndex() + "_" + whileNode.getToken().getColumnIndex();
+        codeGenerator.emitSection("while_" + rowColumnLabel);
+
+        codeGenerator.emitSubLabel("while_" + rowColumnLabel);
+
+        codeGenerator.emitComment("Evaluo expresion de while_" + rowColumnLabel);
+        // Guardo en $a0 el resultado de la expresión a evaluar
+        whileNode.getExpressionNode().accept(this);
+
+        codeGenerator.emitText("beqz $a0 endwhile_" + rowColumnLabel);
+
+
+        codeGenerator.emitSubsection("Cuerpo de while_" + rowColumnLabel);
+        whileNode.getSentenceNode().accept(this);
+
+        codeGenerator.emitText("j while_" + rowColumnLabel);
+        codeGenerator.emitSubLabel("endwhile_" + rowColumnLabel);
+
         return null;
     }
 }

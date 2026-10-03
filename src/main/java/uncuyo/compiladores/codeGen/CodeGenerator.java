@@ -2,7 +2,6 @@ package uncuyo.compiladores.codeGen;
 
 import uncuyo.compiladores.semantic.symbolTable.Method;
 import uncuyo.compiladores.semantic.symbolTable.Parameter;
-import uncuyo.compiladores.semantic.symbolTable.Type;
 import uncuyo.compiladores.semantic.symbolTable.Variable;
 
 import java.io.IOException;
@@ -142,7 +141,7 @@ public class CodeGenerator {
                 .append(":\n");
     }
 
-    public void emitIfElseLabel(String label) {
+    public void emitSubLabel(String label) {
         current.append("        ")
                 .append(label)
                 .append(":\n");
