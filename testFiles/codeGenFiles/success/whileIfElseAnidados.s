@@ -6,6 +6,11 @@ start {
     i = 0;
     suma = 0;
 
+    while (false) {
+        (IO.out_str("False"));
+    }
+
+
     while (i < 3) {
 
         j = 0;
