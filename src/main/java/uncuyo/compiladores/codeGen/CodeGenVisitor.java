@@ -267,7 +267,35 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(UnaryExpressionNode unaryExpressionNode) {
-        // TODO: Generar el codigo MIPS para una expresion unaria.
+        // Proceso la expresión y la guardo en $a0
+        // Como es una expresión unaria, no hace falta guardar en la pila $a0
+        unaryExpressionNode.getExpressionNode().accept(this);
+
+
+        switch (unaryExpressionNode.getUnaryOperatorToken().getTokenType()) {
+            case TokenType.OPERATOR_ADD:
+                break;
+
+            case TokenType.OPERATOR_SUB:
+                codeGenerator.emitText("li $t0 -1");
+                codeGenerator.emitText("mul $a0 $a0 $t0");
+                break;
+
+            case TokenType.OPERATOR_NOT:
+                codeGenerator.emitText("xori $a0 $a0 1");
+                break;
+
+            case TokenType.OPERATOR_INC:
+                codeGenerator.emitText("li $t0 1");
+                codeGenerator.emitText("add $a0 $a0 $t0");
+                break;
+
+            case TokenType.OPERATOR_DEC:
+                codeGenerator.emitText("li $t0 1");
+                codeGenerator.emitText("sub $a0 $a0 $t0");
+                break;
+
+        }
         return null;
     }
 
