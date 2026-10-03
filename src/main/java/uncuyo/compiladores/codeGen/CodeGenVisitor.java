@@ -38,72 +38,92 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(BinaryExpressionNode binaryExpressionNode) {
+
+        codeGenerator.emitComment("Comienzo expresion binaria " + binaryExpressionNode.getBinaryOperatorToken().getLexeme() +
+                " en " + binaryExpressionNode.getBinaryOperatorToken().getRowIndex() + "_" + binaryExpressionNode.getBinaryOperatorToken().getColumnIndex());
+
         // El valor del nodo izquierdo queda en $a0
+        codeGenerator.emitComment("Obtengo el valor del nodo izquierdo");
         binaryExpressionNode.getLeftNode().accept(this);
 
         // Guardo en stack el $a0
         codeGenerator.push("$a0");
 
         // El valor del nodo derecho queda en $a0
+        codeGenerator.emitComment("Obtengo el valor del nodo derecho");
         binaryExpressionNode.getRightNode().accept(this);
 
         // Cargo el valor del nodo izquierdo en $t0 y recupero la pila
+        codeGenerator.emitComment("Recupero el valor del nodo izquierdo");
         codeGenerator.pop();
 
         // Guardo en $a0 el valor de la operación
         switch (binaryExpressionNode.getBinaryOperatorToken().getTokenType()) {
+
             case TokenType.OPERATOR_ADD:
+                codeGenerator.emitComment("Sumo los operandos");
                 codeGenerator.emitText("add $a0 $t0 $a0");
                 break;
 
             case TokenType.OPERATOR_SUB:
+                codeGenerator.emitComment("Resto el operando derecho al izquierdo");
                 codeGenerator.emitText("sub $a0 $t0 $a0");
                 break;
 
             case TokenType.OPERATOR_MUL:
+                codeGenerator.emitComment("Multiplico los operandos");
                 codeGenerator.emitText("mul $a0 $t0 $a0");
                 break;
 
             case TokenType.OPERATOR_DIV:
-                codeGenerator.emitText("# Checkeo division por 0");
+                codeGenerator.emitComment("Checkeo division por 0");
                 codeGenerator.emitText("beqz $a0 runtime_div_zero");
+
+                codeGenerator.emitComment("Divido el operando izquierdo por el derecho");
                 codeGenerator.emitText("div $a0 $t0 $a0");
                 break;
 
             case TokenType.OPERATOR_EQ:
+                codeGenerator.emitComment("Comparo si los operandos son iguales");
                 codeGenerator.emitText("seq $a0 $t0 $a0");
                 break;
 
             case TokenType.OPERATOR_NEQ:
+                codeGenerator.emitComment("Comparo si los operandos son distintos");
                 codeGenerator.emitText("sne $a0 $t0 $a0");
                 break;
 
             case TokenType.OPERATOR_LT:
+                codeGenerator.emitComment("Comparo si el operando izquierdo es menor que el derecho");
                 codeGenerator.emitText("slt $a0 $t0 $a0");
                 break;
 
             case TokenType.OPERATOR_LTE:
+                codeGenerator.emitComment("Comparo si el operando izquierdo es menor o igual que el derecho");
                 codeGenerator.emitText("sle $a0 $t0 $a0");
                 break;
 
             case TokenType.OPERATOR_GT:
+                codeGenerator.emitComment("Comparo si el operando izquierdo es mayor que el derecho");
                 codeGenerator.emitText("sgt $a0 $t0 $a0");
                 break;
 
             case TokenType.OPERATOR_GTE:
+                codeGenerator.emitComment("Comparo si el operando izquierdo es mayor o igual que el derecho");
                 codeGenerator.emitText("sge $a0 $t0 $a0");
                 break;
 
             case TokenType.OPERATOR_OR:
+                codeGenerator.emitComment("Realizo OR logico entre los operandos");
                 codeGenerator.emitText("or $a0 $t0 $a0");
                 break;
 
             case TokenType.OPERATOR_AND:
+                codeGenerator.emitComment("Realizo AND logico entre los operandos");
                 codeGenerator.emitText("and $a0 $t0 $a0");
                 break;
         }
 
-        // TODO: Generar el codigo MIPS para &&, ||, !=
         return null;
     }
 
@@ -267,34 +287,43 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(UnaryExpressionNode unaryExpressionNode) {
+
+        codeGenerator.emitComment("Comienzo expresion unaria " + unaryExpressionNode.getUnaryOperatorToken().getLexeme() +
+                " en " + unaryExpressionNode.getUnaryOperatorToken().getRowIndex() + "_" + unaryExpressionNode.getUnaryOperatorToken().getColumnIndex());
         // Proceso la expresión y la guardo en $a0
         // Como es una expresión unaria, no hace falta guardar en la pila $a0
+        codeGenerator.emitComment("Obtengo el valor de la expresion");
         unaryExpressionNode.getExpressionNode().accept(this);
 
 
         switch (unaryExpressionNode.getUnaryOperatorToken().getTokenType()) {
+
             case TokenType.OPERATOR_ADD:
+                codeGenerator.emitComment("Mantengo el valor sin cambios");
                 break;
 
             case TokenType.OPERATOR_SUB:
+                codeGenerator.emitComment("Cambio el signo del operando");
                 codeGenerator.emitText("li $t0 -1");
                 codeGenerator.emitText("mul $a0 $a0 $t0");
                 break;
 
             case TokenType.OPERATOR_NOT:
+                codeGenerator.emitComment("Niego el valor booleano");
                 codeGenerator.emitText("xori $a0 $a0 1");
                 break;
 
             case TokenType.OPERATOR_INC:
+                codeGenerator.emitComment("Incremento el operando en 1");
                 codeGenerator.emitText("li $t0 1");
                 codeGenerator.emitText("add $a0 $a0 $t0");
                 break;
 
             case TokenType.OPERATOR_DEC:
+                codeGenerator.emitComment("Decremento el operando en 1");
                 codeGenerator.emitText("li $t0 1");
                 codeGenerator.emitText("sub $a0 $a0 $t0");
                 break;
-
         }
         return null;
     }
@@ -317,6 +346,10 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(AssignmentNode assignmentNode) {
+
+        Token currentToken = assignmentNode.getSimpleAccessNode().getToken();
+        codeGenerator.emitComment("Asignacion a " + currentToken.getLexeme() + " en " + currentToken.getRowIndex() + "_" + currentToken.getColumnIndex());
+
         // Genero lado derecho de la igualdad
         // Al terminar, $a0 contiene el valor de la expresión
         assignmentNode.getExpressionNode().accept(this);
@@ -369,17 +402,23 @@ public class CodeGenVisitor implements Visitor<Void> {
     public Void visit(IfElseNode ifElseNode) {
         // TODO: Generar el codigo MIPS para una sentencia if/else.
 
+        String rowColumnLabel = ifElseNode.getToken().getRowIndex() + "_" + ifElseNode.getToken().getColumnIndex();
 
+        codeGenerator.emitSection("if_" + rowColumnLabel);
+
+        codeGenerator.emitComment("Evaluo expresion de if_" + rowColumnLabel);
         // Guardo en $a0 el resultado de la expresión a evaluar
         ifElseNode.getExpression().accept(this);
-        String rowColumnLabel = ifElseNode.getToken().getRowIndex() + "_" + ifElseNode.getToken().getColumnIndex();
         codeGenerator.emitText("beqz $a0 " + (ifElseNode.getSentenceNodeElse() != null ? "else_" : "endif_") + rowColumnLabel);
 
-
+        codeGenerator.emitComment("Cuerpo de if_" + rowColumnLabel);
         codeGenerator.emitIfElseLabel("if_" + rowColumnLabel);
         ifElseNode.getSentenceNodeIf().accept(this);
-        codeGenerator.emitText("j endif_" + rowColumnLabel);
         if (ifElseNode.getSentenceNodeElse() != null) {
+            codeGenerator.emitText("j endif_" + rowColumnLabel);
+        }
+        if (ifElseNode.getSentenceNodeElse() != null) {
+            codeGenerator.emitComment("Cuerpo de else_" + rowColumnLabel);
             codeGenerator.emitIfElseLabel("else_" + rowColumnLabel);
             ifElseNode.getSentenceNodeElse().accept(this);
         }

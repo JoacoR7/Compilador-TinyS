@@ -20,7 +20,7 @@ start {
         (IO.out_int(4));
 
         if (a == 10) {
-            (IO.out_int(5));
+            (IO.out_int(++5));
         } else {
             (IO.out_int(6));
         }
