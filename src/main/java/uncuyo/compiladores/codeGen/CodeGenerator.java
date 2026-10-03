@@ -142,6 +142,12 @@ public class CodeGenerator {
                 .append(":\n");
     }
 
+    public void emitIfElseLabel(String label) {
+        current.append("        ")
+                .append(label)
+                .append(":\n");
+    }
+
     /**
      * Decide si las próximas instrucciones se generan
      * dentro de main o dentro del text general.

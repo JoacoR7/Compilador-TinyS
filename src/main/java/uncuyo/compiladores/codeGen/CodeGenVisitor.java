@@ -368,6 +368,24 @@ public class CodeGenVisitor implements Visitor<Void> {
     @Override
     public Void visit(IfElseNode ifElseNode) {
         // TODO: Generar el codigo MIPS para una sentencia if/else.
+
+
+        // Guardo en $a0 el resultado de la expresión a evaluar
+        ifElseNode.getExpression().accept(this);
+        String rowColumnLabel = ifElseNode.getToken().getRowIndex() + "_" + ifElseNode.getToken().getColumnIndex();
+        codeGenerator.emitText("beqz $a0 " + (ifElseNode.getSentenceNodeElse() != null ? "else_" : "endif_") + rowColumnLabel);
+
+
+        codeGenerator.emitIfElseLabel("if_" + rowColumnLabel);
+        ifElseNode.getSentenceNodeIf().accept(this);
+        codeGenerator.emitText("j endif_" + rowColumnLabel);
+        if (ifElseNode.getSentenceNodeElse() != null) {
+            codeGenerator.emitIfElseLabel("else_" + rowColumnLabel);
+            ifElseNode.getSentenceNodeElse().accept(this);
+        }
+        codeGenerator.emitIfElseLabel("endif_" + rowColumnLabel);
+
+
         return null;
     }
 
