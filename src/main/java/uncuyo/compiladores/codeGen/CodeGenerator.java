@@ -284,7 +284,7 @@ public class CodeGenerator {
         emitBlankLine();
 
         emitComment("Reservo " + frameSpace +
-                        " bytes para $ra, variables locales y el siguiente word libre");
+                        " bytes para variables locales y el siguiente word libre");
         emitText("addiu $sp, $sp, -" + frameSpace);
 
         emitBlankLine();
@@ -349,8 +349,14 @@ public class CodeGenerator {
 
             int frameSpace = 16 + parameterSpace + variableSpace;
 
-            emitText("# Epilogue de " + method.getName());
+            emitSubsection("Epilogue de " + method.getName());
+            emitComment("Recupero el $ra anterior");
+            emitText("lw $ra 0($fp)");
+            emitComment("Recupero el $fp del llamador");
+            emitText("lw $fp " + (parameterSpace + 8) + "($fp)");
+            emitComment("Recupero el espacio usado");
             emitText("addiu $sp $sp " + frameSpace);
+
             emitText("jr $ra");
         }
 
