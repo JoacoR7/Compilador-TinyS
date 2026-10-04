@@ -160,15 +160,22 @@ public class CodeGenVisitor implements Visitor<Void> {
             // En este punto el $sp apunta donde debería estar el $fp del RA, pero no hemos generado el prólogo
             // Empieza en offset 4 ya que ahí está el primer parámetro, si es que tiene
             int parameterOffset = 4;
+            if(chainedCallNode.getExpressionNodes() != null) {
+                codeGenerator.emitSubsection("Evaluo parametros de " + currentMethodCall.getName());
+            }
             for(ExpressionNode expressionNode : chainedCallNode.getExpressionNodes()) {
+                codeGenerator.emitComment("Evaluo parametro n° " + (parameterOffset/4));
                 // Retorna en $a0 el valor
                 expressionNode.accept(this);
 
+                codeGenerator.emitComment("Guardo parametro n° " + (parameterOffset/4));
                 codeGenerator.emitText("sw $a0 " + parameterOffset + "($sp)");
                 parameterOffset += 4;
             }
 
             if (currentMethodCall.isStatic()) {
+                codeGenerator.emitText("");
+                codeGenerator.emitComment("Como el metodo " + currentMethodCall.getName() + " es estatico, guardo la vtable en self");
                 codeGenerator.emitText("lw $a0 " + codeGenerator.getSelfOffset(currentMethodCall) + "($sp)");
                 codeGenerator.emitText("lw $a0 " + (currentMethodCall.getPosition()*4) + "($a0)");
                 codeGenerator.emitText("jalr $a0");
@@ -373,7 +380,14 @@ public class CodeGenVisitor implements Visitor<Void> {
                 AST.getSymbolTable().setCurrentMethod(AST.getSymbolTable().getStart());
 
             } else {
-                AST.getSymbolTable().setCurrentMethod(AST.getSymbolTable().getClasses().get(className).getMethods().get(methodName));
+                if (methodName.equals(".")) {
+                    AST.getSymbolTable().setCurrentMethod(AST.getSymbolTable().getClasses().get(className).getConstructor());
+                    methodName = className + "_constructor";
+                } else {
+                    AST.getSymbolTable().setCurrentMethod(AST.getSymbolTable().getClasses().get(className).getMethods().get(methodName));
+                    codeGenerator.emitData(".word " + methodName);
+                }
+
                 codeGenerator.emitLabel(methodName);
             }
             currentMethod = AST.getSymbolTable().getCurrentMethod();
