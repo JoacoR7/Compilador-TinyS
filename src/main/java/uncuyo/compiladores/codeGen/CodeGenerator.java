@@ -352,6 +352,10 @@ public class CodeGenerator {
             emitSubsection("Epilogue de " + method.getName());
             emitComment("Recupero el $ra anterior");
             emitText("lw $ra 0($fp)");
+            if (!method.getType().getTypeName().equals("void")) {
+                emitComment("Recupero el valor del return");
+                emitText("lw $a0 " + (parameterSpace + 4) + "($fp)");
+            }
             emitComment("Recupero el $fp del llamador");
             emitText("lw $fp " + (parameterSpace + 8) + "($fp)");
             emitComment("Recupero el espacio usado");
@@ -367,7 +371,7 @@ public class CodeGenerator {
     }
 
     public int getParameterOffset(Parameter parameter) {
-        return -((parameter.getPosition() + 1) * 4);
+        return (parameter.getPosition() + 1) * 4;
     }
 
     public int getReturnOffset(Method method) {

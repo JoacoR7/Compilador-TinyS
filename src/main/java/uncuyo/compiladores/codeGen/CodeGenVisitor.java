@@ -7,6 +7,7 @@ import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.*;
 import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.*;
 import uncuyo.compiladores.semantic.symbolTable.Method;
+import uncuyo.compiladores.semantic.symbolTable.Parameter;
 import uncuyo.compiladores.semantic.symbolTable.Variable;
 
 public class CodeGenVisitor implements Visitor<Void> {
@@ -341,8 +342,14 @@ public class CodeGenVisitor implements Visitor<Void> {
         // TODO: Generar el codigo MIPS para el acceso a una variable.
         if (!variableNode.isChainedNode() && variableNode.getChainedNode() == null) {
             Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(variableNode.getToken().getLexeme());
-            codeGenerator.emitText("lw $a0, " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
-            codeGenerator.emitText("lw $a0, 4($a0)");
+            if (currentVariable != null) {
+                codeGenerator.emitText("lw $a0 " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
+                codeGenerator.emitText("lw $a0 4($a0)");
+            } else {
+                Parameter currentParameter = AST.getSymbolTable().getCurrentMethod().getParameters().get(variableNode.getToken().getLexeme());
+                codeGenerator.emitText("lw $a0 " + codeGenerator.getParameterOffset(currentParameter) + "($fp)");
+            }
+
         }
         return null;
     }
@@ -398,7 +405,7 @@ public class CodeGenVisitor implements Visitor<Void> {
 
             if (sentence != null) {
                 sentence.accept(this);
-                blockNode.setHasReturn(blockNode.isHasReturn() || sentence.isHasReturn());
+                //blockNode.setHasReturn(blockNode.isHasReturn() || sentence.isHasReturn());
             }
         }
         if (blockNode.isMethod()) {
@@ -443,7 +450,10 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(ReturnNode returnNode) {
-        // TODO: Generar el codigo MIPS para una sentencia return.
+        returnNode.getExpression().accept(this);
+        int returnOffset = codeGenerator.getReturnOffset(AST.getSymbolTable().getCurrentMethod());
+        codeGenerator.emitComment("Guardo el return");
+        codeGenerator.emitText("sw $a0 " + returnOffset + "($fp)");
         return null;
     }
 
