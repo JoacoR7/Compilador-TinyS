@@ -358,7 +358,7 @@ public class CodeGenerator {
             emitComment("Inicializacion de atributo " + attribute.getName() + " de tipo " + attribute.getType().getTypeName());
 
             List<TokenType> primitiveClasses = List.of(TokenType.INT_CLASS, TokenType.INT_CONSTANT, TokenType.BOOL_CLASS, TokenType.BOOLEAN_CONSTANT, TokenType.STR_CLASS, TokenType.STRING_CONSTANT);
-            if (primitiveClasses.contains(attribute.getType().getTypeName())) {
+            if (primitiveClasses.contains(attribute.getType().getTokenType())) {
                 generatePrimitiveCIR(attribute.getType().getTokenType());
             }
 

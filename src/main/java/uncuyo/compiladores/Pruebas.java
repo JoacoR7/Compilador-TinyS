@@ -15,7 +15,7 @@ import java.util.Map;
 public class Pruebas {
     public static void main(String[] args) throws IOException, LexicalException, SyntacticException {
         Map<String, String> env = System.getenv();
-        String inputPath = env.get("TEST_PATH") + "\\codeGenFiles\\success\\resta.s";
+        String inputPath = env.get("TEST_PATH") + "\\codeGenFiles\\success\\new.s";
         Lexer lexer = new Lexer(inputPath);
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(lexer, lexer.getNextToken());
         semanticAnalyzer.program();
