@@ -1,13 +1,14 @@
 package uncuyo.compiladores.codeGen;
 
-import uncuyo.compiladores.semantic.symbolTable.Method;
-import uncuyo.compiladores.semantic.symbolTable.Parameter;
-import uncuyo.compiladores.semantic.symbolTable.Variable;
+import uncuyo.compiladores.lexer.TokenType;
+import uncuyo.compiladores.semantic.symbolTable.*;
+import uncuyo.compiladores.semantic.symbolTable.Class;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CodeGenerator {
@@ -333,10 +334,47 @@ public class CodeGenerator {
                     emitText("sw $t0 0($v0)");
                     break;
             }
+            emitText("sw $v0 " + getVariableOffset(variable) + "($fp)");
 
-            emitText("addiu $a0 $fp " + getVariableOffset(variable));
-            emitText("sw $v0 0($a0)");
         }
+    }
+
+    /*
+    Inicialización de atributos de una instancia.
+
+    Según el tipo:
+        Int   -> referencia a CIR Int(0)
+        Bool  -> referencia a CIR Bool(false)
+        Str   -> referencia a CIR Str("")
+        Clase -> nil
+        Array -> nil
+
+    $s0 -> dirección base del CIR de self
+*/
+    public void initializeAttributes(Class classEntry) {
+        emitSubsection("Inicializacion atributos de " + classEntry.getName());
+
+        for (Attribute attribute : classEntry.getAttributes().values()) {
+            emitComment("Inicializacion de atributo " + attribute.getName() + " de tipo " + attribute.getType().getTypeName());
+
+            List<TokenType> primitiveClasses = List.of(TokenType.INT_CLASS, TokenType.INT_CONSTANT, TokenType.BOOL_CLASS, TokenType.BOOLEAN_CONSTANT, TokenType.STR_CLASS, TokenType.STRING_CONSTANT);
+            if (primitiveClasses.contains(attribute.getType().getTypeName())) {
+                generatePrimitiveCIR(attribute.getType().getTokenType());
+            }
+
+
+            // Guardar referencia en el atributo del CIR de self
+            emitComment("Guardo la direccion del atributo " + attribute.getName());
+            emitText("lw $t0 4($sp)");
+            emitText("sw $v0 " + getAttributeOffset(attribute) + "($t0)");
+        }
+        emitComment("Guardo la direccion de la vtable de " + classEntry.getName());
+        emitText("la $a0 vtable_" + classEntry.getName());
+        emitText("sw $a0 0($t0)");
+    }
+
+    public int getAttributeOffset(Attribute attribute) {
+        return (attribute.getPosition() + 1) * 4;
     }
 
     public void generateMethodEpilogue(Method method) {
@@ -416,6 +454,39 @@ public class CodeGenerator {
     public void emitSubsection(String title) {
         current.append("\n");
         current.append("        # --- ").append(title).append(" ---\n");
+    }
+
+    public void generatePrimitiveCIR(TokenType tokenType) {
+        switch (tokenType) {
+            case INT_CLASS:
+            case INT_CONSTANT:
+            case BOOLEAN_CONSTANT:
+            case BOOL_CLASS:
+                emitText("li $a0 8");
+                emitText("li $v0 9");
+                emitText("syscall");
+                emitText("sw $zero 0($v0)");
+                emitText("sw $zero 4($v0)");
+                break;
+
+            case STR_CLASS:
+            case STRING_CONSTANT:
+                // Reservar CIR del String
+                emitText("li $a0 8");
+                emitText("li $v0 9");
+                emitText("syscall");
+
+                // VTable
+                emitText("la $t0 vtable_str");
+                emitText("sw $t0 0($v0)");
+
+                // String vacío
+                emitText("la $t0 empty_str");
+                emitText("sw $t0 4($v0)");
+                break;
+
+
+        }
     }
 
 

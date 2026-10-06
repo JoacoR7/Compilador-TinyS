@@ -8,13 +8,13 @@ out_str:
     # ========================================
 
     # Fijo $fp en la posicion donde se guardara el $ra
-    move $fp, $sp
+    move $fp $sp
 
     # Guardo la direccion de retorno de la llamada
-    sw $ra, 0($fp)
+    sw $ra 0($fp)
 
     # $sp apunta al siguiente word libre del frame
-    addiu $sp, $sp, -4
+    addiu $sp $sp -4
 
 
     # ========================================
@@ -22,11 +22,14 @@ out_str:
     # ========================================
 
     # Cargo el Param 1.
-    # En out_str, Param 1 contiene la direccion del string a imprimir
-    lw $a0, 4($fp)
+    # En out_str, Param 1 contiene la direccion del CIR a imprimir
+    lw $a0 4($fp)
+
+    # Recupero la direccion del string del CIR
+    lw $a0 4($a0)
 
     # Syscall 4: imprimir string
-    li $v0, 4
+    li $v0 4
     syscall
 
 
@@ -35,7 +38,7 @@ out_str:
     # ========================================
 
     # Recupero la direccion de retorno
-    lw $ra, 0($fp)
+    lw $ra 0($fp)
 
     # out_str tiene 1 parametro:
     #
@@ -46,10 +49,10 @@ out_str:
     #  0($fp) -> $ra
     #
     # Restauro $sp al primer word libre del caller
-    addiu $sp, $fp, 16
+    addiu $sp $fp 16
 
     # Restauro el frame pointer del caller
-    lw $fp, 12($fp)
+    lw $fp 12($fp)
 
     # Vuelvo a la instruccion siguiente al jalr
     jr $ra
@@ -62,13 +65,13 @@ out_int:
     # ========================================
 
     # Fijo $fp en la posicion donde se guardara el $ra
-    move $fp, $sp
+    move $fp $sp
 
     # Guardo la direccion de retorno de la llamada
-    sw $ra, 0($fp)
+    sw $ra 0($fp)
 
     # $sp apunta al siguiente word libre del frame
-    addiu $sp, $sp, -4
+    addiu $sp $sp -4
 
 
     # ========================================
@@ -76,11 +79,14 @@ out_int:
     # ========================================
 
     # Cargo el Param 1.
-    # En out_int, Param 1 contiene el entero a imprimir
-    lw $a0, 4($fp)
+    # En out_int, Param 1 contiene el CIR a imprimir
+    lw $a0 4($fp)
+
+    # Recupero el int del CIR
+    lw $a0 4($a0)
 
     # Syscall 1: imprimir entero
-    li $v0, 1
+    li $v0 1
     syscall
 
 
@@ -89,7 +95,7 @@ out_int:
     # ========================================
 
     # Recupero la direccion de retorno
-    lw $ra, 0($fp)
+    lw $ra 0($fp)
 
     # out_int tiene 1 parametro:
     #
@@ -127,8 +133,11 @@ out_bool:
     # ========================================
 
     # Cargo el Param 1.
-    # En out_int, Param 1 contiene el booleano (0 o 1) a imprimir
+    # En out_int, Param 1 contiene CIR a imprimir
     lw $t0 4($fp)
+
+    # Recupero el booleano (0 o 1) a imprimir
+    lw $a0 4($a0)
 
     # Se evalua si es 0 o 1 para cargar el string correcto a imprimir
     la $a0 true_str

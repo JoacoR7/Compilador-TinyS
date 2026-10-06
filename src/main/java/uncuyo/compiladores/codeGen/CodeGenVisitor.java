@@ -6,9 +6,12 @@ import uncuyo.compiladores.semantic.abstractSintaxTree.AST;
 import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.*;
 import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.*;
+import uncuyo.compiladores.semantic.symbolTable.Class;
 import uncuyo.compiladores.semantic.symbolTable.Method;
 import uncuyo.compiladores.semantic.symbolTable.Parameter;
 import uncuyo.compiladores.semantic.symbolTable.Variable;
+
+import java.util.List;
 
 public class CodeGenVisitor implements Visitor<Void> {
 
@@ -53,16 +56,21 @@ public class CodeGenVisitor implements Visitor<Void> {
         // El valor del nodo derecho queda en $a0
         codeGenerator.emitComment("Obtengo el valor del nodo derecho");
         binaryExpressionNode.getRightNode().accept(this);
+        codeGenerator.emitComment("Obtengo el valor del CIR");
+        codeGenerator.emitText("lw $a0 4($a0)");
 
         // Cargo el valor del nodo izquierdo en $t0 y recupero la pila
         codeGenerator.emitComment("Recupero el valor del nodo izquierdo");
         codeGenerator.pop();
+        codeGenerator.emitComment("Obtengo el valor del CIR");
+        codeGenerator.emitText("lw $t0 4($t0)");
 
         // Guardo en $a0 el valor de la operación
         switch (binaryExpressionNode.getBinaryOperatorToken().getTokenType()) {
 
             case TokenType.OPERATOR_ADD:
                 codeGenerator.emitComment("Sumo los operandos");
+
                 codeGenerator.emitText("add $a0 $t0 $a0");
                 break;
 
@@ -124,6 +132,24 @@ public class CodeGenVisitor implements Visitor<Void> {
                 codeGenerator.emitText("and $a0 $t0 $a0");
                 break;
         }
+
+        codeGenerator.emitComment("Guardo en la pila el valor");
+        codeGenerator.push("$a0");
+        codeGenerator.emitComment("Genero nuevo CIR");
+        List<TokenType> int_operations = List.of(TokenType.OPERATOR_ADD, TokenType.OPERATOR_SUB, TokenType.OPERATOR_MUL, TokenType.OPERATOR_DIV);
+        List<TokenType> bool_operations = List.of(TokenType.OPERATOR_OR, TokenType.OPERATOR_AND, TokenType.OPERATOR_GT, TokenType.OPERATOR_LT,
+                TokenType.OPERATOR_GTE, TokenType.OPERATOR_LTE, TokenType.OPERATOR_EQ, TokenType.OPERATOR_NEQ);
+        if (int_operations.contains(binaryExpressionNode.getBinaryOperatorToken().getTokenType())) {
+            codeGenerator.generatePrimitiveCIR(TokenType.INT_CLASS);
+        } else if (bool_operations.contains(binaryExpressionNode.getBinaryOperatorToken().getTokenType())) {
+            codeGenerator.generatePrimitiveCIR(TokenType.BOOL_CLASS);
+        }
+        codeGenerator.pop();
+        codeGenerator.emitComment("Recupero el valor de la expresion binaria");
+        codeGenerator.emitComment("Guardo en el CIR el valor");
+        codeGenerator.emitText("sw $t0 4($v0)");
+        codeGenerator.emitText("move $a0 $v0");
+
 
         return null;
     }
@@ -198,6 +224,19 @@ public class CodeGenVisitor implements Visitor<Void> {
     @Override
     public Void visit(ClassConstructorNode classConstructorNode) {
         // TODO: Generar el codigo MIPS para la construccion de un objeto.
+        Class currentClass = AST.getSymbolTable().getClasses().get(classConstructorNode.getToken().getLexeme());
+        codeGenerator.emitSection("Generacion de CIR de " + currentClass.getName());
+        int cirSpace = currentClass.getAttributes().size() + 1;
+        codeGenerator.emitComment("Necesita " + cirSpace + " espacios para sus atributos y la vtable" );
+        codeGenerator.emitText("li $a0 " + cirSpace * 4);
+        codeGenerator.emitText("li $v0 9");
+        codeGenerator.emitText("syscall");
+        codeGenerator.emitComment("Guardo la direccion del heap en el stack para inicializar las variables");
+        codeGenerator.push("$v0");
+        codeGenerator.initializeAttributes(currentClass);
+        codeGenerator.emitComment("Recupero la direccion de la instancia de clase de " + currentClass.getName());
+        codeGenerator.pop();
+        codeGenerator.emitText("move $a0 $t0");
         return null;
     }
 
@@ -217,6 +256,7 @@ public class CodeGenVisitor implements Visitor<Void> {
     public Void visit(LiteralNode literalNode) {
 
         Token token = literalNode.getToken();
+        codeGenerator.emitComment("Genero el literal " + token.getLexeme());
         switch (token.getTokenType()){
             case TokenType.STRING_CONSTANT:
                 codeGenerator.emitText("la $a0 " + codeGenerator.emitString(token.getLexeme()));
@@ -231,6 +271,17 @@ public class CodeGenVisitor implements Visitor<Void> {
                 codeGenerator.emitText("li $a0 0");
             default:
                 break;
+        }
+        if (token.getTokenType() != TokenType.KW_NIL) {
+            codeGenerator.emitComment("Guardo el literal en la pila");
+            codeGenerator.push("$a0");
+            codeGenerator.emitComment("Genero un CIR para el literal");
+            codeGenerator.generatePrimitiveCIR(token.getTokenType());
+            codeGenerator.emitComment("Recupero el literal de la pila");
+            codeGenerator.pop();
+            codeGenerator.emitComment("Guardo el literal en el CIR");
+            codeGenerator.emitText("sw $t0 4($v0)");
+            codeGenerator.emitText("move $a0 $v0");
         }
         return null;
     }
@@ -286,9 +337,7 @@ public class CodeGenVisitor implements Visitor<Void> {
         Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(simpleVariableNode.getToken().getLexeme());
         if (simpleVariableNode.getSimpleChainedNode() == null) {
             // Cargo la dirección del objeto en el stack frame
-            codeGenerator.emitText("lw $t0, " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
-            // Cargo el valor en la posicion del value del CIR
-            codeGenerator.emitText("sw $a0, 4($t0)");
+            codeGenerator.emitText("sw $a0, " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
         }
         // TODO: Generar el codigo MIPS para un acceso simple a una variable.
         return null;
@@ -344,7 +393,6 @@ public class CodeGenVisitor implements Visitor<Void> {
             Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(variableNode.getToken().getLexeme());
             if (currentVariable != null) {
                 codeGenerator.emitText("lw $a0 " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
-                codeGenerator.emitText("lw $a0 4($a0)");
             } else {
                 Parameter currentParameter = AST.getSymbolTable().getCurrentMethod().getParameters().get(variableNode.getToken().getLexeme());
                 codeGenerator.emitText("lw $a0 " + codeGenerator.getParameterOffset(currentParameter) + "($fp)");
