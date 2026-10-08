@@ -187,7 +187,7 @@ public class CodeGenVisitor implements Visitor<Void> {
             // En este punto el $sp apunta donde debería estar el $fp del RA, pero no hemos generado el prólogo
             // Empieza en offset 4 ya que ahí está el primer parámetro, si es que tiene
             int parameterOffset = 4;
-            if(chainedCallNode.getExpressionNodes() != null) {
+            if(chainedCallNode.getExpressionNodes() != null && !chainedCallNode.getExpressionNodes().isEmpty()) {
                 codeGenerator.emitSubsection("Evaluo parametros de " + currentMethodCall.getName());
             }
             for(ExpressionNode expressionNode : chainedCallNode.getExpressionNodes()) {
@@ -204,6 +204,14 @@ public class CodeGenVisitor implements Visitor<Void> {
                 codeGenerator.emitText("");
                 codeGenerator.emitComment("Como el metodo " + currentMethodCall.getName() + " es estatico, guardo la vtable en self");
                 codeGenerator.emitText("lw $a0 " + codeGenerator.getSelfOffset(currentMethodCall) + "($sp)");
+                codeGenerator.emitText("lw $a0 " + (currentMethodCall.getPosition()*4) + "($a0)");
+                codeGenerator.emitText("jalr $a0");
+            } else {
+                codeGenerator.emitComment("Como el metodo " + currentMethodCall.getName() + " es un metodo de instancia, obtengo el self");
+                codeGenerator.emitText("lw $a0 " + codeGenerator.getSelfOffset(currentMethodCall) + "($sp)");
+                codeGenerator.emitComment("Busco la vtable de la instancia");
+                codeGenerator.emitText("lw $a0 0($a0)");
+                codeGenerator.emitComment("Busco el metodo " + currentMethodCall.getName() + " en la vtable");
                 codeGenerator.emitText("lw $a0 " + (currentMethodCall.getPosition()*4) + "($a0)");
                 codeGenerator.emitText("jalr $a0");
             }
@@ -389,8 +397,9 @@ public class CodeGenVisitor implements Visitor<Void> {
     @Override
     public Void visit(VariableNode variableNode) {
         // TODO: Generar el codigo MIPS para el acceso a una variable.
+        // Acceso a variable sin encadenamiento
+        Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(variableNode.getToken().getLexeme());
         if (!variableNode.isChainedNode() && variableNode.getChainedNode() == null) {
-            Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(variableNode.getToken().getLexeme());
             if (currentVariable != null) {
                 codeGenerator.emitText("lw $a0 " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
             } else {
@@ -398,6 +407,17 @@ public class CodeGenVisitor implements Visitor<Void> {
                 codeGenerator.emitText("lw $a0 " + codeGenerator.getParameterOffset(currentParameter) + "($fp)");
             }
 
+        }
+        // Acceso a variable que tiene algo encadenado
+        else if (!variableNode.isChainedNode()) {
+            variableNode.getChainedNode().setIsChainedNode(true);
+            if (variableNode.getChainedNode() instanceof ChainedCallNode) {
+                codeGenerator.emitComment("Guardo en $a0 la direccion del CIR que invoca al metodo");
+                codeGenerator.emitText("lw $a0 " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
+                AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(variableNode.getClassName()));
+            }
+
+            variableNode.getChainedNode().accept(this);
         }
         return null;
     }
