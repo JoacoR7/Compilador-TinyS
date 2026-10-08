@@ -137,7 +137,8 @@ public class CodeGenerator {
      *     Persona_getEdad:
      */
     public void emitLabel(String label) {
-        current.append("    ")
+        current.append("\n")
+                .append("    ")
                 .append(label)
                 .append(":\n");
     }
@@ -264,10 +265,19 @@ public class CodeGenerator {
         int variableCount = method.getVariables().size();
         int variableSpace = variableCount * 4;
         int frameSpace = 4 + variableSpace;
+        int parameterCount = method.getParameters().size();
+        int parameterSpace = parameterCount * 4;
+
 
         emitSection("PROLOGUE " + method.getName());
 
         emitComment("Registro de activacion del metodo:");
+        emitComment("self         -> " + (parameterSpace + 12) + "($fp)");
+        emitComment("$fp llamador -> " + (parameterSpace + 8) + "($fp)");
+        emitComment("return       -> " + (parameterSpace + 4) + "($fp)");
+        for (int i = parameterCount; i > 0; i--) {
+            emitComment("Par " + i + "        -> " + (i * 4) + "($fp)");
+        }
         emitComment("$ra          -> 0($fp)");
 
         for (int i = 1; i <= variableCount; i++) {
@@ -276,10 +286,10 @@ public class CodeGenerator {
 
         emitBlankLine();
 
-        emitComment("Fijo $fp en la posicion donde se guardo $ra");
+        emitComment("Fijo $fp en la posicion donde se guardara el $ra");
         emitText("move $fp, $sp");
 
-        emitComment("Guardo la direccion del return address");
+        emitComment("Guardo la direccion de retorno de la llamada");
         emitText("sw $ra, 0($fp)");
 
         emitBlankLine();

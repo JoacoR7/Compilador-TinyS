@@ -6,10 +6,8 @@ import uncuyo.compiladores.semantic.abstractSintaxTree.AST;
 import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.abstractSintaxTree.expression.*;
 import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.*;
+import uncuyo.compiladores.semantic.symbolTable.*;
 import uncuyo.compiladores.semantic.symbolTable.Class;
-import uncuyo.compiladores.semantic.symbolTable.Method;
-import uncuyo.compiladores.semantic.symbolTable.Parameter;
-import uncuyo.compiladores.semantic.symbolTable.Variable;
 
 import java.util.List;
 
@@ -313,6 +311,10 @@ public class CodeGenVisitor implements Visitor<Void> {
     @Override
     public Void visit(SelfNode selfNode) {
         // TODO: Generar el codigo MIPS para el acceso a self.
+        codeGenerator.emitComment("Accedo al self");
+        codeGenerator.emitText("lw $a0 " + codeGenerator.getSelfOffset(AST.getSymbolTable().getCurrentMethod()) + "($fp)");
+        selfNode.getChainedNode().setIsChainedNode(true);
+        selfNode.getChainedNode().accept(this);
         return null;
     }
 
@@ -331,12 +333,20 @@ public class CodeGenVisitor implements Visitor<Void> {
     @Override
     public Void visit(SimpleChainedNode simpleChainedNode) {
         // TODO: Generar el codigo MIPS para un acceso simple encadenado.
+        if (simpleChainedNode.getSimpleChainedNode() == null) {
+            Attribute currentAttribute = AST.getSymbolTable().getCurrentClass().getAttributes().get(simpleChainedNode.getToken().getLexeme());
+            codeGenerator.emitComment("Obtengo el atributo del self");
+            codeGenerator.emitText("addiu $a0 $a0 " + codeGenerator.getAttributeOffset(currentAttribute));
+        }
         return null;
     }
 
     @Override
     public Void visit(SimpleSelfNode simpleSelfNode) {
         // TODO: Generar el codigo MIPS para un acceso simple mediante self.
+        codeGenerator.emitComment("Obtengo el CIR del self " + AST.getSymbolTable().getCurrentClass().getName());
+        codeGenerator.emitText("lw $a0 " + codeGenerator.getSelfOffset(AST.getSymbolTable().getCurrentMethod()) + "($fp)");
+        simpleSelfNode.getSimpleChainedNode().accept(this);
         return null;
     }
 
@@ -345,7 +355,7 @@ public class CodeGenVisitor implements Visitor<Void> {
         Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(simpleVariableNode.getToken().getLexeme());
         if (simpleVariableNode.getSimpleChainedNode() == null) {
             // Cargo la dirección del objeto en el stack frame
-            codeGenerator.emitText("sw $a0, " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
+            codeGenerator.emitText("addiu $a0 $fp " + codeGenerator.getVariableOffset(currentVariable));
         }
         // TODO: Generar el codigo MIPS para un acceso simple a una variable.
         return null;
@@ -418,6 +428,9 @@ public class CodeGenVisitor implements Visitor<Void> {
             }
 
             variableNode.getChainedNode().accept(this);
+        } else {
+            codeGenerator.emitComment("Accedo al atributo del self");
+            codeGenerator.emitText("lw $a0 " + codeGenerator.getAttributeOffset(AST.getSymbolTable().getCurrentClass().getAttributes().get(variableNode.getToken().getLexeme())) + "($a0)");
         }
         return null;
     }
@@ -434,13 +447,23 @@ public class CodeGenVisitor implements Visitor<Void> {
         codeGenerator.emitComment("Asignacion a \"" + currentToken.getLexeme() + "\" en " + currentToken.getRowIndex() + "_" + currentToken.getColumnIndex());
 
         // Genero lado derecho de la igualdad
-        // Al terminar, $a0 contiene el valor de la expresión
+        // Al terminar, $a0 contiene el CIR de la expresión
+        codeGenerator.emitComment("Evalúo el lado derecho de la asignacion");
         assignmentNode.getExpressionNode().accept(this);
 
-        // Guardo $a0 en la ubicación correspondiente
+        codeGenerator.emitComment("Guardo en la pila el resultado de la expresion");
+        codeGenerator.push("$a0");
+
+        // Al terminar, $a0 contiene el CIR del lado izquierdo
         // Si es local, guardo en offset($fp)
         assignmentNode.getSimpleAccessNode().accept(this);
-        // TODO: Falta hacer el lado izquiero para guardar lo que hay en $a0
+
+        codeGenerator.emitComment("Recupero de la pila el resultado de la expresion");
+        codeGenerator.pop();
+
+        codeGenerator.emitComment("Guardo la expresión en la direccion del lado izquierdo");
+        codeGenerator.emitText("sw $t0 0($a0)");
+
         return null;
     }
 
