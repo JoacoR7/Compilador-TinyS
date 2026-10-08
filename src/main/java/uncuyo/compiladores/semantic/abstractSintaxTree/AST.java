@@ -73,7 +73,7 @@ public class AST implements JsonSerializable {
         String currentClassName = null;
         for (BlockNode blockNode : blockNodes) {
             if (!blockNode.getClassName().equals(currentClassName)) {
-                codeGenVisitor.getCodeGenerator().emitDataLabel("vtable_" + blockNode.getClassName());
+                codeGenVisitor.getCodeGenerator().emitVtableDataLabel("vtable_" + blockNode.getClassName());
                 currentClassName = blockNode.getClassName();
             }
             codeGenVisitor.visit(blockNode);

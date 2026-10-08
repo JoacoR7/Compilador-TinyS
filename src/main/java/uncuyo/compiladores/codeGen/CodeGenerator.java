@@ -13,7 +13,8 @@ import java.util.Map;
 
 public class CodeGenerator {
 
-    private StringBuilder data;
+    private StringBuilder strings;
+    private StringBuilder vtables;
     private StringBuilder text;
     private StringBuilder main;
     private StringBuilder current;
@@ -25,7 +26,8 @@ public class CodeGenerator {
     private int strCount = 0;
 
     public CodeGenerator() {
-        this.data = new StringBuilder();
+        this.strings = new StringBuilder();
+        this.vtables = new StringBuilder();
         this.text = new StringBuilder();
         this.main = new StringBuilder();
 
@@ -101,17 +103,34 @@ public class CodeGenerator {
      *     label:
      *         contenido
      */
-    public void emitData(String line) {
-        data.append("        ")
+    public void emitAsciiz(String line) {
+        strings.append("        ")
+                .append(".asciiz ")
+                .append(line)
+                .append("\n");
+    }
+
+    public void emitVtableFunction(String line) {
+        vtables.append("        ")
+                .append(".word ")
                 .append(line)
                 .append("\n");
     }
 
     /**
-     * Emite una etiqueta dentro de .data.
+     * Emite una etiqueta para string dentro de .data.
      */
-    public void emitDataLabel(String label) {
-        data.append("    ")
+    public void emitSringDataLabel(String label) {
+        strings.append("    ")
+                .append(label)
+                .append(":\n");
+    }
+
+    /**
+     * Emite una etiqueta para vtable dentro de .data.
+     */
+    public void emitVtableDataLabel(String label) {
+        vtables.append("    ")
                 .append(label)
                 .append(":\n");
     }
@@ -179,8 +198,8 @@ public class CodeGenerator {
 
             stringLabels.put(lexeme, label);
 
-            emitDataLabel(label);
-            emitData(".asciiz " + lexeme);
+            emitSringDataLabel(label);
+            emitAsciiz(lexeme);
         }
 
         return label;
@@ -193,8 +212,9 @@ public class CodeGenerator {
 
         return ".data\n"
                 + indentBlock(baseData, 4)
-                + data
+                + strings
                 + "\n"
+                + vtables
 
                 + ".text\n"
 
@@ -228,7 +248,7 @@ public class CodeGenerator {
         int callerFpOffset = getCallerFpOffset(method);
         int returnOffset = getReturnOffset(method);
 
-        emitSection("PRECALL " + method.getName());
+        emitSection("PRECALL " + (method.getName().equals(".") ? ("Constructor " + method.getClassName()) : method.getName()));
 
         emitComment("Layout del registro de activacion:");
         emitComment("Self        -> " + selfOffset + "($sp)");
@@ -269,7 +289,7 @@ public class CodeGenerator {
         int parameterSpace = parameterCount * 4;
 
 
-        emitSection("PROLOGUE " + method.getName());
+        emitSection("PROLOGUE " + (method.getName().equals(".") ? ("Constructor " + method.getClassName()) : method.getName()));
 
         emitComment("Registro de activacion del metodo:");
         emitComment("self         -> " + (parameterSpace + 12) + "($fp)");
@@ -401,6 +421,11 @@ public class CodeGenerator {
             emitComment("Recupero el $ra anterior");
             emitText("lw $ra 0($fp)");
             if (!method.getType().getTypeName().equals("void")) {
+                if (method.getName().equals(".")) {
+                    emitComment("Como es un constructor, guardo en return el self (CIR)");
+                    emitText("lw $t0 " + getSelfOffset(method) + "($fp)");
+                    emitText("sw $t0 " + getReturnOffset(method) + "($fp)");
+                }
                 emitComment("Recupero el valor del return");
                 emitText("lw $a0 " + (parameterSpace + 4) + "($fp)");
             }

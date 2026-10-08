@@ -294,6 +294,7 @@ public class SemanticAnalyzer {
                     currentClass.getName(), currentClass.getConstructor().getToken());
         }
         Method constructor = new Method(auxToken, new Type(TokenType.KW_CLASS, currentClass.getName()), false);
+        constructor.setClassName(getSymbolTable().getCurrentClass().getName());
         symbolTable.getCurrentClass().setConstructor(constructor);
         symbolTable.setCurrentMethod(constructor);
         argumentosFormales();

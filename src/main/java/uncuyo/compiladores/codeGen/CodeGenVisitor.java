@@ -243,6 +243,9 @@ public class CodeGenVisitor implements Visitor<Void> {
         codeGenerator.emitComment("Recupero la direccion de la instancia de clase de " + currentClass.getName());
         codeGenerator.pop();
         codeGenerator.emitText("move $a0 $t0");
+        codeGenerator.generateMethodPreCall(currentClass.getConstructor());
+        codeGenerator.emitText("la $t0 " + currentClass.getName() + "_constructor");
+        codeGenerator.emitText("jalr $t0");
         return null;
     }
 
@@ -311,6 +314,9 @@ public class CodeGenVisitor implements Visitor<Void> {
     @Override
     public Void visit(SelfNode selfNode) {
         // TODO: Generar el codigo MIPS para el acceso a self.
+        if (selfNode.getChainedNode() instanceof VariableNode) {
+            AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(((VariableNode) selfNode.getChainedNode()).getClassName()));
+        }
         codeGenerator.emitComment("Accedo al self");
         codeGenerator.emitText("lw $a0 " + codeGenerator.getSelfOffset(AST.getSymbolTable().getCurrentMethod()) + "($fp)");
         selfNode.getChainedNode().setIsChainedNode(true);
@@ -430,6 +436,8 @@ public class CodeGenVisitor implements Visitor<Void> {
             variableNode.getChainedNode().accept(this);
         } else {
             codeGenerator.emitComment("Accedo al atributo del self");
+            Class currentClass = AST.getSymbolTable().getCurrentClass();
+            Attribute currentAttribute = currentClass.getAttributes().get(variableNode.getToken().getLexeme());
             codeGenerator.emitText("lw $a0 " + codeGenerator.getAttributeOffset(AST.getSymbolTable().getCurrentClass().getAttributes().get(variableNode.getToken().getLexeme())) + "($a0)");
         }
         return null;
@@ -480,10 +488,11 @@ public class CodeGenVisitor implements Visitor<Void> {
             } else {
                 if (methodName.equals(".")) {
                     AST.getSymbolTable().setCurrentMethod(AST.getSymbolTable().getClasses().get(className).getConstructor());
+                    AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(className));
                     methodName = className + "_constructor";
                 } else {
                     AST.getSymbolTable().setCurrentMethod(AST.getSymbolTable().getClasses().get(className).getMethods().get(methodName));
-                    codeGenerator.emitData(".word " + methodName);
+                    codeGenerator.emitVtableFunction(methodName);
                 }
 
                 codeGenerator.emitLabel(methodName);
