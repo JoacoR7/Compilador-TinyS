@@ -235,6 +235,14 @@ runtime_div_zero:
 
     j exit
 
+runtime_null:
+    la $a0, runtime_null_msg
+    li $v0, 4
+    syscall
+
+    j exit
+
+
 #############################
 #          FIN INIT         #
 #############################

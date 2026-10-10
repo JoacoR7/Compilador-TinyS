@@ -531,5 +531,10 @@ public class CodeGenerator {
         }
     }
 
+    public void checkNullAccess(String register) {
+        emitComment("Checkeo acceso nulo");
+        emitText("beqz " + register + " runtime_null");
+    }
+
 
 }

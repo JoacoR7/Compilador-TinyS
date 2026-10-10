@@ -432,9 +432,11 @@ public class CodeGenVisitor implements Visitor<Void> {
         if (!variableNode.isChainedNode() && variableNode.getChainedNode() == null) {
             if (currentVariable != null) {
                 codeGenerator.emitText("lw $a0 " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
+                codeGenerator.checkNullAccess("$a0");
             } else {
                 Parameter currentParameter = AST.getSymbolTable().getCurrentMethod().getParameters().get(variableNode.getToken().getLexeme());
                 codeGenerator.emitText("lw $a0 " + codeGenerator.getParameterOffset(currentParameter) + "($fp)");
+                codeGenerator.checkNullAccess("$a0");
             }
 
         }
@@ -444,6 +446,7 @@ public class CodeGenVisitor implements Visitor<Void> {
             if (variableNode.getChainedNode() instanceof ChainedCallNode) {
                 codeGenerator.emitComment("Guardo en $a0 la direccion del CIR que invoca al metodo");
                 codeGenerator.emitText("lw $a0 " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
+                codeGenerator.checkNullAccess("$a0");
                 AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(variableNode.getClassName()));
             }
 
