@@ -4,9 +4,9 @@ class Persona {
 }
 
 impl Persona {
-    .() {
-        self.edad = 25;
-        self.nombre = "Joaquin";
+    .(Int edad, Str nombre) {
+        self.edad = edad;
+        self.nombre = nombre;
     }
 
     fn setEdad(Int edad) {
@@ -39,15 +39,8 @@ impl Persona {
 
 start {
     Persona persona1;
-    persona1 = new Persona();
-    /*
-    (persona1.saludar("Joaquin"));
-    (IO.out_str("\n"));
+    persona1 = new Persona(30, "Lucas");
     (persona1.saludar("Tomas"));
-    */
-    //(IO.out_str(persona1.getNombre()));
-    (persona1.saludar("Tomas"));
-    (IO.out_str("\nuwu"));
-    //a = 3;
+
 
 }

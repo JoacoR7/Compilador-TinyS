@@ -5,6 +5,8 @@ import uncuyo.compiladores.semantic.symbolTable.*;
 import uncuyo.compiladores.semantic.symbolTable.Class;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
@@ -43,17 +45,19 @@ public class CodeGenerator {
      */
     private String loadResource(String path) {
         try {
-            var stream = getClass()
+            InputStream resourceStream = getClass()
                     .getClassLoader()
                     .getResourceAsStream(path);
 
-            if (stream == null) {
+            if (resourceStream == null) {
                 throw new RuntimeException(
                         "No se encontró el recurso: " + path
                 );
             }
 
-            return new String(stream.readAllBytes());
+            try (InputStream stream = resourceStream) {
+                return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+            }
 
         } catch (Exception e) {
             throw new RuntimeException(

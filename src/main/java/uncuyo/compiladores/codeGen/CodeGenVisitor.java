@@ -244,6 +244,12 @@ public class CodeGenVisitor implements Visitor<Void> {
         codeGenerator.pop();
         codeGenerator.emitText("move $a0 $t0");
         codeGenerator.generateMethodPreCall(currentClass.getConstructor());
+        int i = 4;
+        for (ExpressionNode expressionNode : classConstructorNode.getExpressionNodes()) {
+            expressionNode.accept(this);
+            codeGenerator.emitText("sw $a0 " + i + "($sp)");
+            i += 4;
+        }
         codeGenerator.emitText("la $t0 " + currentClass.getName() + "_constructor");
         codeGenerator.emitText("jalr $t0");
         return null;
