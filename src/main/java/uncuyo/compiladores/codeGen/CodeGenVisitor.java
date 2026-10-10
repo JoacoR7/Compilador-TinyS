@@ -498,10 +498,10 @@ public class CodeGenVisitor implements Visitor<Void> {
                     methodName = className + "_constructor";
                 } else {
                     AST.getSymbolTable().setCurrentMethod(AST.getSymbolTable().getClasses().get(className).getMethods().get(methodName));
-                    codeGenerator.emitVtableFunction(methodName);
+                    codeGenerator.emitVtableFunction(className + "_" + methodName);
                 }
 
-                codeGenerator.emitLabel(methodName);
+                codeGenerator.emitLabel(className + "_" + methodName);
             }
             currentMethod = AST.getSymbolTable().getCurrentMethod();
             codeGenerator.generateMethodPrologue(AST.getSymbolTable().getCurrentMethod());
