@@ -367,6 +367,8 @@ public class CodeGenerator {
                     emitText("la $t0 vtable_str");
                     emitText("sw $t0 0($v0)");
                     break;
+                default:
+                    emitText("move $v0 $zero");
             }
             emitText("sw $v0 " + getVariableOffset(variable) + "($fp)");
 

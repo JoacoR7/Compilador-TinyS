@@ -137,7 +137,7 @@ out_bool:
     lw $t0 4($fp)
 
     # Recupero el booleano (0 o 1) a imprimir
-    lw $a0 4($a0)
+    lw $t0 4($t0)
 
     # Se evalua si es 0 o 1 para cargar el string correcto a imprimir
     la $a0 true_str
