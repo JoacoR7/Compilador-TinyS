@@ -424,6 +424,7 @@ public class CodeGenerator {
             int frameSpace = 16 + parameterSpace + variableSpace;
 
             emitSubsection("Epilogue de " + method.getName());
+            emitLabel("epilogue_" + method.getClassName() + "_" + (method.getName().equals(".") ? "constructor" : method.getName()));
             emitComment("Recupero el $ra anterior");
             emitText("lw $ra 0($fp)");
             if (!method.getType().getTypeName().equals("void")) {

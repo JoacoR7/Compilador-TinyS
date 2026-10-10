@@ -393,24 +393,32 @@ public class CodeGenVisitor implements Visitor<Void> {
             case TokenType.OPERATOR_SUB:
                 codeGenerator.emitComment("Cambio el signo del operando");
                 codeGenerator.emitText("li $t0 -1");
-                codeGenerator.emitText("mul $a0 $a0 $t0");
+                codeGenerator.emitText("lw $t1 4($a0)");
+                codeGenerator.emitText("mul $t0 $t1 $t0");
+                codeGenerator.emitText("sw $t0 4($a0)");
                 break;
 
             case TokenType.OPERATOR_NOT:
                 codeGenerator.emitComment("Niego el valor booleano");
-                codeGenerator.emitText("xori $a0 $a0 1");
+                codeGenerator.emitText("lw $t0 4($a0)");
+                codeGenerator.emitText("xori $t0 $t0 1");
+                codeGenerator.emitText("sw $t0 4($a0)");
                 break;
 
             case TokenType.OPERATOR_INC:
                 codeGenerator.emitComment("Incremento el operando en 1");
                 codeGenerator.emitText("li $t0 1");
-                codeGenerator.emitText("add $a0 $a0 $t0");
+                codeGenerator.emitText("lw $t1 4($a0)");
+                codeGenerator.emitText("add $t0 $t1 $t0");
+                codeGenerator.emitText("sw $t0 4($a0)");
                 break;
 
             case TokenType.OPERATOR_DEC:
                 codeGenerator.emitComment("Decremento el operando en 1");
                 codeGenerator.emitText("li $t0 1");
-                codeGenerator.emitText("sub $a0 $a0 $t0");
+                codeGenerator.emitText("lw $t1 4($a0)");
+                codeGenerator.emitText("sub $t0 $t1 $t0");
+                codeGenerator.emitText("sw $t0 4($a0)");
                 break;
         }
         return null;
@@ -535,6 +543,7 @@ public class CodeGenVisitor implements Visitor<Void> {
         codeGenerator.emitComment("Evaluo expresion de if_" + rowColumnLabel);
         // Guardo en $a0 el resultado de la expresión a evaluar
         ifElseNode.getExpression().accept(this);
+        codeGenerator.emitText("lw $a0 4($a0)");
         codeGenerator.emitText("beqz $a0 " + (ifElseNode.getSentenceNodeElse() != null ? "else_" : "endif_") + rowColumnLabel);
 
         codeGenerator.emitComment("Cuerpo de if_" + rowColumnLabel);
@@ -560,6 +569,9 @@ public class CodeGenVisitor implements Visitor<Void> {
         int returnOffset = codeGenerator.getReturnOffset(AST.getSymbolTable().getCurrentMethod());
         codeGenerator.emitComment("Guardo el return");
         codeGenerator.emitText("sw $a0 " + returnOffset + "($fp)");
+        Method currentMethod = AST.getSymbolTable().getCurrentMethod();
+        codeGenerator.emitText("la $t0 epilogue_" + currentMethod.getClassName() + "_" + (currentMethod.getName().equals(".") ? "constructor" : currentMethod.getName()));
+        codeGenerator.emitText("jr $t0");
         return null;
     }
 
