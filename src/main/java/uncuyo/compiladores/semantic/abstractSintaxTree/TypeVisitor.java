@@ -321,7 +321,7 @@ public class TypeVisitor implements Visitor<Type> {
 
     public Type visit(SelfNode selfNode) {
 
-        Class currentClass = symbolTable.getCurrentClass();
+        Class currentClass = symbolTable.getClasses().get(symbolTable.getCurrentMethod().getClassName());
 
         Type type = new Type(
                 currentClass.getToken().getTokenType(),
@@ -348,7 +348,7 @@ public class TypeVisitor implements Visitor<Type> {
                             chainedNodeToken.getRowIndex(),
                             chainedNodeToken.getColumnIndex(),
                             chainedNodeToken.getLexeme(),
-                            currentClass.getName()
+                            attribute.getClassName()
                     );
                 }
             }
@@ -591,6 +591,11 @@ public class TypeVisitor implements Visitor<Type> {
                 if (((VariableNode) chainedNode).getClassName() == null) {
                     Attribute attribute = symbolTable.getCurrentClass().searchAttribute(chainedNode.getToken().getLexeme());
                     Method method = symbolTable.getCurrentClass().getMethods().get(chainedNode.getToken().getLexeme());
+                    if (attribute.isPrivate()) {
+                        if (method == null || !method.getClassName().equals(attribute.getClassName())) {
+                            throw new InvalidAttributeAccessException(token.getRowIndex(), token.getColumnIndex(), token.getLexeme(), attribute.getClassName());
+                        }
+                    }
                     String className;
                     if (attribute != null) {
                         className = attribute.getType().getTypeName();
