@@ -506,7 +506,7 @@ public class CodeGenVisitor implements Visitor<Void> {
                 if (methodName.equals(".")) {
                     AST.getSymbolTable().setCurrentMethod(AST.getSymbolTable().getClasses().get(className).getConstructor());
                     AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(className));
-                    methodName = className + "_constructor";
+                    methodName = "constructor";
                 } else {
                     AST.getSymbolTable().setCurrentMethod(AST.getSymbolTable().getClasses().get(className).getMethods().get(methodName));
                     codeGenerator.emitVtableFunction(className + "_" + methodName);

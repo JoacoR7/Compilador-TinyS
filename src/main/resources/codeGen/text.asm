@@ -178,6 +178,77 @@ load_false:
     j out_bool_syscall
 
 length_str:
+    # ========================================
+    # PROLOGUE length_str
+    # ========================================
+
+    # Fijo $fp en la posicion donde se guardara el $ra
+    move $fp $sp
+
+    # Guardo la direccion de retorno de la llamada
+    sw $ra 0($fp)
+
+    # $sp apunta al siguiente word libre del frame
+    addiu $sp $sp -4
+
+    # ========================================
+    # BODY length_str
+    # ========================================
+
+    # Cargo el self
+    lw $a0 12($fp)
+
+    # Recupero la direccion del string del CIR
+    lw $a0 4($a0)
+
+    li $t1 0
+
+    inicio_loop_length_str:
+
+    # Cargo el byte actual del Str
+    lb $t0 0($a0)
+
+    # Comparo el byte con \0 (fin de str)
+    beqz $t0 fin_loop_length_str
+
+    # Avanzo una posicion
+    addiu $a0 $a0 1
+    addiu $t1 $t1 1
+
+    j inicio_loop_length_str
+
+    fin_loop_length_str:
+    li $a0 8
+    li $v0 9
+    syscall
+
+    sw $t1 4($v0)
+    sw $v0 4($fp)
+
+    # ========================================
+    # EPILOGUE length_str
+    # ========================================
+
+    # Recupero la direccion de retorno
+    lw $ra 0($fp)
+
+    #
+    # 12($fp) -> Self
+    # 8($fp) -> $fp llamador
+    #  4($fp) -> return
+    #  0($fp) -> $ra
+    #
+
+    # Recupero el return
+    lw $a0 4($fp)
+
+    # Restauro $sp al primer word libre del caller
+    addiu $sp $fp 12
+
+    # Restauro el frame pointer del caller
+    lw $fp 8($fp)
+
+    # Vuelvo a la instruccion siguiente al jalr
     jr $ra
 
 concat_str:

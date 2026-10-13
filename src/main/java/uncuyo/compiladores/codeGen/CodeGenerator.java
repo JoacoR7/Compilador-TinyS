@@ -396,6 +396,8 @@ public class CodeGenerator {
             List<TokenType> primitiveClasses = List.of(TokenType.INT_CLASS, TokenType.INT_CONSTANT, TokenType.BOOL_CLASS, TokenType.BOOLEAN_CONSTANT, TokenType.STR_CLASS, TokenType.STRING_CONSTANT);
             if (primitiveClasses.contains(attribute.getType().getTokenType())) {
                 generatePrimitiveCIR(attribute.getType().getTokenType());
+            } else {
+                emitText("move $v0 $zero");
             }
 
 
