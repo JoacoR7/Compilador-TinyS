@@ -603,7 +603,16 @@ public class TypeVisitor implements Visitor<Type> {
                     }
                     String className;
                     if (attribute != null) {
-                        className = attribute.getType().getTypeName();
+                        if (attribute.getClassName() != null) {
+                            if (!predefinedClasses.contains(attribute.getType().getTypeName())) {
+                                className = attribute.getType().getTypeName();
+                            } else {
+                                className = attribute.getClassName();
+                            }
+                        } else {
+                            className = attribute.getType().getTypeName();
+                        }
+
                     } else if (method != null) {
                         className = method.getType().getTypeName();
                     } else {
