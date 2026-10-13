@@ -1,7 +1,7 @@
 start {
-    Str a,b;
-    a = "Hello ";
+    Str a,b, nombre;
+    a = "Hello";
     b = "world";
-    (IO.out_str(a.concat(b)));
-
+    nombre = "Joaquin";
+    (IO.out_str(a.concat(" ").concat(b).concat(", mi nombre es ").concat(nombre)));
 }

@@ -214,10 +214,13 @@ public class CodeGenVisitor implements Visitor<Void> {
                 codeGenerator.emitText("jalr $a0");
             }
 
+            // Llamadas encadenadas
+            if (chainedCallNode.getChainedNode() != null) {
+                chainedCallNode.getChainedNode().setIsChainedNode(true);
+                chainedCallNode.getChainedNode().accept(this);
+            }
         }
 
-
-        // TODO: Generar el codigo MIPS para una llamada encadenada.
         return null;
     }
 
