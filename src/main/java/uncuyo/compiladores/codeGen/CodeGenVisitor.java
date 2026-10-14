@@ -1,5 +1,6 @@
 package uncuyo.compiladores.codeGen;
 
+import org.w3c.dom.Attr;
 import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.lexer.TokenType;
 import uncuyo.compiladores.semantic.abstractSintaxTree.AST;
@@ -368,9 +369,16 @@ public class CodeGenVisitor implements Visitor<Void> {
     @Override
     public Void visit(SimpleVariableNode simpleVariableNode) {
         Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(simpleVariableNode.getToken().getLexeme());
-        if (simpleVariableNode.getSimpleChainedNode() == null) {
-            // Cargo la dirección del objeto en el stack frame
-            codeGenerator.emitText("addiu $a0 $fp " + codeGenerator.getVariableOffset(currentVariable));
+        // Cargo la dirección del objeto en el stack frame
+        codeGenerator.emitText("addiu $a0 $fp " + codeGenerator.getVariableOffset(currentVariable));
+        if (simpleVariableNode.getSimpleChainedNode() != null) {
+            codeGenerator.checkNullAccess("$a0", currentVariable.getToken().getRowIndex(), currentVariable.getToken().getColumnIndex());
+            SimpleChainedNode simpleChainedNode = simpleVariableNode.getSimpleChainedNode();
+            Attribute attribute = AST.getSymbolTable().getClasses().get(currentVariable.getType().getLexeme()).getAttributes().get(simpleChainedNode.getToken().getLexeme());
+            if (attribute != null) {
+                int attributeOffset = codeGenerator.getAttributeOffset(attribute);
+                codeGenerator.emitText("lw $a0 " + attributeOffset + "($a0)");
+            }
         }
         // TODO: Generar el codigo MIPS para un acceso simple a una variable.
         return null;
@@ -435,11 +443,11 @@ public class CodeGenVisitor implements Visitor<Void> {
         if (!variableNode.isChainedNode() && variableNode.getChainedNode() == null) {
             if (currentVariable != null) {
                 codeGenerator.emitText("lw $a0 " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
-                codeGenerator.checkNullAccess("$a0");
+                codeGenerator.checkNullAccess("$a0", currentVariable.getToken().getRowIndex(), currentVariable.getToken().getColumnIndex());
             } else {
                 Parameter currentParameter = AST.getSymbolTable().getCurrentMethod().getParameters().get(variableNode.getToken().getLexeme());
                 codeGenerator.emitText("lw $a0 " + codeGenerator.getParameterOffset(currentParameter) + "($fp)");
-                codeGenerator.checkNullAccess("$a0");
+                codeGenerator.checkNullAccess("$a0", variableNode.getToken().getRowIndex(), variableNode.getToken().getColumnIndex());
             }
 
         }
@@ -449,7 +457,7 @@ public class CodeGenVisitor implements Visitor<Void> {
             if (variableNode.getChainedNode() instanceof ChainedCallNode) {
                 codeGenerator.emitComment("Guardo en $a0 la direccion del CIR que invoca al metodo");
                 codeGenerator.emitText("lw $a0 " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
-                codeGenerator.checkNullAccess("$a0");
+                codeGenerator.checkNullAccess("$a0", variableNode.getToken().getRowIndex(), variableNode.getToken().getColumnIndex());
                 AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(variableNode.getClassName()));
             }
 
@@ -485,6 +493,7 @@ public class CodeGenVisitor implements Visitor<Void> {
         // Al terminar, $a0 contiene el CIR del lado izquierdo
         // Si es local, guardo en offset($fp)
         assignmentNode.getSimpleAccessNode().accept(this);
+        codeGenerator.checkNullAccess("$a0", assignmentNode.getSimpleAccessNode().getToken().getRowIndex(), assignmentNode.getSimpleAccessNode().getToken().getColumnIndex());
 
         codeGenerator.emitComment("Recupero de la pila el resultado de la expresion");
         codeGenerator.pop();

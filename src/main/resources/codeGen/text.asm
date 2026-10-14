@@ -451,8 +451,20 @@ runtime_div_zero:
     j exit
 
 runtime_null:
-    la $a0, runtime_null_msg
-    li $v0, 4
+    la $a0 runtime_null_msg
+    li $v0 4
+    syscall
+
+    move $a0 $a2
+    li $v0 1
+    syscall
+
+    la $a0 runtime_null_msg2
+    li $v0 4
+    syscall
+
+    move $a0 $a3
+    li $v0 1
     syscall
 
     j exit

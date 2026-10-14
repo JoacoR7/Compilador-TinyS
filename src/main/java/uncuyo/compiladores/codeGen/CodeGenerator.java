@@ -533,8 +533,10 @@ public class CodeGenerator {
         }
     }
 
-    public void checkNullAccess(String register) {
+    public void checkNullAccess(String register, int rowIndex, int columnIndex) {
         emitComment("Checkeo acceso nulo");
+        emitText("li $a2 " + rowIndex);
+        emitText("li $a3 " + columnIndex);
         emitText("beqz " + register + " runtime_null");
     }
 
