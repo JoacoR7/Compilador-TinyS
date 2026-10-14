@@ -463,10 +463,15 @@ public class CodeGenVisitor implements Visitor<Void> {
 
             variableNode.getChainedNode().accept(this);
         } else {
-            codeGenerator.emitComment("Accedo al atributo del self");
             Class currentClass = AST.getSymbolTable().getCurrentClass();
             Attribute currentAttribute = currentClass.getAttributes().get(variableNode.getToken().getLexeme());
-            codeGenerator.emitText("lw $a0 " + codeGenerator.getAttributeOffset(AST.getSymbolTable().getCurrentClass().getAttributes().get(variableNode.getToken().getLexeme())) + "($a0)");
+            codeGenerator.emitComment("Accedo al atributo " + currentAttribute.getToken().getLexeme() + " del self");
+            codeGenerator.emitText("lw $a0 " + codeGenerator.getAttributeOffset(AST.getSymbolTable().getCurrentClass().getAttributes().get(currentAttribute.getToken().getLexeme())) + "($a0)");
+            if (variableNode.getChainedNode() != null) {
+                codeGenerator.checkNullAccess("$a0", variableNode.getToken().getRowIndex(), variableNode.getToken().getColumnIndex());
+                variableNode.getChainedNode().setIsChainedNode(true);
+                variableNode.getChainedNode().accept(this);
+            }
         }
         return null;
     }
