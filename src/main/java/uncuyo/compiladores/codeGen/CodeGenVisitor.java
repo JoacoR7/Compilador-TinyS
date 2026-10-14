@@ -29,6 +29,82 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(ArrayConstructorNode arrayConstructorNode) {
+        codeGenerator.emitSubsection("Constructor array linea " + arrayConstructorNode.getToken().getRowIndex() +
+                ", columna " + arrayConstructorNode.getToken().getColumnIndex());
+        codeGenerator.emitComment("Evaluo expresion de constructor array");
+        // Me devuelve en $a0 el CIR de la expresión
+        arrayConstructorNode.getExpression().accept(this);
+        codeGenerator.emitComment("Recupero el valor del CIR");
+        codeGenerator.emitText("lw $a0 4($a0)");
+        codeGenerator.emitComment("Guardo la longitud del array en la pila");
+        codeGenerator.push("$a0");
+        codeGenerator.emitComment("Necesito la cantidad de elementos del array mas 8 bytes: 4 para la direccion de la vtable y 4 para la longitud");
+        codeGenerator.emitText("li $t0 4");
+        codeGenerator.emitText("mul $a0 $a0 $t0");
+        codeGenerator.emitText("addiu $a0 $a0 8");
+        codeGenerator.emitText("li $v0 9");
+        codeGenerator.emitText("syscall");
+
+        String arrayType = ((ArrayType) arrayConstructorNode.getType()).getSubType().getLexeme();
+        codeGenerator.emitComment("El array es de tipo " + arrayType + ", por lo tanto guardo su vtable correspondiente");
+        codeGenerator.emitText("la $a0 vtable_array_" + arrayType.toLowerCase());
+        codeGenerator.emitText("sw $a0 0($v0)");
+
+        codeGenerator.emitComment("Recupero la longitud del array de la pila en $t0");
+        codeGenerator.pop();
+
+        codeGenerator.emitComment("Guardo la longitud del array");
+        codeGenerator.emitText("sw $t0 4($v0)");
+
+        codeGenerator.emitComment("Inicializacion de elementos del array");
+        codeGenerator.emitComment("$t1 va a ser el contador");
+        codeGenerator.emitText("li $t1 0");
+        codeGenerator.emitComment("$t2 contendra la direccion a la vtable correspondiente");
+        if (arrayType.equals("Str")) {
+            codeGenerator.emitText("la $t2 vtable_" + arrayType.toLowerCase());
+        } else {
+            codeGenerator.emitText("li $t2 0");
+        }
+        codeGenerator.emitComment("$t3 contendrá la direccion del primer elemento del array");
+        codeGenerator.emitText("addiu $t3 $v0 8");
+        codeGenerator.emitComment("Guardo la direccion del array en la pila");
+        codeGenerator.push("$v0");
+        if (arrayType.equals("Str")) {
+            codeGenerator.emitComment("Como el array es de tipo Str, guardo la direccion al str vacio");
+            codeGenerator.emitText("la $t4 empty_str");
+        } else {
+            codeGenerator.emitComment("Como el array es de tipo " + arrayType + ", guardo un 0 en $t4");
+            codeGenerator.emitText("li $t4 0");
+        }
+        codeGenerator.emitComment("$a0 valdra 8, que son los bytes necesarios para cada elemento");
+        codeGenerator.emitText("li $a0 8");
+        codeGenerator.emitSubLabel("inicializacion_array_" + arrayConstructorNode.getToken().getRowIndex() + "_" + arrayConstructorNode.getToken().getColumnIndex());
+        codeGenerator.emitComment("Hago el syscall para almacenar el espacio");
+        codeGenerator.emitText("li $v0 9");
+        codeGenerator.emitText("syscall");
+
+        codeGenerator.emitComment("Guardo la vtable correspondiente");
+        codeGenerator.emitText("sw $t2 0($v0)");
+
+        codeGenerator.emitComment("Como el array es de tipo " + arrayType + ", guardo " + (arrayType.equals("Str") ? " la direccion al str vacio" : "un 0"));
+        codeGenerator.emitText("sw $t4 4($v0)");
+
+        codeGenerator.emitComment("Guardo el CIR en la posicion correspondiente");
+        codeGenerator.emitText("sw $v0 0($t3)");
+
+        codeGenerator.emitComment("Avanzo de posicion");
+        codeGenerator.emitText("addiu $t3 $t3 4");
+        codeGenerator.emitComment("Incremento el contador");
+        codeGenerator.emitText("addiu $t1 $t1 1");
+
+        codeGenerator.emitComment("Comparo el contador con la longitud para saber si salgo del loop");
+        codeGenerator.emitText("bne $t1 $t0 inicializacion_array_" + arrayConstructorNode.getToken().getRowIndex() + "_" + arrayConstructorNode.getToken().getColumnIndex());
+
+        codeGenerator.emitComment("Recupero la direccion del array");
+        codeGenerator.pop();
+
+        codeGenerator.emitText("move $a0 $t0");
+
         // TODO: Generar el codigo MIPS para la construccion de un arreglo.
         return null;
     }
