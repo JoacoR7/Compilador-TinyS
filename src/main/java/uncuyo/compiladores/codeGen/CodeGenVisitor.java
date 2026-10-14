@@ -215,6 +215,7 @@ public class CodeGenVisitor implements Visitor<Void> {
                 codeGenerator.emitText("jalr $a0");
             }
 
+            AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(chainedCallNode.getType().getLexeme()));
             // Llamadas encadenadas
             if (chainedCallNode.getChainedNode() != null) {
                 chainedCallNode.getChainedNode().setIsChainedNode(true);
