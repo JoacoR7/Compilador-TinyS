@@ -549,6 +549,141 @@ in_int:
     jr $ra
 
 in_bool:
+    # ========================================
+    # PROLOGUE in_bool
+    # ========================================
+
+    # Fijo $fp en la posicion donde se guardara el $ra
+    move $fp $sp
+
+    # Guardo la direccion de retorno de la llamada
+    sw $ra 0($fp)
+
+    # $sp apunta al siguiente word libre del frame
+    addiu $sp $sp -4
+
+    # ========================================
+    # BODY in_bool
+    # ========================================
+
+    # Reservo 7 bytes en el heap (false\n\0)
+    li $a0 7
+    li $v0 9
+    syscall
+
+    # Guardo la direccion para el syscall de lectura de STR
+    move $a0 $v0
+
+    # 7 bytes para el buffer
+    li $a1 7
+    li $v0 8
+    syscall
+
+    # Guardo el valor leido en la pila
+    sw $a0 0($sp)
+    addiu $sp $sp -4
+
+    # Cargo true_str para comparar
+    la $a1 true_str
+
+    # t2 sera el resultado de la comparacion, si es true se queda en 1, si es false pasa a ser 0
+    li $t2 1
+
+    # Comparo si lo ingresado es vacio
+    lb $t0 0($a0)
+    li $t1 10
+    beq $t0 $t1 error_comparacion
+
+    comparacion_true:
+
+    # Cargo el byte actual de la posicion
+    lb $t0 0($a0)
+    lb $t1 0($a1)
+
+    # Si true_str ya llego a fin de linea, comparo salto de linea
+    beqz $t1 comparacion_salto_linea
+
+    # Adelanto una posicion en el puntero
+    addiu $a0 $a0 1
+    addiu $a1 $a1 1
+
+    beq $t0 $t1 comparacion_true
+
+    # Cargo el string de false
+    la $a1 false_str
+    # $t2 pasa a ser 0 por si es false el input
+    li $t2 0
+
+    # Recupero el input de la fila
+    lw $a0 4($sp)
+    addiu $sp $sp 4
+
+    comparacion_false:
+    # Obtengo el byte actual
+    lb $t0 0($a0)
+    lb $t1 0($a1)
+
+    # Si false_str ya llego a fin de linea, comparo salto de linea
+    beqz $t1 comparacion_salto_linea
+
+    addiu $a0 $a0 1
+    addiu $a1 $a1 1
+
+    beq $t0 $t1 comparacion_false
+
+    comparacion_salto_linea:
+    # Comparo con salto de linea
+    li $t1 10
+    beq $t0 $t1 comparacion_fin_str
+
+    error_comparacion:
+    la $a0 runtime_invalid_bool_msg
+    li $v0 4
+    syscall
+
+    j exit
+
+    comparacion_fin_str:
+    # Si el string ingresado termino, se carga el t2 (1 true - 0 false)
+    addiu $a0 $a0 1
+    lb $t0 0($a0)
+    li $t1 0
+    # Si no termino, booleano invalido (no ingreso true o false)
+    bne $t0 $t1 error_comparacion
+
+    # Genero CIR para bool
+    li $a0 8
+    li $v0 9
+    syscall
+
+    # Cargo el valor (0 o 1) en el CIR
+    sw $t2 4($v0)
+
+    # Guardo el valor en el return
+    sw $v0 4($fp)
+
+    # ========================================
+    # EPILOGUE in_bool
+    # ========================================
+
+    # Recupero la direccion de retorno
+    lw $ra 0($fp)
+
+    # 12($fp) -> Self
+    # 8($fp) -> $fp llamador
+    #  4($fp) -> return
+    #  0($fp) -> $ra
+
+    # Recupero el return
+    lw $a0 4($fp)
+
+    # Restauro $sp al primer word libre del caller
+    addiu $sp, $fp, 16
+
+    # Restauro el frame pointer del caller
+    lw $fp, 12($fp)
+
+    # Vuelvo a la instruccion siguiente al jalr
     jr $ra
 
 

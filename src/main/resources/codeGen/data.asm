@@ -14,6 +14,7 @@ runtime_null_msg2: .asciiz ", columna "
 runtime_out_of_range_msg: .asciiz "Error: indice fuera de rango\n"
 runtime_negative_index_msg: .asciiz "Error: indice negativo\n"
 runtime_div_zero_msg: .asciiz "Error: division por cero\n"
+runtime_invalid_bool_msg: .asciiz "Error: ingreso booleano no valido\n"
 
 # ========================= #
 #          VTABLES          #
