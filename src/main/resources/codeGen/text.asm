@@ -399,6 +399,63 @@ concat_str:
     jr $ra
 
 length_array:
+    # ========================================
+    # PROLOGUE length_array
+    # ========================================
+
+    # Fijo $fp en la posicion donde se guardara el $ra
+    move $fp $sp
+
+    # Guardo la direccion de retorno de la llamada
+    sw $ra 0($fp)
+
+    # $sp apunta al siguiente word libre del frame
+    addiu $sp $sp -4
+
+    # ========================================
+    # BODY length_str
+    # ========================================
+
+    # Como la longitud en el CIR del array es solo un literal, genero un nuevo CIR para int
+    li $a0 8
+    li $v0 9
+    syscall
+
+    # Cargo el self
+    lw $a0 12($fp)
+
+    # Cargo el valor de la longitud
+    lw $a0 4($a0)
+
+    # Lo guardo en el nuevo CIR
+    sw $a0 4($v0)
+
+    # Guardo la direccion del CIR en el return
+    sw $v0 4($fp)
+
+    # ========================================
+    # EPILOGUE length_array
+    # ========================================
+
+    # Recupero la direccion de retorno
+    lw $ra 0($fp)
+
+    #
+    # 12($fp) -> Self
+    # 8($fp) -> $fp llamador
+    #  4($fp) -> return
+    #  0($fp) -> $ra
+
+    # Recupero el return
+    lw $a0 4($fp)
+
+    # Restauro $sp al primer word libre del caller
+    addiu $sp $fp 12
+
+    # Restauro el frame pointer del caller
+    lw $fp 8($fp)
+
+    # Vuelvo a la instruccion siguiente al jalr
     jr $ra
 
 has_next_array:
