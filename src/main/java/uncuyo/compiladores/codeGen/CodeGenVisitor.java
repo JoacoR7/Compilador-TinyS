@@ -124,6 +124,8 @@ public class CodeGenVisitor implements Visitor<Void> {
             codeGenerator.emitText("lw $a0 " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
         }
 
+        codeGenerator.checkNullAccess("$a0" , currentToken.getRowIndex(), currentToken.getColumnIndex());
+
         codeGenerator.emitComment("Recupero la expresion de la pila");
         codeGenerator.pop();
         codeGenerator.emitText("lw $t0 4($t0)");
@@ -455,6 +457,8 @@ public class CodeGenVisitor implements Visitor<Void> {
         if (currentVariable != null) {
             codeGenerator.emitText("lw $a0 " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
         }
+
+        codeGenerator.checkNullAccess("$a0" , currentToken.getRowIndex(), currentToken.getColumnIndex());
 
         codeGenerator.emitComment("Recupero la expresion");
         codeGenerator.pop();
