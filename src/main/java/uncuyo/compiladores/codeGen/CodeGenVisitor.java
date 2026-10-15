@@ -112,6 +112,28 @@ public class CodeGenVisitor implements Visitor<Void> {
     @Override
     public Void visit(ArrayNode arrayNode) {
         // TODO: Generar el codigo MIPS para el acceso a un arreglo.
+        Token currentToken = arrayNode.getToken();
+        codeGenerator.emitComment("Evaluo la expresion de acceso a arreglo");
+        arrayNode.getExpression().accept(this);
+        codeGenerator.emitComment("Guardo el resultado en la pila");
+        codeGenerator.push("$a0");
+
+        codeGenerator.emitComment("Busco el array");
+        Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(currentToken.getLexeme());
+        if (currentVariable != null) {
+            codeGenerator.emitText("lw $a0 " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
+        }
+
+        codeGenerator.emitComment("Recupero la expresion de la pila");
+        codeGenerator.pop();
+        codeGenerator.emitComment("Multiplico por 4 y sumo 8 para obtener la direccion al elemento correspondiente");
+        codeGenerator.emitText("lw $t0 4($t0)");
+        codeGenerator.emitText("sll $t0 $t0 2");
+        codeGenerator.emitText("addiu $t0 $t0 8");
+
+        codeGenerator.emitText("add $a0 $a0 $t0");
+        codeGenerator.emitText("lw $a0 0($a0)");
+
         return null;
     }
 
@@ -419,7 +441,25 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(SimpleArrayNode simpleArrayNode) {
-        // TODO: Generar el codigo MIPS para un acceso simple a un arreglo.
+        codeGenerator.emitComment("Evaluo la expresion de acceso a array");
+        simpleArrayNode.getExpressionNode().accept(this);
+        codeGenerator.push("$a0");
+        Token currentToken = simpleArrayNode.getToken();
+        Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(currentToken.getLexeme());
+        if (currentVariable != null) {
+            codeGenerator.emitText("lw $a0 " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
+        }
+
+        codeGenerator.emitComment("Recupero la expresion");
+        codeGenerator.pop();
+
+        //TODO: Evaluar indice incorrecto
+
+        codeGenerator.emitComment("Multiplico por 4 y sumo 8 para acceder al elemento correcto");
+        codeGenerator.emitText("lw $t0 4($t0)");
+        codeGenerator.emitText("sll $t0 $t0 2");
+        codeGenerator.emitText("addiu $t0 $t0 8");
+        codeGenerator.emitText("add $a0 $a0 $t0");
         return null;
     }
 
