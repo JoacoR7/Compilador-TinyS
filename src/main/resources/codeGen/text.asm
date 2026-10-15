@@ -483,6 +483,69 @@ in_str:
     jr $ra
 
 in_int:
+    # ========================================
+    # PROLOGUE in_int
+    # ========================================
+
+    # Fijo $fp en la posicion donde se guardara el $ra
+    move $fp $sp
+
+    # Guardo la direccion de retorno de la llamada
+    sw $ra 0($fp)
+
+    # $sp apunta al siguiente word libre del frame
+    addiu $sp $sp -4
+
+
+    # ========================================
+    # BODY in_int
+    # ========================================
+
+    # Cargo el syscall para leer int
+    li $v0 5
+    syscall
+
+    # Guardo el resultado en la pila
+    sw $v0 0($sp)
+    addiu $sp $sp -4
+
+    # Genero un CIR entero
+    li $a0 8
+    li $v0 9
+    syscall
+
+    # Recupero la lectura de la pila
+    lw $t0 4($sp)
+    addiu $sp $sp 4
+
+    # Lo guardo en la posicion value del CIR
+    sw $t0 4($v0)
+
+    # Guardo la direccion del CIR en el return
+    sw $v0 4($fp)
+
+    # ========================================
+    # EPILOGUE in_int
+    # ========================================
+
+    # Recupero la direccion de retorno
+    lw $ra 0($fp)
+
+    # 12($fp) -> Self
+    # 8($fp) -> $fp llamador
+    #  4($fp) -> return
+    #  0($fp) -> $ra
+
+    # Recupero el return
+    lw $a0 4($fp)
+
+    # Restauro $sp al primer word libre del caller
+    addiu $sp, $fp, 16
+
+    # Restauro el frame pointer del caller
+    lw $fp, 12($fp)
+
+    # Vuelvo a la instruccion siguiente al jalr
     jr $ra
 
 in_bool:
