@@ -11,7 +11,8 @@ true_str: .asciiz "true"
 false_str: .asciiz "false"
 runtime_null_msg: .asciiz "Error: referencia a una instancia no inicializada en linea "
 runtime_null_msg2: .asciiz ", columna "
-runtime_bounds_msg: .asciiz "Error: indice fuera de rango\n"
+runtime_out_of_range_msg: .asciiz "Error: indice fuera de rango\n"
+runtime_negative_index_msg: .asciiz "Error: indice negativo\n"
 runtime_div_zero_msg: .asciiz "Error: division por cero\n"
 
 # ========================= #

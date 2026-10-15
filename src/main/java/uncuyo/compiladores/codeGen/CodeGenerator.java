@@ -540,5 +540,21 @@ public class CodeGenerator {
         emitText("beqz " + register + " runtime_null");
     }
 
+    public void checkNegativeArrayIndex(String index) {
+        emitComment("Checkeo indice negativo");
+        emitText("bltz " + index + " runtime_negative_index");
+    }
+
+    public void checkIndexOutOfBounds(String index, String length) {
+        emitComment("Checkeo indice fuera de rango");
+        emitText("slt $t2 " + index + " " + length);
+        emitText("beqz $t2 runtime_out_of_range");
+    }
+
+    public void checkIndex(String index, String length) {
+        checkNegativeArrayIndex(index);
+        checkIndexOutOfBounds(index, length);
+    }
+
 
 }

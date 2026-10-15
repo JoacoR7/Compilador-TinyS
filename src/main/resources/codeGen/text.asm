@@ -469,6 +469,21 @@ runtime_null:
 
     j exit
 
+runtime_out_of_range:
+    la $a0 runtime_out_of_range_msg
+    li $v0 4
+    syscall
+
+    j exit
+
+runtime_negative_index:
+    la $a0 runtime_negative_index_msg
+    li $v0 4
+    syscall
+
+    j exit
+
+
 
 #############################
 #          FIN INIT         #

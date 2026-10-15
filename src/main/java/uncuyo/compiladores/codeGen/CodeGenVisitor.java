@@ -126,8 +126,14 @@ public class CodeGenVisitor implements Visitor<Void> {
 
         codeGenerator.emitComment("Recupero la expresion de la pila");
         codeGenerator.pop();
-        codeGenerator.emitComment("Multiplico por 4 y sumo 8 para obtener la direccion al elemento correspondiente");
         codeGenerator.emitText("lw $t0 4($t0)");
+
+        codeGenerator.emitComment("Recupero la longitud del array para hacer checkeo de indice");
+        codeGenerator.emitText("lw $t1 4($a0)");
+
+        codeGenerator.checkIndex("$t0", "$t1");
+
+        codeGenerator.emitComment("Multiplico por 4 y sumo 8 para obtener la direccion al elemento correspondiente");
         codeGenerator.emitText("sll $t0 $t0 2");
         codeGenerator.emitText("addiu $t0 $t0 8");
 
@@ -452,11 +458,14 @@ public class CodeGenVisitor implements Visitor<Void> {
 
         codeGenerator.emitComment("Recupero la expresion");
         codeGenerator.pop();
+        codeGenerator.emitText("lw $t0 4($t0)");
 
-        //TODO: Evaluar indice incorrecto
+        codeGenerator.emitComment("Recupero la longitud del array para hacer checkeo de indice");
+        codeGenerator.emitText("lw $t1 4($a0)");
+
+        codeGenerator.checkIndex("$t0", "$t1");
 
         codeGenerator.emitComment("Multiplico por 4 y sumo 8 para acceder al elemento correcto");
-        codeGenerator.emitText("lw $t0 4($t0)");
         codeGenerator.emitText("sll $t0 $t0 2");
         codeGenerator.emitText("addiu $t0 $t0 8");
         codeGenerator.emitText("add $a0 $a0 $t0");
