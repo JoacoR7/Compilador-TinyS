@@ -274,8 +274,52 @@ public class CodeGenVisitor implements Visitor<Void> {
                 codeGenerator.emitText("la $a0, vtable_" + className);
 
 
-            } else if (chainedCallNode.getToken().getTokenType() == TokenType.IDENTIFIER_VAR_METHOD &&
-                    AST.getSymbolTable().getCurrentMethod().getVariables().containsKey(currentToken.getLexeme())) {
+            } else if (chainedCallNode.getToken().getTokenType() == TokenType.IDENTIFIER_VAR_METHOD) {
+                codeGenerator.emitComment("Obtengo el self para hacer la llamada de metodo de instancia");
+                codeGenerator.emitText("lw $a0 " + codeGenerator.getSelfOffset(AST.getSymbolTable().getCurrentMethod()) + "($fp)");
+                // Obtengo el método de la clase actual (la clase actual se define cuando se hace llamada estática o directamente cuando obtenemos un objeto buscamos su clase)
+                Method currentMethodCall = AST.getSymbolTable().getCurrentClass().getMethods().get(currentToken.getLexeme());
+                // Genero el precall para reservar espacio para self, $fp llamador, return y parámetros
+                codeGenerator.generateMethodPreCall(currentMethodCall);
+
+                // En este punto el $sp apunta donde debería estar el $fp del RA, pero no hemos generado el prólogo
+                // Empieza en offset 4 ya que ahí está el primer parámetro, si es que tiene
+                int parameterOffset = 4;
+                if(chainedCallNode.getExpressionNodes() != null && !chainedCallNode.getExpressionNodes().isEmpty()) {
+                    codeGenerator.emitSubsection("Evaluo parametros de " + currentMethodCall.getName());
+                }
+                for(ExpressionNode expressionNode : chainedCallNode.getExpressionNodes()) {
+                    codeGenerator.emitComment("Evaluo parametro n° " + (parameterOffset/4));
+                    // Retorna en $a0 el valor
+                    expressionNode.accept(this);
+
+                    codeGenerator.emitComment("Guardo parametro n° " + (parameterOffset/4));
+                    codeGenerator.emitText("sw $a0 " + parameterOffset + "($sp)");
+                    parameterOffset += 4;
+                }
+
+                if (currentMethodCall.isStatic()) {
+                    codeGenerator.emitText("");
+                    codeGenerator.emitComment("Como el metodo " + currentMethodCall.getName() + " es estatico, guardo la vtable en self");
+                    codeGenerator.emitText("lw $a0 " + codeGenerator.getSelfOffset(currentMethodCall) + "($sp)");
+                    codeGenerator.emitText("lw $a0 " + (currentMethodCall.getPosition()*4) + "($a0)");
+                    codeGenerator.emitText("jalr $a0");
+                } else {
+                    codeGenerator.emitComment("Como el metodo " + currentMethodCall.getName() + " es un metodo de instancia, obtengo el self");
+                    codeGenerator.emitText("lw $a0 " + codeGenerator.getSelfOffset(currentMethodCall) + "($sp)");
+                    codeGenerator.emitComment("Busco la vtable de la instancia");
+                    codeGenerator.emitText("lw $a0 0($a0)");
+                    codeGenerator.emitComment("Busco el metodo " + currentMethodCall.getName() + " en la vtable");
+                    codeGenerator.emitText("lw $a0 " + (currentMethodCall.getPosition()*4) + "($a0)");
+                    codeGenerator.emitText("jalr $a0");
+                }
+
+                // Llamadas encadenadas
+                if (chainedCallNode.getChainedNode() != null) {
+                    AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(chainedCallNode.getType().getLexeme()));
+                    chainedCallNode.getChainedNode().setIsChainedNode(true);
+                    chainedCallNode.getChainedNode().accept(this);
+                }
 
             }
             ChainedNode nextNode = chainedCallNode.getChainedNode();
@@ -321,9 +365,9 @@ public class CodeGenVisitor implements Visitor<Void> {
                 codeGenerator.emitText("jalr $a0");
             }
 
-            AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(chainedCallNode.getType().getLexeme()));
             // Llamadas encadenadas
             if (chainedCallNode.getChainedNode() != null) {
+                AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(chainedCallNode.getType().getLexeme()));
                 chainedCallNode.getChainedNode().setIsChainedNode(true);
                 chainedCallNode.getChainedNode().accept(this);
             }
@@ -580,14 +624,23 @@ public class CodeGenVisitor implements Visitor<Void> {
         // TODO: Generar el codigo MIPS para el acceso a una variable.
         // Acceso a variable sin encadenamiento
         Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(variableNode.getToken().getLexeme());
+        Parameter currentParameter = AST.getSymbolTable().getCurrentMethod().getParameters().get(variableNode.getToken().getLexeme());
+        Attribute currentAttribute = AST.getSymbolTable().getCurrentClass().getAttributes().get(variableNode.getToken().getLexeme());
         if (!variableNode.isChainedNode() && variableNode.getChainedNode() == null) {
             if (currentVariable != null) {
+                codeGenerator.emitComment("Busco la variable en el RA");
                 codeGenerator.emitText("lw $a0 " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
                 codeGenerator.checkNullAccess("$a0", currentVariable.getToken().getRowIndex(), currentVariable.getToken().getColumnIndex());
-            } else {
-                Parameter currentParameter = AST.getSymbolTable().getCurrentMethod().getParameters().get(variableNode.getToken().getLexeme());
+            } else if (currentParameter != null){
+                codeGenerator.emitComment("Busco el parámetro en el RA");
                 codeGenerator.emitText("lw $a0 " + codeGenerator.getParameterOffset(currentParameter) + "($fp)");
                 codeGenerator.checkNullAccess("$a0", variableNode.getToken().getRowIndex(), variableNode.getToken().getColumnIndex());
+            } else {
+                codeGenerator.emitComment("Cargo el self ya que busco un atributo");
+                codeGenerator.emitText("lw $a0 " + codeGenerator.getSelfOffset(AST.getSymbolTable().getCurrentMethod()) + "($fp)");
+                codeGenerator.checkNullAccess("$a0", variableNode.getToken().getRowIndex(), variableNode.getToken().getColumnIndex());
+                codeGenerator.emitComment("Cargo el atributo " + currentAttribute.getName());
+                codeGenerator.emitText("lw $a0 " + codeGenerator.getAttributeOffset(currentAttribute) + "($a0)");
             }
 
         }
@@ -604,7 +657,7 @@ public class CodeGenVisitor implements Visitor<Void> {
             variableNode.getChainedNode().accept(this);
         } else {
             Class currentClass = AST.getSymbolTable().getCurrentClass();
-            Attribute currentAttribute = currentClass.getAttributes().get(variableNode.getToken().getLexeme());
+            currentAttribute = currentClass.getAttributes().get(variableNode.getToken().getLexeme());
             codeGenerator.emitComment("Accedo al atributo " + currentAttribute.getToken().getLexeme() + " del self");
             codeGenerator.emitText("lw $a0 " + codeGenerator.getAttributeOffset(AST.getSymbolTable().getCurrentClass().getAttributes().get(currentAttribute.getToken().getLexeme())) + "($a0)");
             if (variableNode.getChainedNode() != null) {
@@ -666,6 +719,7 @@ public class CodeGenVisitor implements Visitor<Void> {
                     methodName = "constructor";
                 } else {
                     AST.getSymbolTable().setCurrentMethod(AST.getSymbolTable().getClasses().get(className).getMethods().get(methodName));
+                    AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(className));
                     codeGenerator.emitVtableFunction(className + "_" + methodName);
                 }
 
@@ -676,7 +730,6 @@ public class CodeGenVisitor implements Visitor<Void> {
             codeGenerator.emitText("# Body de " + methodName);
         }
         for (SentenceNode sentence : blockNode.getSentences()) {
-
             if (sentence != null) {
                 sentence.accept(this);
                 //blockNode.setHasReturn(blockNode.isHasReturn() || sentence.isHasReturn());
@@ -697,7 +750,6 @@ public class CodeGenVisitor implements Visitor<Void> {
     @Override
     public Void visit(IfElseNode ifElseNode) {
         String rowColumnLabel = ifElseNode.getToken().getRowIndex() + "_" + ifElseNode.getToken().getColumnIndex();
-
         codeGenerator.emitSection("if_" + rowColumnLabel);
 
         codeGenerator.emitComment("Evaluo expresion de if_" + rowColumnLabel);
@@ -705,7 +757,6 @@ public class CodeGenVisitor implements Visitor<Void> {
         ifElseNode.getExpression().accept(this);
         codeGenerator.emitText("lw $a0 4($a0)");
         codeGenerator.emitText("beqz $a0 " + (ifElseNode.getSentenceNodeElse() != null ? "else_" : "endif_") + rowColumnLabel);
-
         codeGenerator.emitComment("Cuerpo de if_" + rowColumnLabel);
         codeGenerator.emitSubLabel("if_" + rowColumnLabel);
         ifElseNode.getSentenceNodeIf().accept(this);
@@ -757,7 +808,7 @@ public class CodeGenVisitor implements Visitor<Void> {
         codeGenerator.emitComment("Evaluo expresion de while_" + rowColumnLabel);
         // Guardo en $a0 el resultado de la expresión a evaluar
         whileNode.getExpressionNode().accept(this);
-
+        codeGenerator.emitText("lw $a0 4($a0)");
         codeGenerator.emitText("beqz $a0 endwhile_" + rowColumnLabel);
 
 
