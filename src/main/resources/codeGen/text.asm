@@ -549,10 +549,10 @@ in_str:
     lw $a0 4($fp)
 
     # Restauro $sp al primer word libre del caller
-    addiu $sp, $fp, 16
+    addiu $sp, $fp, 12
 
     # Restauro el frame pointer del caller
-    lw $fp, 12($fp)
+    lw $fp, 8($fp)
 
     # Vuelvo a la instruccion siguiente al jalr
     jr $ra
