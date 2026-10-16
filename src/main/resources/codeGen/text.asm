@@ -470,24 +470,6 @@ next_str_array:
 next_bool_array:
     jr $ra
 
-
-# ========================================
-# ASCII PARA IMPRIMIR ARRAYS
-# ========================================
-# '['  -> 91  (Corchete de apertura)
-# ']'  -> 93  (Corchete de cierre)
-# ','  -> 44  (Coma)
-# ' '  -> 32  (Espacio)
-# '\n' -> 10  (Salto de linea)
-#
-# Para imprimir caracteres:
-# li $a0, <codigo ASCII>
-# li $v0, 11
-# syscall
-#
-# Formato esperado: [1, 2, 3, 4]
-# Array vacio:     []
-# ========================================
 out_array_int:
     li $t0 1
     li $t4 0
