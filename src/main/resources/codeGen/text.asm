@@ -480,7 +480,83 @@ out_array_bool:
     jr $ra
 
 in_str:
+    # ========================================
+    # PROLOGUE in_str
+    # ========================================
+
+    # Fijo $fp en la posicion donde se guardara el $ra
+    move $fp $sp
+
+    # Guardo la direccion de retorno de la llamada
+    sw $ra 0($fp)
+
+    # $sp apunta al siguiente word libre del frame
+    addiu $sp $sp -4
+
+    # ========================================
+    # BODY in_str
+    # ========================================
+
+    # Reservo 1026 bytes en el heap (1204 caracteres y \n\0)
+    li $a0 1026
+    li $v0 9
+    syscall
+
+    # Guardo la direccion para el syscall de lectura de STR
+    move $a0 $v0
+
+    # 1026 bytes para el buffer
+    li $a1 1026
+    li $v0 8
+    syscall
+
+    # Guardo el valor leido en la pila
+    sw $a0 0($sp)
+    addiu $sp $sp -4
+
+    # Genero el CIR
+    li $a0 8
+    li $v0 9
+    syscall
+
+    # Recupero el valor leido de la pila
+    lw $a0 4($sp)
+    addiu $sp $sp 4
+
+    # Guardo el valor leido en el CIR
+    sw $a0 4($v0)
+
+    # Guardo la vtable en el CIR
+    la $a0 vtable_str
+    sw $a0 0($v0)
+
+    # Guardo el CIR en el return
+    sw $v0 4($fp)
+
+    # ========================================
+    # EPILOGUE in_str
+    # ========================================
+
+    # Recupero la direccion de retorno
+    lw $ra 0($fp)
+
+    # 12($fp) -> Self
+    # 8($fp) -> $fp llamador
+    #  4($fp) -> return
+    #  0($fp) -> $ra
+
+    # Recupero el return
+    lw $a0 4($fp)
+
+    # Restauro $sp al primer word libre del caller
+    addiu $sp, $fp, 16
+
+    # Restauro el frame pointer del caller
+    lw $fp, 12($fp)
+
+    # Vuelvo a la instruccion siguiente al jalr
     jr $ra
+
 
 in_int:
     # ========================================
