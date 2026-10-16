@@ -10,7 +10,7 @@ impl Persona {
     }
 
     fn setEdad(Int edad) {
-        self.edad = edad;
+        edad = edad;
     }
 
     fn Int getEdad() {

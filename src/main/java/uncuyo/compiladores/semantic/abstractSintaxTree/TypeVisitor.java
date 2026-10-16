@@ -1,10 +1,8 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree;
 
 import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.*;
-import uncuyo.compiladores.exceptions.semantic.symbolTableException.AttributeNotFoundException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.*;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.ClassNotFoundException;
-import uncuyo.compiladores.exceptions.semantic.symbolTableException.MethodNotFoundException;
-import uncuyo.compiladores.exceptions.semantic.symbolTableException.VariableNotFoundException;
 import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.lexer.TokenDefinitions;
 import uncuyo.compiladores.lexer.TokenType;
@@ -494,6 +492,10 @@ public class TypeVisitor implements Visitor<Type> {
         Type type = null;
         if(variableNode.getClassName() == null) {
             Variable variable = AST.getSymbolTable().getStart().getVariables().get(variableNode.getToken().getLexeme());
+            if (variable == null) {
+                throw new LocalVariableNotFoundException(variableNode.getToken().getRowIndex(), variableNode.getToken().getColumnIndex(),
+                        variableNode.getToken().getLexeme(), AST.getSymbolTable().getCurrentMethod().getName());
+            }
             if (currentBlock != null) {
                 Variable blockVariable = currentBlock.findVariable(variableNode.getToken().getLexeme());
                 if (variable != null && blockVariable != null) {
@@ -523,7 +525,8 @@ public class TypeVisitor implements Visitor<Type> {
             } else {
                 if (!variableNode.isChainedNode() && !AST.getSymbolTable().getStart().getVariables().containsKey(variableNode.getToken().getLexeme())) {
                     if (currentBlock != null && currentBlock.findVariable(variableNode.getToken().getLexeme()) == null) {
-                        throw new VariableNotFoundException(variableNode.getToken().getLexeme());
+                        throw new LocalVariableNotFoundException(variableNode.getToken().getRowIndex(), variableNode.getToken().getColumnIndex(),
+                                variableNode.getToken().getLexeme(), AST.getSymbolTable().getCurrentMethod().getName());
                     }
                 }
             }
