@@ -689,7 +689,7 @@ public class TypeVisitor implements Visitor<Type> {
         }
         if (symbolTable.getCurrentMethod() != null) {
             if (!symbolTable.getCurrentMethod().getType().getLexeme().equals("void")) {
-                if (!blockNode.isHasReturn()) {
+                if (!blockNode.isHasReturn() && blockNode.isMethod()) {
                     throw new MissingReturnException(symbolTable.getCurrentMethod());
                 }
             }
