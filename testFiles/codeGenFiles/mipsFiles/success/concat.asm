@@ -1,0 +1,1729 @@
+.data
+    #############################
+    #       COMIENZO INIT       #
+    #############################
+
+    # ========================= #
+    #     STRINGS PREDEFINIDOS  #
+    # ========================= #
+
+    empty_str: .asciiz ""
+    true_str: .asciiz "true"
+    false_str: .asciiz "false"
+    runtime_null_msg: .asciiz "Error: referencia a una instancia no inicializada en linea "
+    runtime_null_msg2: .asciiz ", columna "
+    runtime_out_of_range_msg: .asciiz "Error: indice fuera de rango\n"
+    runtime_negative_index_msg: .asciiz "Error: indice negativo\n"
+    runtime_div_zero_msg: .asciiz "Error: division por cero\n"
+    runtime_invalid_bool_msg: .asciiz "Error: ingreso booleano no valido\n"
+
+    # ========================= #
+    #          VTABLES          #
+    # ========================= #
+
+    vtable_str:
+        .word length_str
+        .word concat_str
+
+    vtable_array_int:
+        .word length_array
+        .word has_next_array
+        .word next_int_array
+
+    vtable_array_str:
+        .word length_array
+        .word has_next_array
+        .word next_str_array
+
+    vtable_array_bool:
+        .word length_array
+        .word has_next_array
+        .word next_bool_array
+
+    vtable_IO:
+        .word out_str
+        .word out_int
+        .word out_bool
+        .word out_array_int
+        .word out_array_str
+        .word out_array_bool
+        .word in_str
+        .word in_int
+        .word in_bool
+
+    #############################
+    #          FIN INIT         #
+    #############################
+
+    str_0:
+        .asciiz "Hello"
+    str_1:
+        .asciiz "world"
+    str_2:
+        .asciiz "Joaquin"
+    str_3:
+        .asciiz " "
+    str_4:
+        .asciiz ", mi nombre es "
+    str_5:
+        .asciiz ", y tengo "
+    str_6:
+        .asciiz " años"
+
+    vtable_Persona:
+        .word Persona_getNombre
+        .word Persona_getEdad
+.text
+    .globl main
+
+    main:
+
+        # ========================================
+        # PROLOGUE start
+        # ========================================
+        # Registro de activacion del metodo:
+        # self         -> 12($fp)
+        # $fp llamador -> 8($fp)
+        # return       -> 4($fp)
+        # $ra          -> 0($fp)
+        # Var 1        -> -4($fp)
+        # Var 2        -> -8($fp)
+        # Var 3        -> -12($fp)
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp, $sp
+        # Guardo la direccion de retorno de la llamada
+        sw $ra, 0($fp)
+
+        # Reservo 16 bytes para variables locales y el siguiente word libre
+        addiu $sp, $sp, -16
+
+
+        # --- INICIALIZACION DE VARIABLES LOCALES ---
+        # Inicializacion variables locales de start
+        # Inicializacion de a
+        li $a0 8
+        li $v0 9
+        syscall
+        la $t0 empty_str
+        sw $t0 4($v0)
+        la $t0 vtable_str
+        sw $t0 0($v0)
+        sw $v0 -4($fp)
+        # Inicializacion de b
+        li $a0 8
+        li $v0 9
+        syscall
+        la $t0 empty_str
+        sw $t0 4($v0)
+        la $t0 vtable_str
+        sw $t0 0($v0)
+        sw $v0 -8($fp)
+        # Inicializacion de p1
+        move $v0 $zero
+        sw $v0 -12($fp)
+
+        # $sp queda apuntando al primer word libre del frame
+
+        # Body de start
+        # Asignacion a "a" en 24_5
+        # Evalúo el lado derecho de la asignacion
+        # Genero el literal "Hello"
+        la $a0 str_0
+        # Guardo el literal en la pila
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        # Genero un CIR para el literal
+        li $a0 8
+        li $v0 9
+        syscall
+        la $t0 vtable_str
+        sw $t0 0($v0)
+        la $t0 empty_str
+        sw $t0 4($v0)
+        # Recupero el literal de la pila
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo el literal en el CIR
+        sw $t0 4($v0)
+        move $a0 $v0
+        # Guardo en la pila el resultado de la expresion
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        addiu $a0 $fp -4
+        # Checkeo acceso nulo
+        li $a2 24
+        li $a3 5
+        beqz $a0 runtime_null
+        # Recupero de la pila el resultado de la expresion
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo la expresión en la direccion del lado izquierdo
+        sw $t0 0($a0)
+        # Asignacion a "b" en 25_5
+        # Evalúo el lado derecho de la asignacion
+        # Genero el literal "world"
+        la $a0 str_1
+        # Guardo el literal en la pila
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        # Genero un CIR para el literal
+        li $a0 8
+        li $v0 9
+        syscall
+        la $t0 vtable_str
+        sw $t0 0($v0)
+        la $t0 empty_str
+        sw $t0 4($v0)
+        # Recupero el literal de la pila
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo el literal en el CIR
+        sw $t0 4($v0)
+        move $a0 $v0
+        # Guardo en la pila el resultado de la expresion
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        addiu $a0 $fp -8
+        # Checkeo acceso nulo
+        li $a2 25
+        li $a3 5
+        beqz $a0 runtime_null
+        # Recupero de la pila el resultado de la expresion
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo la expresión en la direccion del lado izquierdo
+        sw $t0 0($a0)
+        # Asignacion a "p1" en 26_5
+        # Evalúo el lado derecho de la asignacion
+
+        # ========================================
+        # Generacion de CIR de Persona
+        # ========================================
+        # Necesita 3 espacios para sus atributos y la vtable
+        li $a0 12
+        li $v0 9
+        syscall
+        # Guardo la direccion del heap en el stack para inicializar las variables
+        sw $v0 0($sp)
+        addiu $sp $sp -4
+
+        # --- Inicializacion atributos de Persona ---
+        # Inicializacion de atributo nombre de tipo Str
+        li $a0 8
+        li $v0 9
+        syscall
+        la $t0 vtable_str
+        sw $t0 0($v0)
+        la $t0 empty_str
+        sw $t0 4($v0)
+        # Guardo la direccion del atributo nombre
+        lw $t0 4($sp)
+        sw $v0 4($t0)
+        # Inicializacion de atributo edad de tipo Int
+        li $a0 8
+        li $v0 9
+        syscall
+        sw $zero 0($v0)
+        sw $zero 4($v0)
+        # Guardo la direccion del atributo edad
+        lw $t0 4($sp)
+        sw $v0 8($t0)
+        # Guardo la direccion de la vtable de Persona
+        la $a0 vtable_Persona
+        sw $a0 0($t0)
+        # Recupero la direccion de la instancia de clase de Persona
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        move $a0 $t0
+
+        # ========================================
+        # PRECALL Constructor Persona
+        # ========================================
+        # Layout del registro de activacion:
+        # Self        -> 20($sp)
+        # $fp llamador -> 16($sp)
+        # return      -> 12($sp)
+        # Param 2     -> 8($sp)
+        # Param 1     -> 4($sp)
+        # $ra          -> 0($sp) [lo guarda el callee]
+
+        # Reservo el registro de activacion del caller
+        addiu $sp, $sp, -20
+        # Guardo Self/contexto
+        sw $a0, 20($sp)
+        # Guardo $fp del llamador
+        sw $fp, 16($sp)
+        # Inicializo return
+        sw $zero, 12($sp)
+
+        # Genero el literal "Joaquin"
+        la $a0 str_2
+        # Guardo el literal en la pila
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        # Genero un CIR para el literal
+        li $a0 8
+        li $v0 9
+        syscall
+        la $t0 vtable_str
+        sw $t0 0($v0)
+        la $t0 empty_str
+        sw $t0 4($v0)
+        # Recupero el literal de la pila
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo el literal en el CIR
+        sw $t0 4($v0)
+        move $a0 $v0
+        sw $a0 4($sp)
+        # Genero el literal 25
+        li $a0 25
+        # Guardo el literal en la pila
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        # Genero un CIR para el literal
+        li $a0 8
+        li $v0 9
+        syscall
+        sw $zero 0($v0)
+        sw $zero 4($v0)
+        # Recupero el literal de la pila
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo el literal en el CIR
+        sw $t0 4($v0)
+        move $a0 $v0
+        sw $a0 8($sp)
+        la $t0 Persona_constructor
+        jalr $t0
+        # Guardo en la pila el resultado de la expresion
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        addiu $a0 $fp -12
+        # Checkeo acceso nulo
+        li $a2 26
+        li $a3 5
+        beqz $a0 runtime_null
+        # Recupero de la pila el resultado de la expresion
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo la expresión en la direccion del lado izquierdo
+        sw $t0 0($a0)
+
+        # --- Comienzo llamada 27_6 ---
+        # Llamada estática sobre IO
+        # Guardo la vtable de IO
+        la $a0, vtable_IO
+
+        # ========================================
+        # PRECALL out_str
+        # ========================================
+        # Layout del registro de activacion:
+        # Self        -> 16($sp)
+        # $fp llamador -> 12($sp)
+        # return      -> 8($sp)
+        # Param 1     -> 4($sp)
+        # $ra          -> 0($sp) [lo guarda el callee]
+
+        # Reservo el registro de activacion del caller
+        addiu $sp, $sp, -16
+        # Guardo Self/contexto
+        sw $a0, 16($sp)
+        # Guardo $fp del llamador
+        sw $fp, 12($sp)
+        # Inicializo return
+        sw $zero, 8($sp)
+
+
+        # --- Evaluo parametros de out_str ---
+        # Evaluo parametro n° 1
+        # Guardo en $a0 la direccion del CIR que invoca al metodo
+        lw $a0 -4($fp)
+        # Checkeo acceso nulo
+        li $a2 27
+        li $a3 17
+        beqz $a0 runtime_null
+
+        # ========================================
+        # PRECALL concat
+        # ========================================
+        # Layout del registro de activacion:
+        # Self        -> 16($sp)
+        # $fp llamador -> 12($sp)
+        # return      -> 8($sp)
+        # Param 1     -> 4($sp)
+        # $ra          -> 0($sp) [lo guarda el callee]
+
+        # Reservo el registro de activacion del caller
+        addiu $sp, $sp, -16
+        # Guardo Self/contexto
+        sw $a0, 16($sp)
+        # Guardo $fp del llamador
+        sw $fp, 12($sp)
+        # Inicializo return
+        sw $zero, 8($sp)
+
+
+        # --- Evaluo parametros de concat ---
+        # Evaluo parametro n° 1
+        # Genero el literal " "
+        la $a0 str_3
+        # Guardo el literal en la pila
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        # Genero un CIR para el literal
+        li $a0 8
+        li $v0 9
+        syscall
+        la $t0 vtable_str
+        sw $t0 0($v0)
+        la $t0 empty_str
+        sw $t0 4($v0)
+        # Recupero el literal de la pila
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo el literal en el CIR
+        sw $t0 4($v0)
+        move $a0 $v0
+        # Guardo parametro n° 1
+        sw $a0 4($sp)
+        # Como el metodo concat es un metodo de instancia, obtengo el self
+        lw $a0 16($sp)
+        # Busco la vtable de la instancia
+        lw $a0 0($a0)
+        # Busco el metodo concat en la vtable
+        lw $a0 4($a0)
+        jalr $a0
+
+        # ========================================
+        # PRECALL concat
+        # ========================================
+        # Layout del registro de activacion:
+        # Self        -> 16($sp)
+        # $fp llamador -> 12($sp)
+        # return      -> 8($sp)
+        # Param 1     -> 4($sp)
+        # $ra          -> 0($sp) [lo guarda el callee]
+
+        # Reservo el registro de activacion del caller
+        addiu $sp, $sp, -16
+        # Guardo Self/contexto
+        sw $a0, 16($sp)
+        # Guardo $fp del llamador
+        sw $fp, 12($sp)
+        # Inicializo return
+        sw $zero, 8($sp)
+
+
+        # --- Evaluo parametros de concat ---
+        # Evaluo parametro n° 1
+        lw $a0 -8($fp)
+        # Checkeo acceso nulo
+        li $a2 22
+        li $a3 11
+        beqz $a0 runtime_null
+        # Guardo parametro n° 1
+        sw $a0 4($sp)
+        # Como el metodo concat es un metodo de instancia, obtengo el self
+        lw $a0 16($sp)
+        # Busco la vtable de la instancia
+        lw $a0 0($a0)
+        # Busco el metodo concat en la vtable
+        lw $a0 4($a0)
+        jalr $a0
+
+        # ========================================
+        # PRECALL concat
+        # ========================================
+        # Layout del registro de activacion:
+        # Self        -> 16($sp)
+        # $fp llamador -> 12($sp)
+        # return      -> 8($sp)
+        # Param 1     -> 4($sp)
+        # $ra          -> 0($sp) [lo guarda el callee]
+
+        # Reservo el registro de activacion del caller
+        addiu $sp, $sp, -16
+        # Guardo Self/contexto
+        sw $a0, 16($sp)
+        # Guardo $fp del llamador
+        sw $fp, 12($sp)
+        # Inicializo return
+        sw $zero, 8($sp)
+
+
+        # --- Evaluo parametros de concat ---
+        # Evaluo parametro n° 1
+        # Genero el literal ", mi nombre es "
+        la $a0 str_4
+        # Guardo el literal en la pila
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        # Genero un CIR para el literal
+        li $a0 8
+        li $v0 9
+        syscall
+        la $t0 vtable_str
+        sw $t0 0($v0)
+        la $t0 empty_str
+        sw $t0 4($v0)
+        # Recupero el literal de la pila
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo el literal en el CIR
+        sw $t0 4($v0)
+        move $a0 $v0
+        # Guardo parametro n° 1
+        sw $a0 4($sp)
+        # Como el metodo concat es un metodo de instancia, obtengo el self
+        lw $a0 16($sp)
+        # Busco la vtable de la instancia
+        lw $a0 0($a0)
+        # Busco el metodo concat en la vtable
+        lw $a0 4($a0)
+        jalr $a0
+
+        # ========================================
+        # PRECALL concat
+        # ========================================
+        # Layout del registro de activacion:
+        # Self        -> 16($sp)
+        # $fp llamador -> 12($sp)
+        # return      -> 8($sp)
+        # Param 1     -> 4($sp)
+        # $ra          -> 0($sp) [lo guarda el callee]
+
+        # Reservo el registro de activacion del caller
+        addiu $sp, $sp, -16
+        # Guardo Self/contexto
+        sw $a0, 16($sp)
+        # Guardo $fp del llamador
+        sw $fp, 12($sp)
+        # Inicializo return
+        sw $zero, 8($sp)
+
+
+        # --- Evaluo parametros de concat ---
+        # Evaluo parametro n° 1
+        # Guardo en $a0 la direccion del CIR que invoca al metodo
+        lw $a0 -12($fp)
+        # Checkeo acceso nulo
+        li $a2 27
+        li $a3 74
+        beqz $a0 runtime_null
+
+        # ========================================
+        # PRECALL getNombre
+        # ========================================
+        # Layout del registro de activacion:
+        # Self        -> 12($sp)
+        # $fp llamador -> 8($sp)
+        # return      -> 4($sp)
+        # $ra          -> 0($sp) [lo guarda el callee]
+
+        # Reservo el registro de activacion del caller
+        addiu $sp, $sp, -12
+        # Guardo Self/contexto
+        sw $a0, 12($sp)
+        # Guardo $fp del llamador
+        sw $fp, 8($sp)
+        # Inicializo return
+        sw $zero, 4($sp)
+
+        # Como el metodo getNombre es un metodo de instancia, obtengo el self
+        lw $a0 12($sp)
+        # Busco la vtable de la instancia
+        lw $a0 0($a0)
+        # Busco el metodo getNombre en la vtable
+        lw $a0 0($a0)
+        jalr $a0
+        # Guardo parametro n° 1
+        sw $a0 4($sp)
+        # Como el metodo concat es un metodo de instancia, obtengo el self
+        lw $a0 16($sp)
+        # Busco la vtable de la instancia
+        lw $a0 0($a0)
+        # Busco el metodo concat en la vtable
+        lw $a0 4($a0)
+        jalr $a0
+
+        # ========================================
+        # PRECALL concat
+        # ========================================
+        # Layout del registro de activacion:
+        # Self        -> 16($sp)
+        # $fp llamador -> 12($sp)
+        # return      -> 8($sp)
+        # Param 1     -> 4($sp)
+        # $ra          -> 0($sp) [lo guarda el callee]
+
+        # Reservo el registro de activacion del caller
+        addiu $sp, $sp, -16
+        # Guardo Self/contexto
+        sw $a0, 16($sp)
+        # Guardo $fp del llamador
+        sw $fp, 12($sp)
+        # Inicializo return
+        sw $zero, 8($sp)
+
+
+        # --- Evaluo parametros de concat ---
+        # Evaluo parametro n° 1
+        # Genero el literal ", y tengo "
+        la $a0 str_5
+        # Guardo el literal en la pila
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        # Genero un CIR para el literal
+        li $a0 8
+        li $v0 9
+        syscall
+        la $t0 vtable_str
+        sw $t0 0($v0)
+        la $t0 empty_str
+        sw $t0 4($v0)
+        # Recupero el literal de la pila
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo el literal en el CIR
+        sw $t0 4($v0)
+        move $a0 $v0
+        # Guardo parametro n° 1
+        sw $a0 4($sp)
+        # Como el metodo concat es un metodo de instancia, obtengo el self
+        lw $a0 16($sp)
+        # Busco la vtable de la instancia
+        lw $a0 0($a0)
+        # Busco el metodo concat en la vtable
+        lw $a0 4($a0)
+        jalr $a0
+        # Guardo parametro n° 1
+        sw $a0 4($sp)
+        
+        # Como el metodo out_str es estatico, guardo la vtable en self
+        lw $a0 16($sp)
+        lw $a0 0($a0)
+        jalr $a0
+
+        # --- Comienzo llamada 28_6 ---
+        # Llamada estática sobre IO
+        # Guardo la vtable de IO
+        la $a0, vtable_IO
+
+        # ========================================
+        # PRECALL out_int
+        # ========================================
+        # Layout del registro de activacion:
+        # Self        -> 16($sp)
+        # $fp llamador -> 12($sp)
+        # return      -> 8($sp)
+        # Param 1     -> 4($sp)
+        # $ra          -> 0($sp) [lo guarda el callee]
+
+        # Reservo el registro de activacion del caller
+        addiu $sp, $sp, -16
+        # Guardo Self/contexto
+        sw $a0, 16($sp)
+        # Guardo $fp del llamador
+        sw $fp, 12($sp)
+        # Inicializo return
+        sw $zero, 8($sp)
+
+
+        # --- Evaluo parametros de out_int ---
+        # Evaluo parametro n° 1
+        # Guardo en $a0 la direccion del CIR que invoca al metodo
+        lw $a0 -12($fp)
+        # Checkeo acceso nulo
+        li $a2 28
+        li $a3 17
+        beqz $a0 runtime_null
+
+        # ========================================
+        # PRECALL getEdad
+        # ========================================
+        # Layout del registro de activacion:
+        # Self        -> 12($sp)
+        # $fp llamador -> 8($sp)
+        # return      -> 4($sp)
+        # $ra          -> 0($sp) [lo guarda el callee]
+
+        # Reservo el registro de activacion del caller
+        addiu $sp, $sp, -12
+        # Guardo Self/contexto
+        sw $a0, 12($sp)
+        # Guardo $fp del llamador
+        sw $fp, 8($sp)
+        # Inicializo return
+        sw $zero, 4($sp)
+
+        # Como el metodo getEdad es un metodo de instancia, obtengo el self
+        lw $a0 12($sp)
+        # Busco la vtable de la instancia
+        lw $a0 0($a0)
+        # Busco el metodo getEdad en la vtable
+        lw $a0 4($a0)
+        jalr $a0
+        # Guardo parametro n° 1
+        sw $a0 4($sp)
+        
+        # Como el metodo out_int es estatico, guardo la vtable en self
+        lw $a0 16($sp)
+        lw $a0 4($a0)
+        jalr $a0
+
+        # --- Comienzo llamada 29_6 ---
+        # Llamada estática sobre IO
+        # Guardo la vtable de IO
+        la $a0, vtable_IO
+
+        # ========================================
+        # PRECALL out_str
+        # ========================================
+        # Layout del registro de activacion:
+        # Self        -> 16($sp)
+        # $fp llamador -> 12($sp)
+        # return      -> 8($sp)
+        # Param 1     -> 4($sp)
+        # $ra          -> 0($sp) [lo guarda el callee]
+
+        # Reservo el registro de activacion del caller
+        addiu $sp, $sp, -16
+        # Guardo Self/contexto
+        sw $a0, 16($sp)
+        # Guardo $fp del llamador
+        sw $fp, 12($sp)
+        # Inicializo return
+        sw $zero, 8($sp)
+
+
+        # --- Evaluo parametros de out_str ---
+        # Evaluo parametro n° 1
+        # Genero el literal " años"
+        la $a0 str_6
+        # Guardo el literal en la pila
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        # Genero un CIR para el literal
+        li $a0 8
+        li $v0 9
+        syscall
+        la $t0 vtable_str
+        sw $t0 0($v0)
+        la $t0 empty_str
+        sw $t0 4($v0)
+        # Recupero el literal de la pila
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo el literal en el CIR
+        sw $t0 4($v0)
+        move $a0 $v0
+        # Guardo parametro n° 1
+        sw $a0 4($sp)
+        
+        # Como el metodo out_str es estatico, guardo la vtable en self
+        lw $a0 16($sp)
+        lw $a0 0($a0)
+        jalr $a0
+        li $v0 10
+        syscall
+
+    #############################
+    #       COMIENZO INIT       #
+    #############################
+
+    out_str:
+        # ========================================
+        # PROLOGUE out_str
+        # ========================================
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp $sp
+
+        # Guardo la direccion de retorno de la llamada
+        sw $ra 0($fp)
+
+        # $sp apunta al siguiente word libre del frame
+        addiu $sp $sp -4
+
+
+        # ========================================
+        # BODY out_str
+        # ========================================
+
+        # Cargo el Param 1.
+        # En out_str, Param 1 contiene la direccion del CIR a imprimir
+        lw $a0 4($fp)
+
+        # Recupero la direccion del string del CIR
+        lw $a0 4($a0)
+
+        # Syscall 4: imprimir string
+        li $v0 4
+        syscall
+
+
+        # ========================================
+        # EPILOGUE out_str
+        # ========================================
+
+        # Recupero la direccion de retorno
+        lw $ra 0($fp)
+
+        # out_str tiene 1 parametro:
+        #
+        # 16($fp) -> Self
+        # 12($fp) -> $fp llamador
+        #  8($fp) -> return
+        #  4($fp) -> Param 1
+        #  0($fp) -> $ra
+        #
+        # Restauro $sp al primer word libre del caller
+        addiu $sp $fp 16
+
+        # Restauro el frame pointer del caller
+        lw $fp 12($fp)
+
+        # Vuelvo a la instruccion siguiente al jalr
+        jr $ra
+
+
+
+    out_int:
+        # ========================================
+        # PROLOGUE out_int
+        # ========================================
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp $sp
+
+        # Guardo la direccion de retorno de la llamada
+        sw $ra 0($fp)
+
+        # $sp apunta al siguiente word libre del frame
+        addiu $sp $sp -4
+
+
+        # ========================================
+        # BODY out_int
+        # ========================================
+
+        # Cargo el Param 1.
+        # En out_int, Param 1 contiene el CIR a imprimir
+        lw $a0 4($fp)
+
+        # Recupero el int del CIR
+        lw $a0 4($a0)
+
+        # Syscall 1: imprimir entero
+        li $v0 1
+        syscall
+
+
+        # ========================================
+        # EPILOGUE out_int
+        # ========================================
+
+        # Recupero la direccion de retorno
+        lw $ra 0($fp)
+
+        # out_int tiene 1 parametro:
+        #
+        # 16($fp) -> Self
+        # 12($fp) -> $fp llamador
+        #  8($fp) -> return
+        #  4($fp) -> Param 1
+        #  0($fp) -> $ra
+        #
+        # Restauro $sp al primer word libre del caller
+        addiu $sp, $fp, 16
+
+        # Restauro el frame pointer del caller
+        lw $fp, 12($fp)
+
+        # Vuelvo a la instruccion siguiente al jalr
+        jr $ra
+
+    out_bool:
+        # ========================================
+        # PROLOGUE out_bool
+        # ========================================
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp $sp
+
+        #Guardo la direccion de retorno de la llamada
+        sw $ra 0($fp)
+
+        # $sp apunta al siguiente word libre del frame
+        addiu $sp $sp -4
+
+        # ========================================
+        # BODY out_bool
+        # ========================================
+
+        # Cargo el Param 1.
+        # En out_int, Param 1 contiene CIR a imprimir
+        lw $t0 4($fp)
+
+        # Recupero el booleano (0 o 1) a imprimir
+        lw $t0 4($t0)
+
+        # Se evalua si es 0 o 1 para cargar el string correcto a imprimir
+        la $a0 true_str
+        beqz $t0 load_false
+
+        out_bool_syscall:
+
+        # Syscall 4: imprimir string
+        li $v0 4
+        syscall
+
+        # ========================================
+        # EPILOGUE out_bool
+        # ========================================
+
+        # Recupero la direccion de retorno
+        lw $ra, 0($fp)
+
+        # out_bool tiene 1 parametro:
+        #
+        # 16($fp) -> Self
+        # 12($fp) -> $fp llamador
+        #  8($fp) -> return
+        #  4($fp) -> Param 1
+        #  0($fp) -> $ra
+        #
+        # Restauro $sp al primer word libre del caller
+        addiu $sp, $fp, 16
+
+        # Restauro el frame pointer del caller
+        lw $fp, 12($fp)
+
+        # Vuelvo a la instruccion siguiente al jalr
+        jr $ra
+
+    load_false:
+        la $a0 false_str
+        j out_bool_syscall
+
+    length_str:
+        # ========================================
+        # PROLOGUE length_str
+        # ========================================
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp $sp
+
+        # Guardo la direccion de retorno de la llamada
+        sw $ra 0($fp)
+
+        # $sp apunta al siguiente word libre del frame
+        addiu $sp $sp -4
+
+        # ========================================
+        # BODY length_str
+        # ========================================
+
+        # Cargo el self
+        lw $a0 12($fp)
+
+        # Recupero la direccion del string del CIR
+        lw $a0 4($a0)
+
+        li $t1 0
+
+        inicio_loop_length_str:
+
+        # Cargo el byte actual del Str
+        lb $t0 0($a0)
+
+        # Comparo el byte con \0 (fin de str)
+        beqz $t0 fin_loop_length_str
+
+        # Avanzo una posicion
+        addiu $a0 $a0 1
+        addiu $t1 $t1 1
+
+        j inicio_loop_length_str
+
+        fin_loop_length_str:
+        li $a0 8
+        li $v0 9
+        syscall
+
+        sw $t1 4($v0)
+        sw $v0 4($fp)
+
+        # ========================================
+        # EPILOGUE length_str
+        # ========================================
+
+        # Recupero la direccion de retorno
+        lw $ra 0($fp)
+
+        #
+        # 12($fp) -> Self
+        # 8($fp) -> $fp llamador
+        #  4($fp) -> return
+        #  0($fp) -> $ra
+        #
+
+        # Recupero el return
+        lw $a0 4($fp)
+
+        # Restauro $sp al primer word libre del caller
+        addiu $sp $fp 12
+
+        # Restauro el frame pointer del caller
+        lw $fp 8($fp)
+
+        # Vuelvo a la instruccion siguiente al jalr
+        jr $ra
+
+    concat_str:
+        # ========================================
+        # PROLOGUE concat_str
+        # ========================================
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp $sp
+
+        # Guardo la direccion de retorno de la llamada
+        sw $ra 0($fp)
+
+        # $sp apunta al siguiente word libre del frame
+        addiu $sp $sp -4
+
+        # ========================================
+        # BODY concat_str
+        # ========================================
+
+        # Cargo el self
+        lw $a0 16($fp)
+
+        # Guardo el CIR en donde iria el self del metodo length
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+
+        # Guardo el fp actual para que length lo recupere
+        sw $fp 0($sp)
+        addiu $sp $sp -8
+
+        jal length_str
+
+        # Length me devolvio en $a0 el CIR con la longitud, lo guardo en la pila
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+
+        # Cargo el parametro, el CIR a concatenar con self
+        lw $a0 4($fp)
+
+        # Guardo el parametro en el self del metodo length
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+
+        # Guardo el fp actual para que el metodo length lo recupere luego
+        sw $fp 0($sp)
+        addiu $sp $sp -8
+
+        jal length_str
+
+        # Cargo el CIR con el length del self
+        lw $t0 4($sp)
+        # Recupero el length
+        lw $t0 4($t0)
+
+        # Recupero el length del parametro
+        lw $a0 4($a0)
+
+        # Sumo self.length y param1.length
+        add $a0 $a0 $t0
+        # Sumo un byte extra para el fin de cadena
+        addiu $a0 $a0 1
+
+        # Reservo ese espacio
+        li $v0 9
+        syscall
+
+        # Guardo la direccion del heap con esa memoria reservada
+        sw $v0 0($sp)
+        addiu $sp $sp -4
+
+        # Guardo memoria en el heap para el nuevo CIR concatenado
+        li $a0 8
+        li $v0 9
+        syscall
+
+        # Obtengo la direccion del Str (aun vacio, solo tengo la memoria reservada)
+        lw $a0 4($sp)
+        # Guardo esa direccion en el nuevo CIR
+        sw $a0 4($v0)
+
+        # Recupero la pila
+        addiu $sp $sp 4
+
+        # Cargo el self
+        lw $a0 16($fp)
+        # Cargo el str self
+        lw $a0 4($a0)
+
+        # Obtengo la direccion del heap del Str
+        lw $a1 4($v0)
+        inicio_loop_concat_str_loop_1:
+        lb $t0 0($a0)
+        beqz $t0 fin_loop_concat_str_loop_1
+
+        sb $t0 0($a1)
+        addiu $a0 $a0 1
+        addiu $a1 $a1 1
+
+        j inicio_loop_concat_str_loop_1
+
+        fin_loop_concat_str_loop_1:
+        # Cargo el param1
+        lw $a0 4($fp)
+        # Cargo el str de param1
+        lw $a0 4($a0)
+
+        inicio_loop_concat_str_loop_2:
+        lb $t0 0($a0)
+        sb $t0 0($a1)
+        beqz $t0 fin_loop_concat_str_loop_2
+
+        addiu $a0 $a0 1
+        addiu $a1 $a1 1
+
+        j inicio_loop_concat_str_loop_2
+        fin_loop_concat_str_loop_2:
+
+        la $t0 vtable_str
+        # Cargo en el nuevo CIR la vtable de Str
+        sw $t0 0($v0)
+        sw $v0 8($fp)
+
+        # ========================================
+        # EPILOGUE concat_str
+        # ========================================
+
+        # Recupero la direccion de retorno
+        lw $ra 0($fp)
+
+        # concat_str tiene 1 parametro
+        # 16($fp) -> Self
+        # 12($fp) -> $fp llamador
+        #  8($fp) -> return
+        #  4($fp) -> Param1
+        #  0($fp) -> $ra
+
+        # Recupero el return
+        lw $a0 8($fp)
+
+        # Restauro $sp al primer word libre del caller
+        addiu $sp $fp 16
+
+        # Restauro el frame pointer del caller
+        lw $fp 12($fp)
+
+        # Vuelvo a la instruccion siguiente al jalr
+        jr $ra
+
+    length_array:
+        # ========================================
+        # PROLOGUE length_array
+        # ========================================
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp $sp
+
+        # Guardo la direccion de retorno de la llamada
+        sw $ra 0($fp)
+
+        # $sp apunta al siguiente word libre del frame
+        addiu $sp $sp -4
+
+        # ========================================
+        # BODY length_str
+        # ========================================
+
+        # Como la longitud en el CIR del array es solo un literal, genero un nuevo CIR para int
+        li $a0 8
+        li $v0 9
+        syscall
+
+        # Cargo el self
+        lw $a0 12($fp)
+
+        # Cargo el valor de la longitud
+        lw $a0 4($a0)
+
+        # Lo guardo en el nuevo CIR
+        sw $a0 4($v0)
+
+        # Guardo la direccion del CIR en el return
+        sw $v0 4($fp)
+
+        # ========================================
+        # EPILOGUE length_array
+        # ========================================
+
+        # Recupero la direccion de retorno
+        lw $ra 0($fp)
+
+        #
+        # 12($fp) -> Self
+        # 8($fp) -> $fp llamador
+        #  4($fp) -> return
+        #  0($fp) -> $ra
+
+        # Recupero el return
+        lw $a0 4($fp)
+
+        # Restauro $sp al primer word libre del caller
+        addiu $sp $fp 12
+
+        # Restauro el frame pointer del caller
+        lw $fp 8($fp)
+
+        # Vuelvo a la instruccion siguiente al jalr
+        jr $ra
+
+    has_next_array:
+        jr $ra
+
+    next_int_array:
+        jr $ra
+
+    next_str_array:
+        jr $ra
+
+    next_bool_array:
+        jr $ra
+
+    out_array_int:
+        jr $ra
+
+    out_array_str:
+        jr $ra
+
+    out_array_bool:
+        jr $ra
+
+    in_str:
+        # ========================================
+        # PROLOGUE in_str
+        # ========================================
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp $sp
+
+        # Guardo la direccion de retorno de la llamada
+        sw $ra 0($fp)
+
+        # $sp apunta al siguiente word libre del frame
+        addiu $sp $sp -4
+
+        # ========================================
+        # BODY in_str
+        # ========================================
+
+        # Reservo 1026 bytes en el heap (1204 caracteres y \n\0)
+        li $a0 1026
+        li $v0 9
+        syscall
+
+        # Guardo la direccion para el syscall de lectura de STR
+        move $a0 $v0
+
+        # 1026 bytes para el buffer
+        li $a1 1026
+        li $v0 8
+        syscall
+
+        # Guardo el valor leido en la pila
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+
+        # Genero el CIR
+        li $a0 8
+        li $v0 9
+        syscall
+
+        # Recupero el valor leido de la pila
+        lw $a0 4($sp)
+        addiu $sp $sp 4
+
+        # Guardo el valor leido en el CIR
+        sw $a0 4($v0)
+
+        # Guardo la vtable en el CIR
+        la $a0 vtable_str
+        sw $a0 0($v0)
+
+        # Guardo el CIR en el return
+        sw $v0 4($fp)
+
+        # ========================================
+        # EPILOGUE in_str
+        # ========================================
+
+        # Recupero la direccion de retorno
+        lw $ra 0($fp)
+
+        # 12($fp) -> Self
+        # 8($fp) -> $fp llamador
+        #  4($fp) -> return
+        #  0($fp) -> $ra
+
+        # Recupero el return
+        lw $a0 4($fp)
+
+        # Restauro $sp al primer word libre del caller
+        addiu $sp, $fp, 16
+
+        # Restauro el frame pointer del caller
+        lw $fp, 12($fp)
+
+        # Vuelvo a la instruccion siguiente al jalr
+        jr $ra
+
+
+    in_int:
+        # ========================================
+        # PROLOGUE in_int
+        # ========================================
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp $sp
+
+        # Guardo la direccion de retorno de la llamada
+        sw $ra 0($fp)
+
+        # $sp apunta al siguiente word libre del frame
+        addiu $sp $sp -4
+
+
+        # ========================================
+        # BODY in_int
+        # ========================================
+
+        # Cargo el syscall para leer int
+        li $v0 5
+        syscall
+
+        # Guardo el resultado en la pila
+        sw $v0 0($sp)
+        addiu $sp $sp -4
+
+        # Genero un CIR entero
+        li $a0 8
+        li $v0 9
+        syscall
+
+        # Recupero la lectura de la pila
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+
+        # Lo guardo en la posicion value del CIR
+        sw $t0 4($v0)
+
+        # Guardo la direccion del CIR en el return
+        sw $v0 4($fp)
+
+        # ========================================
+        # EPILOGUE in_int
+        # ========================================
+
+        # Recupero la direccion de retorno
+        lw $ra 0($fp)
+
+        # 12($fp) -> Self
+        # 8($fp) -> $fp llamador
+        #  4($fp) -> return
+        #  0($fp) -> $ra
+
+        # Recupero el return
+        lw $a0 4($fp)
+
+        # Restauro $sp al primer word libre del caller
+        addiu $sp, $fp, 12
+
+        # Restauro el frame pointer del caller
+        lw $fp, 8($fp)
+
+        # Vuelvo a la instruccion siguiente al jalr
+        jr $ra
+
+    in_bool:
+        # ========================================
+        # PROLOGUE in_bool
+        # ========================================
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp $sp
+
+        # Guardo la direccion de retorno de la llamada
+        sw $ra 0($fp)
+
+        # $sp apunta al siguiente word libre del frame
+        addiu $sp $sp -4
+
+        # ========================================
+        # BODY in_bool
+        # ========================================
+
+        # Reservo 7 bytes en el heap (false\n\0)
+        li $a0 7
+        li $v0 9
+        syscall
+
+        # Guardo la direccion para el syscall de lectura de STR
+        move $a0 $v0
+
+        # 7 bytes para el buffer
+        li $a1 7
+        li $v0 8
+        syscall
+
+        # Guardo el valor leido en la pila
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+
+        # Cargo true_str para comparar
+        la $a1 true_str
+
+        # t2 sera el resultado de la comparacion, si es true se queda en 1, si es false pasa a ser 0
+        li $t2 1
+
+        # Comparo si lo ingresado es vacio
+        lb $t0 0($a0)
+        li $t1 10
+        beq $t0 $t1 error_comparacion
+
+        comparacion_true:
+
+        # Cargo el byte actual de la posicion
+        lb $t0 0($a0)
+        lb $t1 0($a1)
+
+        # Si true_str ya llego a fin de linea, comparo salto de linea
+        beqz $t1 comparacion_salto_linea
+
+        # Adelanto una posicion en el puntero
+        addiu $a0 $a0 1
+        addiu $a1 $a1 1
+
+        beq $t0 $t1 comparacion_true
+
+        # Cargo el string de false
+        la $a1 false_str
+        # $t2 pasa a ser 0 por si es false el input
+        li $t2 0
+
+        # Recupero el input de la fila
+        lw $a0 4($sp)
+        addiu $sp $sp 4
+
+        comparacion_false:
+        # Obtengo el byte actual
+        lb $t0 0($a0)
+        lb $t1 0($a1)
+
+        # Si false_str ya llego a fin de linea, comparo salto de linea
+        beqz $t1 comparacion_salto_linea
+
+        addiu $a0 $a0 1
+        addiu $a1 $a1 1
+
+        beq $t0 $t1 comparacion_false
+
+        comparacion_salto_linea:
+        # Comparo con salto de linea
+        li $t1 10
+        beq $t0 $t1 comparacion_fin_str
+
+        error_comparacion:
+        la $a0 runtime_invalid_bool_msg
+        li $v0 4
+        syscall
+
+        j exit
+
+        comparacion_fin_str:
+        # Si el string ingresado termino, se carga el t2 (1 true - 0 false)
+        addiu $a0 $a0 1
+        lb $t0 0($a0)
+        li $t1 0
+        # Si no termino, booleano invalido (no ingreso true o false)
+        bne $t0 $t1 error_comparacion
+
+        # Genero CIR para bool
+        li $a0 8
+        li $v0 9
+        syscall
+
+        # Cargo el valor (0 o 1) en el CIR
+        sw $t2 4($v0)
+
+        # Guardo el valor en el return
+        sw $v0 4($fp)
+
+        # ========================================
+        # EPILOGUE in_bool
+        # ========================================
+
+        # Recupero la direccion de retorno
+        lw $ra 0($fp)
+
+        # 12($fp) -> Self
+        # 8($fp) -> $fp llamador
+        #  4($fp) -> return
+        #  0($fp) -> $ra
+
+        # Recupero el return
+        lw $a0 4($fp)
+
+        # Restauro $sp al primer word libre del caller
+        addiu $sp, $fp, 12
+
+        # Restauro el frame pointer del caller
+        lw $fp, 8($fp)
+
+        # Vuelvo a la instruccion siguiente al jalr
+        jr $ra
+
+
+    # ========================= #
+    #          UTILS            #
+    # ========================= #
+    exit:
+        li $v0, 10
+        syscall
+
+    # ========================= #
+    #     RUNTIME EXCEPTIONS    #
+    # ========================= #
+
+    runtime_div_zero:
+        la $a0, runtime_div_zero_msg
+        li $v0, 4
+        syscall
+
+        j exit
+
+    runtime_null:
+        la $a0 runtime_null_msg
+        li $v0 4
+        syscall
+
+        move $a0 $a2
+        li $v0 1
+        syscall
+
+        la $a0 runtime_null_msg2
+        li $v0 4
+        syscall
+
+        move $a0 $a3
+        li $v0 1
+        syscall
+
+        j exit
+
+    runtime_out_of_range:
+        la $a0 runtime_out_of_range_msg
+        li $v0 4
+        syscall
+
+        j exit
+
+    runtime_negative_index:
+        la $a0 runtime_negative_index_msg
+        li $v0 4
+        syscall
+
+        j exit
+
+
+
+    #############################
+    #          FIN INIT         #
+    #############################
+
+
+
+    Persona_constructor:
+
+        # ========================================
+        # PROLOGUE Constructor Persona
+        # ========================================
+        # Registro de activacion del metodo:
+        # self         -> 20($fp)
+        # $fp llamador -> 16($fp)
+        # return       -> 12($fp)
+        # Par 2        -> 8($fp)
+        # Par 1        -> 4($fp)
+        # $ra          -> 0($fp)
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp, $sp
+        # Guardo la direccion de retorno de la llamada
+        sw $ra, 0($fp)
+
+        # Reservo 4 bytes para variables locales y el siguiente word libre
+        addiu $sp, $sp, -4
+
+        # $sp queda apuntando al primer word libre del frame
+
+        # Body de constructor
+        # Asignacion a "self" en 8_9
+        # Evalúo el lado derecho de la asignacion
+        lw $a0 4($fp)
+        # Checkeo acceso nulo
+        li $a2 8
+        li $a3 23
+        beqz $a0 runtime_null
+        # Guardo en la pila el resultado de la expresion
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        # Obtengo el CIR del self Persona
+        lw $a0 20($fp)
+        # Obtengo el atributo del self
+        addiu $a0 $a0 4
+        # Checkeo acceso nulo
+        li $a2 8
+        li $a3 9
+        beqz $a0 runtime_null
+        # Recupero de la pila el resultado de la expresion
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo la expresión en la direccion del lado izquierdo
+        sw $t0 0($a0)
+        # Asignacion a "self" en 9_9
+        # Evalúo el lado derecho de la asignacion
+        lw $a0 8($fp)
+        # Checkeo acceso nulo
+        li $a2 9
+        li $a3 21
+        beqz $a0 runtime_null
+        # Guardo en la pila el resultado de la expresion
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        # Obtengo el CIR del self Persona
+        lw $a0 20($fp)
+        # Obtengo el atributo del self
+        addiu $a0 $a0 8
+        # Checkeo acceso nulo
+        li $a2 9
+        li $a3 9
+        beqz $a0 runtime_null
+        # Recupero de la pila el resultado de la expresion
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo la expresión en la direccion del lado izquierdo
+        sw $t0 0($a0)
+
+        # --- Epilogue de . ---
+
+    epilogue_Persona_constructor:
+        # Recupero el $ra anterior
+        lw $ra 0($fp)
+        # Como es un constructor, guardo en return el self (CIR)
+        lw $t0 20($fp)
+        sw $t0 12($fp)
+        # Recupero el valor del return
+        lw $a0 12($fp)
+        # Recupero el $fp del llamador
+        lw $fp 16($fp)
+        # Recupero el espacio usado
+        addiu $sp $sp 24
+        jr $ra
+
+    Persona_getNombre:
+
+        # ========================================
+        # PROLOGUE getNombre
+        # ========================================
+        # Registro de activacion del metodo:
+        # self         -> 12($fp)
+        # $fp llamador -> 8($fp)
+        # return       -> 4($fp)
+        # $ra          -> 0($fp)
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp, $sp
+        # Guardo la direccion de retorno de la llamada
+        sw $ra, 0($fp)
+
+        # Reservo 4 bytes para variables locales y el siguiente word libre
+        addiu $sp, $sp, -4
+
+        # $sp queda apuntando al primer word libre del frame
+
+        # Body de getNombre
+        # Accedo al self
+        lw $a0 12($fp)
+        # Accedo al atributo nombre del self
+        lw $a0 4($a0)
+        # Guardo el return
+        sw $a0 4($fp)
+        la $t0 epilogue_Persona_getNombre
+        jr $t0
+
+        # --- Epilogue de getNombre ---
+
+    epilogue_Persona_getNombre:
+        # Recupero el $ra anterior
+        lw $ra 0($fp)
+        # Recupero el valor del return
+        lw $a0 4($fp)
+        # Recupero el $fp del llamador
+        lw $fp 8($fp)
+        # Recupero el espacio usado
+        addiu $sp $sp 16
+        jr $ra
+
+    Persona_getEdad:
+
+        # ========================================
+        # PROLOGUE getEdad
+        # ========================================
+        # Registro de activacion del metodo:
+        # self         -> 12($fp)
+        # $fp llamador -> 8($fp)
+        # return       -> 4($fp)
+        # $ra          -> 0($fp)
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp, $sp
+        # Guardo la direccion de retorno de la llamada
+        sw $ra, 0($fp)
+
+        # Reservo 4 bytes para variables locales y el siguiente word libre
+        addiu $sp, $sp, -4
+
+        # $sp queda apuntando al primer word libre del frame
+
+        # Body de getEdad
+        # Accedo al self
+        lw $a0 12($fp)
+        # Accedo al atributo edad del self
+        lw $a0 8($a0)
+        # Guardo el return
+        sw $a0 4($fp)
+        la $t0 epilogue_Persona_getEdad
+        jr $t0
+
+        # --- Epilogue de getEdad ---
+
+    epilogue_Persona_getEdad:
+        # Recupero el $ra anterior
+        lw $ra 0($fp)
+        # Recupero el valor del return
+        lw $a0 4($fp)
+        # Recupero el $fp del llamador
+        lw $fp 8($fp)
+        # Recupero el espacio usado
+        addiu $sp $sp 16
+        jr $ra
