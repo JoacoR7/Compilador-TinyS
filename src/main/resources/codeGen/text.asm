@@ -470,14 +470,151 @@ next_str_array:
 next_bool_array:
     jr $ra
 
+
+# ========================================
+# ASCII PARA IMPRIMIR ARRAYS
+# ========================================
+# '['  -> 91  (Corchete de apertura)
+# ']'  -> 93  (Corchete de cierre)
+# ','  -> 44  (Coma)
+# ' '  -> 32  (Espacio)
+# '\n' -> 10  (Salto de linea)
+#
+# Para imprimir caracteres:
+# li $a0, <codigo ASCII>
+# li $v0, 11
+# syscall
+#
+# Formato esperado: [1, 2, 3, 4]
+# Array vacio:     []
+# ========================================
 out_array_int:
-    jr $ra
+    li $t0 1
+    li $t4 0
+    j out_array
+
 
 out_array_str:
-    jr $ra
+    li $t0 4
+    li $t4 0
+    j out_array
 
 out_array_bool:
+    li $t0 4
+    li $t4 1
+
+out_array:
+    # ========================================
+    # PROLOGUE out_array
+    # ========================================
+
+    # Fijo $fp en la posicion donde se guardara el $ra
+    move $fp $sp
+
+    # Guardo la direccion de retorno de la llamada
+    sw $ra 0($fp)
+
+    # $sp apunta al siguiente word libre del frame
+    addiu $sp $sp -4
+
+    # ========================================
+    # BODY out_array
+    # ========================================
+
+    # $t0 contiene el syscall correspondiente para imprimir int, str o bool
+    # $t4 indica si es bool o no
+
+    # Cargo el Param
+    lw $t1 4($fp)
+
+    # Cargo la longitud del array
+    lw $t2 4($t1)
+
+    # Inicio un contador en 0
+    li $t3 0
+
+    # Avanzo al primer elemento del array
+    addiu $t1 $t1 8
+
+    # Imprimo '['
+    li $a0 91
+    li $v0 11
+    syscall
+
+    loop_out_array:
+    # Imprimo el elemento actual
+    lw $a0 0($t1)
+    lw $a0 4($a0)
+
+    bnez $t4 cargar_bool
+    fin_cargar_bool:
+
+    move $v0 $t0
+    syscall
+
+    # Aumento contadores y posiciones
+    addiu $t1 $t1 4
+    addiu $t3 $t3 1
+
+    # Si la longitud es igual al contador, termino el loop
+    beq $t2 $t3 fin_loop_out_array
+
+    # Imprimo ','
+    li $a0 44
+    li $v0 11
+    syscall
+
+    # Imprimo ' '
+    li $a0 32
+    syscall
+
+    j loop_out_array
+
+    fin_loop_out_array:
+    # Imprimo ']'
+    li $a0 93
+    li $v0 11
+    syscall
+
+    # Imprimo '\n'
+    li $a0 10
+    syscall
+
+    # ========================================
+    # EPILOGUE out_array
+    # ========================================
+
+    # Recupero la direccion de retorno
+    lw $ra 0($fp)
+
+    #
+    # 16($fp) -> Self
+    # 12($fp) -> $fp llamador
+    #  8($fp) -> return
+    #  4($fp) -> Param1
+    #  0($fp) -> $ra
+
+    # Restauro $sp al primer word libre del caller
+    addiu $sp $fp 16
+
+    # Restauro el frame pointer del caller
+    lw $fp 12($fp)
+
+    # Vuelvo a la instruccion siguiente al jalr
     jr $ra
+
+cargar_bool:
+    # $a0 contiene el valor del Bool (0 o 1)
+    beqz $a0 cargar_false
+
+    # Si es true (1)
+    la $a0 true_str
+    j fin_cargar_bool
+
+cargar_false:
+    # Si es false (0)
+    la $a0 false_str
+    j fin_cargar_bool
 
 in_str:
     # ========================================
