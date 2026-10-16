@@ -1397,22 +1397,57 @@ public class SemanticAnalyzer {
                 TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
                 TokenType.SPECIAL_SYMBOL_CM)) {
 
-            Variable variable = this.getSymbolTable().getCurrentMethod().getVariables().get(token.getLexeme());
-            Parameter parameter = this.getSymbolTable().getCurrentMethod().getParameters().get(token.getLexeme());
+            Variable variable = this.getSymbolTable()
+                    .getCurrentMethod()
+                    .getVariables()
+                    .get(token.getLexeme());
 
-            if (variable == null && parameter == null){
+            Attribute attribute = null;
+
+            if (this.getSymbolTable().getCurrentClass() != null) {
+                attribute = this.getSymbolTable()
+                        .getClasses().get(this.getSymbolTable().getCurrentClass().getName())
+                        .getAttributes().get(token.getLexeme());
+            }
+
+            Parameter parameter = this.getSymbolTable()
+                    .getCurrentMethod()
+                    .getParameters()
+                    .get(token.getLexeme());
+
+            // Busco variables en el bloque actual
+            if (variable == null && parameter == null) {
                 if (symbolTable.getCurrentBlock() != null) {
-                    variable = symbolTable.getCurrentBlock().findVariable(token.getLexeme());
-                }
-                if (variable == null) {
-                    if (symbolTable.getCurrentBlock() != null) {
-                        throw new ForVariableOutOfScopeException(token.getRowIndex(), token.getColumnIndex(), token.getLexeme(), symbolTable.getCurrentMethod().getName());
-                    }
-                    throw new LocalVariableNotFoundException(token.getRowIndex(), token.getColumnIndex(), token.getLexeme(), symbolTable.getCurrentMethod().getName());
+                    variable = symbolTable.getCurrentBlock()
+                            .findVariable(token.getLexeme());
                 }
             }
 
-            Type type = variable != null ? variable.getType() : parameter.getType();
+            // Si no existe ninguno de los tres
+            if (variable == null && parameter == null && attribute == null) {
+                if (symbolTable.getCurrentBlock() != null) {
+                    throw new ForVariableOutOfScopeException(
+                            token.getRowIndex(),
+                            token.getColumnIndex(),
+                            token.getLexeme(),
+                            symbolTable.getCurrentMethod().getName()
+                    );
+                }
+
+                throw new LocalVariableNotFoundException(
+                        token.getRowIndex(),
+                        token.getColumnIndex(),
+                        token.getLexeme(),
+                        symbolTable.getCurrentMethod().getName()
+                );
+            }
+
+            // Obtengo el tipo según lo encontrado
+            Type type = variable != null
+                    ? variable.getType()
+                    : parameter != null
+                    ? parameter.getType()
+                    : attribute.getType();
 
             chainedNode = new VariableNode(token, type, null, symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null,
                     symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start");
