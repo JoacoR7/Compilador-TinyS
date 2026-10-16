@@ -5,7 +5,7 @@ class Persona {
 
 impl Persona {
     .(Int edad, Str nombre) {
-        self.edad = edad;
+        edad = edad;
         self.nombre = nombre;
     }
 

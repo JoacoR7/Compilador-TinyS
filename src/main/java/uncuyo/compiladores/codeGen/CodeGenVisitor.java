@@ -498,9 +498,19 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(SimpleVariableNode simpleVariableNode) {
-        Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(simpleVariableNode.getToken().getLexeme());
-        // Cargo la dirección del objeto en el stack frame
-        codeGenerator.emitText("addiu $a0 $fp " + codeGenerator.getVariableOffset(currentVariable));
+        Token currentToken = simpleVariableNode.getToken();
+        Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(currentToken.getLexeme());
+        if (currentVariable != null) {
+            // Cargo la dirección del objeto en el stack frame
+            codeGenerator.emitText("addiu $a0 $fp " + codeGenerator.getVariableOffset(currentVariable));
+        } else {
+            Attribute currentAttribute = AST.getSymbolTable().getCurrentClass().getAttributes().get(currentToken.getLexeme());
+            codeGenerator.emitComment("Obtengo el self (instancia actual)");
+            codeGenerator.emitText("lw $a0 " + codeGenerator.getSelfOffset(AST.getSymbolTable().getCurrentMethod()) + "($fp)");
+            codeGenerator.emitComment("Obtengo la direccion del atributo del self");
+            codeGenerator.emitText("addiu $a0 $a0 " + codeGenerator.getAttributeOffset(currentAttribute));
+        }
+
         if (simpleVariableNode.getSimpleChainedNode() != null) {
             codeGenerator.checkNullAccess("$a0", currentVariable.getToken().getRowIndex(), currentVariable.getToken().getColumnIndex());
             SimpleChainedNode simpleChainedNode = simpleVariableNode.getSimpleChainedNode();
