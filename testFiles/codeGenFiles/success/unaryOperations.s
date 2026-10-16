@@ -7,8 +7,8 @@ start {
 
     positive = +7;
     negative = -7;
-    incremented = ++7;
-    decremented = --7;
+    incremented = ++positive;
+    decremented = --positive;
     negated = !false;
 
     (IO.out_int(positive));
