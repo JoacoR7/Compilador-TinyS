@@ -848,13 +848,19 @@ public class SemanticAnalyzer {
             Variable variable = this.getSymbolTable().getCurrentMethod().getVariables().get(token.getLexeme());
 
             if (variable == null){
-                Parameter parameter = this.getSymbolTable().getCurrentMethod().getParameters().get(token.getLexeme());
-                if (parameter == null){
-                    throw new LocalVariableNotFoundException(token.getRowIndex(), token.getColumnIndex(), token.getLexeme(), symbolTable.getCurrentMethod().getName());
-                }else {
-                    type = parameter.getType();
+                Attribute attribute = this.getSymbolTable().getClasses().get(this.getSymbolTable().getCurrentClass().getName()).getAttributes().get(token.getLexeme());
+                if (attribute == null) {
+                    Parameter parameter = this.getSymbolTable().getCurrentMethod().getParameters().get(token.getLexeme());
+                    if (parameter == null){
+                        throw new LocalVariableNotFoundException(token.getRowIndex(), token.getColumnIndex(), token.getLexeme(), symbolTable.getCurrentMethod().getName());
+                    }else {
+                        type = parameter.getType();
+                    }
+                } else {
+                    type = attribute.getType();
                 }
-            }else {
+
+            } else {
                 type = variable.getType();
             }
 
