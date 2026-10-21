@@ -743,7 +743,104 @@ public class CodeGenVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(ForNode forNode) {
-        // TODO: Generar el codigo MIPS para una sentencia for.
+        // Obtengo la clase array
+        Class arrayClass = AST.getSymbolTable().getClasses().get("Array");
+        // Obtengo el método actual
+        Method currentMethod = AST.getSymbolTable().getCurrentMethod();
+        // Obtengo el método hasNext de array
+        Method hasNext = arrayClass.getMethods().get("hasNext");
+        // Obtengo el metodo next correspondiente
+        Method next = null;
+        switch (((ArrayType) forNode.getVarNode2().getType()).getSubType().getTypeName()) {
+            case "Int":
+                next = arrayClass.getMethods().get("next_int");
+                break;
+            case "Str":
+                next = arrayClass.getMethods().get("next_str");
+                break;
+            case "Bool":
+                next = arrayClass.getMethods().get("next_bool");
+                break;
+        }
+        codeGenerator.emitSection("Comienzo for " + forNode.getVarNode1().getToken().getRowIndex() + "_" + forNode.getVarNode1().getToken().getColumnIndex());
+
+        /*
+        int offsetBase = -4 * (currentMethod.getVariables().size() + 1);
+
+        int offsetVariable = offsetBase - (codeGenerator.getForDepth() * 8);
+         */
+
+
+        Variable currentVariable = new Variable(forNode.getVarNode1().getToken(), forNode.getVarNode1().getType());
+        currentVariable.setPosition(currentMethod.getVariables().size() + codeGenerator.getForDepth());
+        codeGenerator.setForDepth(codeGenerator.getForDepth() + 1);
+        currentMethod.getVariables().put(currentVariable.getName(), currentVariable);
+        codeGenerator.generatePrimitiveCIR(currentVariable.getToken().getTokenType());
+        codeGenerator.emitComment("Guardo la nueva variable en el RA");
+        codeGenerator.push("$v0");
+
+        codeGenerator.emitComment("Cargo el array");
+        Variable currentArrayVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(forNode.getVarNode2().getToken().getLexeme());
+        codeGenerator.emitText("lw $a0 " + codeGenerator.getVariableOffset(currentArrayVariable) + "($fp)");
+        codeGenerator.emitComment("Lo guardo en la pila");
+        codeGenerator.push("$a0");
+
+        codeGenerator.emitComment("Genero un objeto iterator");
+        codeGenerator.emitText("li $a0 8");
+        codeGenerator.emitText("li $v0 9");
+        codeGenerator.emitText("syscall");
+
+        codeGenerator.emitComment("Recupero el array");
+        codeGenerator.pop();
+        codeGenerator.emitComment("Guardo el array en el primer espacio del CIR de iterator");
+        codeGenerator.emitText("sw $t0 0($v0)");
+
+        codeGenerator.emitComment("Cargo indice -1");
+        codeGenerator.emitText("li $t0 -1");
+        codeGenerator.emitComment("Guardo el indice en la segunda posicion del CIR del iterator");
+        codeGenerator.emitText("sw $t0 4($v0)");
+
+        codeGenerator.emitComment("Guardo el iterator en la pila");
+        codeGenerator.push("$v0");
+
+        codeGenerator.emitComment("Comienzo loop for");
+        codeGenerator.emitSubLabel("for_" + forNode.getVarNode1().getToken().getRowIndex() + "_" + forNode.getVarNode1().getToken().getColumnIndex());
+        codeGenerator.emitComment("Cargo el objeto iterator");
+        codeGenerator.emitText("lw $a0 4($sp)");
+        codeGenerator.generateMethodPreCall(hasNext);
+
+        codeGenerator.emitComment("Salto a hasNext");
+        codeGenerator.emitText("jal has_next_array");
+
+        codeGenerator.emitComment("Tengo en $a0 el CIR booleano");
+        codeGenerator.emitComment("Recupero el valor del booleano");
+        codeGenerator.emitText("lw $a0 4($a0)");
+
+        codeGenerator.emitText("beqz $a0 end_for_" + forNode.getVarNode1().getToken().getRowIndex() + "_" + forNode.getVarNode1().getToken().getColumnIndex());
+
+        codeGenerator.emitComment("Cargo el objeto iterator");
+        codeGenerator.emitText("lw $a0 4($sp)");
+
+        codeGenerator.generateMethodPreCall(next);
+        codeGenerator.emitComment("Salto a next");
+        codeGenerator.emitText("jal " + next.getName() + "_array");
+
+        codeGenerator.emitComment("Tengo en $a0 el del elemento actual");
+        codeGenerator.emitComment("Guardo el valor en la posicion correspondiente de la variable");
+        codeGenerator.emitText("sw $a0 " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
+
+        forNode.getSentenceNode().accept(this);
+
+
+        codeGenerator.emitText("j for_" + forNode.getVarNode1().getToken().getRowIndex() + "_" + forNode.getVarNode1().getToken().getColumnIndex());
+        codeGenerator.emitSubLabel("end_for_" + forNode.getVarNode1().getToken().getRowIndex() + "_" + forNode.getVarNode1().getToken().getColumnIndex());
+        codeGenerator.emitComment("Quito el cir iterator de la pila");
+        codeGenerator.pop();
+
+        currentMethod.getVariables().remove(currentVariable.getName());
+        codeGenerator.emitComment("Quito la variable del contexto for del RA");
+        codeGenerator.pop();
+        codeGenerator.setForDepth(codeGenerator.getForDepth() - 1);
         return null;
     }
 

@@ -413,7 +413,7 @@ length_array:
     addiu $sp $sp -4
 
     # ========================================
-    # BODY length_str
+    # BODY length_array
     # ========================================
 
     # Como la longitud en el CIR del array es solo un literal, genero un nuevo CIR para int
@@ -459,9 +459,159 @@ length_array:
     jr $ra
 
 has_next_array:
+    # ========================================
+    # PROLOGUE has_next_array
+    # ========================================
+
+    # Fijo $fp en la posicion donde se guardara el $ra
+    move $fp $sp
+
+    # Guardo la direccion de retorno de la llamada
+    sw $ra 0($fp)
+
+    # $sp apunta al siguiente word libre del frame
+    addiu $sp $sp -4
+
+
+    # ========================================
+    # BODY has_next_array
+    # ========================================
+
+    # Cargo el objeto iterator guardado en self
+    lw $a0 12($fp)
+
+    # Cargo el indice actual
+    lw $t0 4($a0)
+
+    # Cargo el array
+    lw $t1 0($a0)
+
+    # Cargo la longitud del array
+    lw $t1 4($t1)
+
+    # Incremento en uno el valor del indice actual para ver si entra en el rango de la longitud
+    addiu $t0 $t0 1
+
+    # Comparo el indice con la longitud -> indice < longitud ? 1 : 0
+    slt $t0 $t0 $t1
+
+    # Genero un CIR booleano
+    li $a0 8
+    li $v0 9
+    syscall
+
+    # Guardo el valor en el CIR
+    sw $t0 4($v0)
+
+    # Guardo el CIR booleano en el return
+    sw $v0 4($fp)
+
+    # ========================================
+    # EPILOGUE has_next_array
+    # ========================================
+
+    # Recupero la direccion de retorno
+    lw $ra 0($fp)
+
+    # 12($fp) -> Self
+    # 8($fp) -> $fp llamador
+    #  4($fp) -> return
+    #  0($fp) -> $ra
+
+    # Recupero el return
+    lw $a0 4($fp)
+
+    # Restauro $sp al primer word libre del caller
+    addiu $sp, $fp, 12
+
+    # Restauro el frame pointer del caller
+    lw $fp, 8($fp)
+
+    # Vuelvo a la instruccion siguiente al jalr
     jr $ra
 
 next_int_array:
+    # ========================================
+    # PROLOGUE next_int_array
+    # ========================================
+
+    # Fijo $fp en la posicion donde se guardara el $ra
+    move $fp $sp
+
+    # Guardo la direccion de retorno de la llamada
+    sw $ra 0($fp)
+
+    # $sp apunta al siguiente word libre del frame
+    addiu $sp $sp -4
+
+
+    # ========================================
+    # BODY next_int_array
+    # ========================================
+
+    # Cargo el objeto iterator guardado en self
+    lw $a0 12($fp)
+
+    # Cargo el indice actual
+    lw $t0 4($a0)
+
+    # Incremento en uno el valor del indice actual
+    addiu $t0 $t0 1
+
+    # Guardo el nuevo indice en el iterator
+    sw $t0 4($a0)
+
+    # Multiplico por 4 el indice para acceder al elemento correspondiente
+    sll $t0, $t0, 2
+
+    # Cargo el array
+    lw $t1 0($a0)
+
+    # Avanzo hasta la posicion del primer elemento del array
+    addiu $t1 $t1 8
+
+    # Avanzo a la posicion correspondiente
+    add $t1 $t1 $t0
+
+    # Cargo la direccion que contiene ese elemento
+    lw $t1 0($t1)
+
+    # Genero un CIR entero
+    li $a0 8
+    li $v0 9
+    syscall
+
+    # Obtengo el valor del elemento actual
+    lw $t0 4($t1)
+
+    # Guardo el valor en el nuevo CIR
+    sw $t0 4($v0)
+
+    # Guardo el CIR entero en el return
+    sw $v0 4($fp)
+
+    # ========================================
+    # EPILOGUE next_int_array
+    # ========================================
+
+    # Recupero la direccion de retorno
+    lw $ra 0($fp)
+
+    # 12($fp) -> Self
+    # 8($fp) -> $fp llamador
+    #  4($fp) -> return
+    #  0($fp) -> $ra
+
+    # Recupero el return
+    lw $a0 4($fp)
+
+    # Restauro $sp al primer word libre del caller
+    addiu $sp, $fp, 12
+
+    # Restauro el frame pointer del caller
+    lw $fp, 8($fp)
+
+    # Vuelvo a la instruccion siguiente al jalr
     jr $ra
 
 next_str_array:

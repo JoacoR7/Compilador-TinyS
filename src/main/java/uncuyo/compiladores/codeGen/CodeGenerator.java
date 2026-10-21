@@ -20,6 +20,7 @@ public class CodeGenerator {
     private StringBuilder text;
     private StringBuilder main;
     private StringBuilder current;
+    private int forDepth = 0;
 
     private String baseData;
     private String baseText;
@@ -38,6 +39,14 @@ public class CodeGenerator {
 
         this.baseData = loadResource("codeGen/data.asm");
         this.baseText = loadResource("codeGen/text.asm");
+    }
+
+    public int getForDepth() {
+        return forDepth;
+    }
+
+    public void setForDepth(int forDepth) {
+        this.forDepth = forDepth;
     }
 
     /**
