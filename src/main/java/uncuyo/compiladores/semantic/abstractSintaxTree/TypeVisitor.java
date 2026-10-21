@@ -492,10 +492,6 @@ public class TypeVisitor implements Visitor<Type> {
         Type type = null;
         if(variableNode.getClassName() == null) {
             Variable variable = AST.getSymbolTable().getStart().getVariables().get(variableNode.getToken().getLexeme());
-            if (variable == null) {
-                throw new LocalVariableNotFoundException(variableNode.getToken().getRowIndex(), variableNode.getToken().getColumnIndex(),
-                        variableNode.getToken().getLexeme(), AST.getSymbolTable().getCurrentMethod().getName());
-            }
             if (currentBlock != null) {
                 Variable blockVariable = currentBlock.findVariable(variableNode.getToken().getLexeme());
                 if (variable != null && blockVariable != null) {
@@ -508,6 +504,10 @@ public class TypeVisitor implements Visitor<Type> {
                 } else if (variable == null && blockVariable != null) {
                     variable = blockVariable;
                 }
+            }
+            if (variable == null) {
+                throw new LocalVariableNotFoundException(variableNode.getToken().getRowIndex(), variableNode.getToken().getColumnIndex(),
+                        variableNode.getToken().getLexeme(), AST.getSymbolTable().getCurrentMethod().getName());
             }
             variableNode.setClassName((variable).getType().getLexeme());
             symbolTable.setCurrentClass(symbolTable.getClasses().get(variableNode.getClassName()));
@@ -721,6 +721,7 @@ public class TypeVisitor implements Visitor<Type> {
 
         Block savedBlock = currentBlock;
         currentBlock = symbolTable.getCurrentMethod().getBlocks().get(forBlockIndex++);
+        symbolTable.setCurrentBlock(currentBlock);
 
         forNode.getSentenceNode().accept(this);
         forNode.setHasReturn(forNode.getSentenceNode().isHasReturn());
