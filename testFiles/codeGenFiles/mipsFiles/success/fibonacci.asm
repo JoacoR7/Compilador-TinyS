@@ -107,7 +107,7 @@
         # $sp queda apuntando al primer word libre del frame
 
         # Body de start
-        # Asignacion a "fib" en 71_5
+        # Asignacion a "fib" en 74_5
         # Evalúo el lado derecho de la asignacion
 
         # ========================================
@@ -182,7 +182,7 @@
         addiu $sp $sp -4
         addiu $a0 $fp -4
         # Checkeo acceso nulo
-        li $a2 71
+        li $a2 74
         li $a3 5
         beqz $a0 runtime_null
         # Recupero de la pila el resultado de la expresion
@@ -190,10 +190,10 @@
         addiu $sp $sp 4
         # Guardo la expresión en la direccion del lado izquierdo
         sw $t0 0($a0)
-        # Asignacion a "n" en 72_5
+        # Asignacion a "n" en 75_5
         # Evalúo el lado derecho de la asignacion
 
-        # --- Comienzo llamada 72_9 ---
+        # --- Comienzo llamada 75_9 ---
         # Llamada estática sobre IO
         # Guardo la vtable de IO
         la $a0, vtable_IO
@@ -226,7 +226,7 @@
         addiu $sp $sp -4
         addiu $a0 $fp -8
         # Checkeo acceso nulo
-        li $a2 72
+        li $a2 75
         li $a3 5
         beqz $a0 runtime_null
         # Recupero de la pila el resultado de la expresion
@@ -235,7 +235,7 @@
         # Guardo la expresión en la direccion del lado izquierdo
         sw $t0 0($a0)
 
-        # --- Comienzo llamada 74_6 ---
+        # --- Comienzo llamada 77_6 ---
         # Llamada estática sobre IO
         # Guardo la vtable de IO
         la $a0, vtable_IO
@@ -265,7 +265,7 @@
         # Guardo en $a0 la direccion del CIR que invoca al metodo
         lw $a0 -4($fp)
         # Checkeo acceso nulo
-        li $a2 74
+        li $a2 77
         li $a3 17
         beqz $a0 runtime_null
 
@@ -291,9 +291,10 @@
 
         # --- Evaluo parametros de sucesion_fib ---
         # Evaluo parametro n° 1
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
-        li $a2 69
+        li $a2 72
         li $a3 9
         beqz $a0 runtime_null
         # Guardo parametro n° 1
@@ -730,7 +731,7 @@
         addiu $sp $sp -4
 
         # ========================================
-        # BODY length_str
+        # BODY length_array
         # ========================================
 
         # Como la longitud en el CIR del array es solo un literal, genero un nuevo CIR para int
@@ -776,25 +777,311 @@
         jr $ra
 
     has_next_array:
+        # ========================================
+        # PROLOGUE has_next_array
+        # ========================================
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp $sp
+
+        # Guardo la direccion de retorno de la llamada
+        sw $ra 0($fp)
+
+        # $sp apunta al siguiente word libre del frame
+        addiu $sp $sp -4
+
+
+        # ========================================
+        # BODY has_next_array
+        # ========================================
+
+        # Cargo el objeto iterator guardado en self
+        lw $a0 12($fp)
+
+        # Cargo el indice actual
+        lw $t0 4($a0)
+
+        # Cargo el array
+        lw $t1 0($a0)
+
+        # Cargo la longitud del array
+        lw $t1 4($t1)
+
+        # Incremento en uno el valor del indice actual para ver si entra en el rango de la longitud
+        addiu $t0 $t0 1
+
+        # Comparo el indice con la longitud -> indice < longitud ? 1 : 0
+        slt $t0 $t0 $t1
+
+        # Genero un CIR booleano
+        li $a0 8
+        li $v0 9
+        syscall
+
+        # Guardo el valor en el CIR
+        sw $t0 4($v0)
+
+        # Guardo el CIR booleano en el return
+        sw $v0 4($fp)
+
+        # ========================================
+        # EPILOGUE has_next_array
+        # ========================================
+
+        # Recupero la direccion de retorno
+        lw $ra 0($fp)
+
+        # 12($fp) -> Self
+        # 8($fp) -> $fp llamador
+        #  4($fp) -> return
+        #  0($fp) -> $ra
+
+        # Recupero el return
+        lw $a0 4($fp)
+
+        # Restauro $sp al primer word libre del caller
+        addiu $sp, $fp, 12
+
+        # Restauro el frame pointer del caller
+        lw $fp, 8($fp)
+
+        # Vuelvo a la instruccion siguiente al jalr
         jr $ra
 
     next_int_array:
-        jr $ra
+        li $t2 0
+        j next_array
+        nop
 
     next_str_array:
-        jr $ra
+        la $t2, vtable_str
+        j next_array
+        nop
 
     next_bool_array:
+        li $t2 0
+        j next_array
+        nop
+
+    next_array:
+
+        # ========================================
+        # PROLOGUE next_array
+        # ========================================
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp, $sp
+
+        # Guardo la direccion de retorno de la llamada
+        sw $ra, 0($fp)
+
+        # $sp apunta al siguiente word libre del frame
+        addiu $sp, $sp, -4
+
+
+        # ========================================
+        # BODY next_array
+        # ========================================
+
+        # Cargo el objeto iterator guardado en self
+        lw $a0, 12($fp)
+
+        # Cargo el indice actual
+        lw $t0, 4($a0)
+
+        # Incremento en uno el valor del indice actual
+        addiu $t0, $t0, 1
+
+        # Guardo el nuevo indice en el iterator
+        sw $t0, 4($a0)
+
+        # Multiplico por 4 el indice para acceder al elemento correspondiente
+        sll $t0, $t0, 2
+
+        # Cargo el array
+        lw $t1, 0($a0)
+
+        # Avanzo hasta la posicion del primer elemento del array
+        addiu $t1, $t1, 8
+
+        # Avanzo a la posicion correspondiente
+        addu $t1, $t1, $t0
+
+        # Cargo la direccion del CIR del elemento
+        lw $t1, 0($t1)
+
+        # Reservo 8 bytes para el nuevo CIR
+        li $a0, 8
+        li $v0, 9
+        syscall
+
+        # Guardo la vtable en caso de string, en otro caso es 0
+        sw $t2, 0($v0)
+
+        # Obtengo el valor del elemento actual
+        lw $t0, 4($t1)
+
+        # Guardo el valor en el nuevo CIR
+        sw $t0, 4($v0)
+
+        # Guardo el CIR en el return
+        sw $v0, 4($fp)
+
+
+        # ========================================
+        # EPILOGUE
+        # ========================================
+
+        # Recupero la direccion de retorno
+        lw $ra, 0($fp)
+
+        # Registro de activacion:
+        #
+        # 12($fp) -> Self
+        #  8($fp) -> $fp llamador
+        #  4($fp) -> return
+        #  0($fp) -> $ra
+
+        # Recupero el return
+        lw $a0, 4($fp)
+
+        # Restauro $sp al primer word libre del caller
+        addiu $sp, $fp, 12
+
+        # Restauro el frame pointer del caller
+        lw $fp, 8($fp)
+
+        # Vuelvo a la instruccion siguiente al jalr
         jr $ra
+        nop
 
     out_array_int:
-        jr $ra
+        li $t0 1
+        li $t4 0
+        j out_array
+
 
     out_array_str:
-        jr $ra
+        li $t0 4
+        li $t4 0
+        j out_array
 
     out_array_bool:
+        li $t0 4
+        li $t4 1
+
+    out_array:
+        # ========================================
+        # PROLOGUE out_array
+        # ========================================
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp $sp
+
+        # Guardo la direccion de retorno de la llamada
+        sw $ra 0($fp)
+
+        # $sp apunta al siguiente word libre del frame
+        addiu $sp $sp -4
+
+        # ========================================
+        # BODY out_array
+        # ========================================
+
+        # $t0 contiene el syscall correspondiente para imprimir int, str o bool
+        # $t4 indica si es bool o no
+
+        # Cargo el Param
+        lw $t1 4($fp)
+
+        # Cargo la longitud del array
+        lw $t2 4($t1)
+
+        # Inicio un contador en 0
+        li $t3 0
+
+        # Avanzo al primer elemento del array
+        addiu $t1 $t1 8
+
+        # Imprimo '['
+        li $a0 91
+        li $v0 11
+        syscall
+
+        loop_out_array:
+        # Imprimo el elemento actual
+        lw $a0 0($t1)
+        lw $a0 4($a0)
+
+        bnez $t4 cargar_bool
+        fin_cargar_bool:
+
+        move $v0 $t0
+        syscall
+
+        # Aumento contadores y posiciones
+        addiu $t1 $t1 4
+        addiu $t3 $t3 1
+
+        # Si la longitud es igual al contador, termino el loop
+        beq $t2 $t3 fin_loop_out_array
+
+        # Imprimo ','
+        li $a0 44
+        li $v0 11
+        syscall
+
+        # Imprimo ' '
+        li $a0 32
+        syscall
+
+        j loop_out_array
+
+        fin_loop_out_array:
+        # Imprimo ']'
+        li $a0 93
+        li $v0 11
+        syscall
+
+        # Imprimo '\n'
+        li $a0 10
+        syscall
+
+        # ========================================
+        # EPILOGUE out_array
+        # ========================================
+
+        # Recupero la direccion de retorno
+        lw $ra 0($fp)
+
+        #
+        # 16($fp) -> Self
+        # 12($fp) -> $fp llamador
+        #  8($fp) -> return
+        #  4($fp) -> Param1
+        #  0($fp) -> $ra
+
+        # Restauro $sp al primer word libre del caller
+        addiu $sp $fp 16
+
+        # Restauro el frame pointer del caller
+        lw $fp 12($fp)
+
+        # Vuelvo a la instruccion siguiente al jalr
         jr $ra
+
+    cargar_bool:
+        # $a0 contiene el valor del Bool (0 o 1)
+        beqz $a0 cargar_false
+
+        # Si es true (1)
+        la $a0 true_str
+        j fin_cargar_bool
+
+    cargar_false:
+        # Si es false (0)
+        la $a0 false_str
+        j fin_cargar_bool
 
     in_str:
         # ========================================
@@ -866,10 +1153,10 @@
         lw $a0 4($fp)
 
         # Restauro $sp al primer word libre del caller
-        addiu $sp, $fp, 16
+        addiu $sp, $fp, 12
 
         # Restauro el frame pointer del caller
-        lw $fp, 12($fp)
+        lw $fp, 8($fp)
 
         # Vuelvo a la instruccion siguiente al jalr
         jr $ra
@@ -1287,15 +1574,18 @@
         # Evaluo expresion de while_16_9
         # Comienzo expresion binaria <= en 16_18
         # Obtengo el valor del nodo izquierdo
+        # Cargo el self ya que busco un atributo
         lw $a0 16($fp)
         # Checkeo acceso nulo
         li $a2 16
         li $a3 16
         beqz $a0 runtime_null
-        addiu $a0 $a0 8
+        # Cargo el atributo i
+        lw $a0 8($a0)
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco el parámetro en el RA
         lw $a0 4($fp)
         # Checkeo acceso nulo
         li $a2 16
@@ -1336,12 +1626,14 @@
         # Evaluo expresion de if_17_13
         # Comienzo expresion binaria == en 17_19
         # Obtengo el valor del nodo izquierdo
+        # Cargo el self ya que busco un atributo
         lw $a0 16($fp)
         # Checkeo acceso nulo
         li $a2 17
         li $a3 17
         beqz $a0 runtime_null
-        addiu $a0 $a0 8
+        # Cargo el atributo i
+        lw $a0 8($a0)
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
@@ -1390,7 +1682,9 @@
         beqz $a0 else_17_13
         # Cuerpo de if_17_13
         if_17_13:
-        # Accedo al self
+
+        # --- Comienzo llamada 18_18 ---
+        # Obtengo el self para hacer la llamada de metodo de instancia
         lw $a0 16($fp)
 
         # ========================================
@@ -1415,12 +1709,14 @@
 
         # --- Evaluo parametros de imprimo_numero ---
         # Evaluo parametro n° 1
+        # Cargo el self ya que busco un atributo
         lw $a0 16($fp)
         # Checkeo acceso nulo
         li $a2 18
-        li $a3 38
+        li $a3 33
         beqz $a0 runtime_null
-        addiu $a0 $a0 8
+        # Cargo el atributo i
+        lw $a0 8($a0)
         # Guardo parametro n° 1
         sw $a0 4($sp)
         # Como el metodo imprimo_numero es un metodo de instancia, obtengo el self
@@ -1430,7 +1726,9 @@
         # Busco el metodo imprimo_numero en la vtable
         lw $a0 4($a0)
         jalr $a0
-        # Accedo al self
+
+        # --- Comienzo llamada 19_18 ---
+        # Obtengo el self para hacer la llamada de metodo de instancia
         lw $a0 16($fp)
 
         # ========================================
@@ -1455,12 +1753,14 @@
 
         # --- Evaluo parametros de imprimo_sucesion ---
         # Evaluo parametro n° 1
+        # Cargo el self ya que busco un atributo
         lw $a0 16($fp)
         # Checkeo acceso nulo
         li $a2 19
-        li $a3 40
+        li $a3 35
         beqz $a0 runtime_null
-        addiu $a0 $a0 4
+        # Cargo el atributo suma
+        lw $a0 4($a0)
         # Guardo parametro n° 1
         sw $a0 4($sp)
         # Como el metodo imprimo_sucesion es un metodo de instancia, obtengo el self
@@ -1480,12 +1780,14 @@
         # Evaluo expresion de if_22_17
         # Comienzo expresion binaria == en 22_23
         # Obtengo el valor del nodo izquierdo
+        # Cargo el self ya que busco un atributo
         lw $a0 16($fp)
         # Checkeo acceso nulo
         li $a2 22
         li $a3 21
         beqz $a0 runtime_null
-        addiu $a0 $a0 8
+        # Cargo el atributo i
+        lw $a0 8($a0)
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
@@ -1534,7 +1836,9 @@
         beqz $a0 else_22_17
         # Cuerpo de if_22_17
         if_22_17:
-        # Accedo al self
+
+        # --- Comienzo llamada 23_22 ---
+        # Obtengo el self para hacer la llamada de metodo de instancia
         lw $a0 16($fp)
 
         # ========================================
@@ -1559,12 +1863,14 @@
 
         # --- Evaluo parametros de imprimo_numero ---
         # Evaluo parametro n° 1
+        # Cargo el self ya que busco un atributo
         lw $a0 16($fp)
         # Checkeo acceso nulo
         li $a2 23
-        li $a3 42
+        li $a3 37
         beqz $a0 runtime_null
-        addiu $a0 $a0 8
+        # Cargo el atributo i
+        lw $a0 8($a0)
         # Guardo parametro n° 1
         sw $a0 4($sp)
         # Como el metodo imprimo_numero es un metodo de instancia, obtengo el self
@@ -1578,21 +1884,25 @@
         # Evalúo el lado derecho de la asignacion
         # Comienzo expresion binaria + en 24_33
         # Obtengo el valor del nodo izquierdo
+        # Cargo el self ya que busco un atributo
         lw $a0 16($fp)
         # Checkeo acceso nulo
         li $a2 24
         li $a3 28
         beqz $a0 runtime_null
-        addiu $a0 $a0 4
+        # Cargo el atributo suma
+        lw $a0 4($a0)
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Cargo el self ya que busco un atributo
         lw $a0 16($fp)
         # Checkeo acceso nulo
         li $a2 24
         li $a3 35
         beqz $a0 runtime_null
-        addiu $a0 $a0 8
+        # Cargo el atributo i
+        lw $a0 8($a0)
         # Obtengo el valor del CIR
         lw $a0 4($a0)
         # Recupero el valor del nodo izquierdo
@@ -1633,7 +1943,9 @@
         addiu $sp $sp 4
         # Guardo la expresión en la direccion del lado izquierdo
         sw $t0 0($a0)
-        # Accedo al self
+
+        # --- Comienzo llamada 25_22 ---
+        # Obtengo el self para hacer la llamada de metodo de instancia
         lw $a0 16($fp)
 
         # ========================================
@@ -1658,12 +1970,14 @@
 
         # --- Evaluo parametros de imprimo_sucesion ---
         # Evaluo parametro n° 1
+        # Cargo el self ya que busco un atributo
         lw $a0 16($fp)
         # Checkeo acceso nulo
         li $a2 25
-        li $a3 44
+        li $a3 39
         beqz $a0 runtime_null
-        addiu $a0 $a0 4
+        # Cargo el atributo suma
+        lw $a0 4($a0)
         # Guardo parametro n° 1
         sw $a0 4($sp)
         # Como el metodo imprimo_sucesion es un metodo de instancia, obtengo el self
@@ -1676,7 +1990,9 @@
         j endif_22_17
         # Cuerpo de else_22_17
         else_22_17:
-        # Accedo al self
+
+        # --- Comienzo llamada 28_22 ---
+        # Obtengo el self para hacer la llamada de metodo de instancia
         lw $a0 16($fp)
 
         # ========================================
@@ -1701,12 +2017,14 @@
 
         # --- Evaluo parametros de imprimo_numero ---
         # Evaluo parametro n° 1
+        # Cargo el self ya que busco un atributo
         lw $a0 16($fp)
         # Checkeo acceso nulo
         li $a2 28
-        li $a3 42
+        li $a3 37
         beqz $a0 runtime_null
-        addiu $a0 $a0 8
+        # Cargo el atributo i
+        lw $a0 8($a0)
         # Guardo parametro n° 1
         sw $a0 4($sp)
         # Como el metodo imprimo_numero es un metodo de instancia, obtengo el self
@@ -1716,20 +2034,22 @@
         # Busco el metodo imprimo_numero en la vtable
         lw $a0 4($a0)
         jalr $a0
-        # Asignacion a "anterior" en 35_21
+        # Asignacion a "anterior" en 38_21
         # Evalúo el lado derecho de la asignacion
+        # Cargo el self ya que busco un atributo
         lw $a0 16($fp)
         # Checkeo acceso nulo
-        li $a2 35
+        li $a2 38
         li $a3 32
         beqz $a0 runtime_null
-        addiu $a0 $a0 4
+        # Cargo el atributo suma
+        lw $a0 4($a0)
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
         addiu $a0 $fp -4
         # Checkeo acceso nulo
-        li $a2 35
+        li $a2 38
         li $a3 21
         beqz $a0 runtime_null
         # Recupero de la pila el resultado de la expresion
@@ -1737,25 +2057,29 @@
         addiu $sp $sp 4
         # Guardo la expresión en la direccion del lado izquierdo
         sw $t0 0($a0)
-        # Asignacion a "suma" en 36_21
+        # Asignacion a "suma" en 39_21
         # Evalúo el lado derecho de la asignacion
-        # Comienzo expresion binaria + en 36_33
+        # Comienzo expresion binaria + en 39_33
         # Obtengo el valor del nodo izquierdo
+        # Cargo el self ya que busco un atributo
         lw $a0 16($fp)
         # Checkeo acceso nulo
-        li $a2 36
+        li $a2 39
         li $a3 28
         beqz $a0 runtime_null
-        addiu $a0 $a0 4
+        # Cargo el atributo suma
+        lw $a0 4($a0)
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Cargo el self ya que busco un atributo
         lw $a0 16($fp)
         # Checkeo acceso nulo
-        li $a2 36
+        li $a2 39
         li $a3 35
         beqz $a0 runtime_null
-        addiu $a0 $a0 12
+        # Cargo el atributo j
+        lw $a0 12($a0)
         # Obtengo el valor del CIR
         lw $a0 4($a0)
         # Recupero el valor del nodo izquierdo
@@ -1788,7 +2112,7 @@
         # Obtengo la direccion del atributo del self
         addiu $a0 $a0 4
         # Checkeo acceso nulo
-        li $a2 36
+        li $a2 39
         li $a3 21
         beqz $a0 runtime_null
         # Recupero de la pila el resultado de la expresion
@@ -1796,8 +2120,9 @@
         addiu $sp $sp 4
         # Guardo la expresión en la direccion del lado izquierdo
         sw $t0 0($a0)
-        # Asignacion a "j" en 37_21
+        # Asignacion a "j" en 40_21
         # Evalúo el lado derecho de la asignacion
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 10
@@ -1811,7 +2136,7 @@
         # Obtengo la direccion del atributo del self
         addiu $a0 $a0 12
         # Checkeo acceso nulo
-        li $a2 37
+        li $a2 40
         li $a3 21
         beqz $a0 runtime_null
         # Recupero de la pila el resultado de la expresion
@@ -1819,7 +2144,9 @@
         addiu $sp $sp 4
         # Guardo la expresión en la direccion del lado izquierdo
         sw $t0 0($a0)
-        # Accedo al self
+
+        # --- Comienzo llamada 42_22 ---
+        # Obtengo el self para hacer la llamada de metodo de instancia
         lw $a0 16($fp)
 
         # ========================================
@@ -1844,12 +2171,14 @@
 
         # --- Evaluo parametros de imprimo_sucesion ---
         # Evaluo parametro n° 1
+        # Cargo el self ya que busco un atributo
         lw $a0 16($fp)
         # Checkeo acceso nulo
-        li $a2 39
-        li $a3 44
+        li $a2 42
+        li $a3 39
         beqz $a0 runtime_null
-        addiu $a0 $a0 4
+        # Cargo el atributo suma
+        lw $a0 4($a0)
         # Guardo parametro n° 1
         sw $a0 4($sp)
         # Como el metodo imprimo_sucesion es un metodo de instancia, obtengo el self
@@ -1861,14 +2190,16 @@
         jalr $a0
         endif_22_17:
         endif_17_13:
-        # Comienzo expresion unaria ++ en 43_14
+        # Comienzo expresion unaria ++ en 46_14
         # Obtengo el valor de la expresion
+        # Cargo el self ya que busco un atributo
         lw $a0 16($fp)
         # Checkeo acceso nulo
-        li $a2 43
+        li $a2 46
         li $a3 16
         beqz $a0 runtime_null
-        addiu $a0 $a0 8
+        # Cargo el atributo i
+        lw $a0 8($a0)
         # Incremento el operando en 1
         li $t0 1
         lw $t1 4($a0)
@@ -1876,12 +2207,14 @@
         sw $t0 4($a0)
         j while_16_9
         endwhile_16_9:
+        # Cargo el self ya que busco un atributo
         lw $a0 16($fp)
         # Checkeo acceso nulo
-        li $a2 46
+        li $a2 49
         li $a3 13
         beqz $a0 runtime_null
-        addiu $a0 $a0 4
+        # Cargo el atributo suma
+        lw $a0 4($a0)
         # Guardo el return
         sw $a0 8($fp)
         la $t0 epilogue_Fibonacci_sucesion_fib
@@ -1922,7 +2255,7 @@
         # $sp queda apuntando al primer word libre del frame
 
         # Body de constructor
-        # Asignacion a "i" en 50_9
+        # Asignacion a "i" en 53_9
         # Evalúo el lado derecho de la asignacion
         # Genero el literal 0
         li $a0 0
@@ -1949,7 +2282,7 @@
         # Obtengo la direccion del atributo del self
         addiu $a0 $a0 8
         # Checkeo acceso nulo
-        li $a2 50
+        li $a2 53
         li $a3 9
         beqz $a0 runtime_null
         # Recupero de la pila el resultado de la expresion
@@ -1957,7 +2290,7 @@
         addiu $sp $sp 4
         # Guardo la expresión en la direccion del lado izquierdo
         sw $t0 0($a0)
-        # Asignacion a "j" en 51_9
+        # Asignacion a "j" en 54_9
         # Evalúo el lado derecho de la asignacion
         # Genero el literal 0
         li $a0 0
@@ -1984,7 +2317,7 @@
         # Obtengo la direccion del atributo del self
         addiu $a0 $a0 12
         # Checkeo acceso nulo
-        li $a2 51
+        li $a2 54
         li $a3 9
         beqz $a0 runtime_null
         # Recupero de la pila el resultado de la expresion
@@ -1992,7 +2325,7 @@
         addiu $sp $sp 4
         # Guardo la expresión en la direccion del lado izquierdo
         sw $t0 0($a0)
-        # Asignacion a "suma" en 52_9
+        # Asignacion a "suma" en 55_9
         # Evalúo el lado derecho de la asignacion
         # Genero el literal 0
         li $a0 0
@@ -2019,7 +2352,7 @@
         # Obtengo la direccion del atributo del self
         addiu $a0 $a0 4
         # Checkeo acceso nulo
-        li $a2 52
+        li $a2 55
         li $a3 9
         beqz $a0 runtime_null
         # Recupero de la pila el resultado de la expresion
@@ -2068,7 +2401,7 @@
 
         # Body de imprimo_numero
 
-        # --- Comienzo llamada 56_10 ---
+        # --- Comienzo llamada 59_10 ---
         # Llamada estática sobre IO
         # Guardo la vtable de IO
         la $a0, vtable_IO
@@ -2122,7 +2455,7 @@
         lw $a0 0($a0)
         jalr $a0
 
-        # --- Comienzo llamada 57_10 ---
+        # --- Comienzo llamada 60_10 ---
         # Llamada estática sobre IO
         # Guardo la vtable de IO
         la $a0, vtable_IO
@@ -2149,9 +2482,10 @@
 
         # --- Evaluo parametros de out_int ---
         # Evaluo parametro n° 1
+        # Busco el parámetro en el RA
         lw $a0 4($fp)
         # Checkeo acceso nulo
-        li $a2 57
+        li $a2 60
         li $a3 21
         beqz $a0 runtime_null
         # Guardo parametro n° 1
@@ -2162,7 +2496,7 @@
         lw $a0 4($a0)
         jalr $a0
 
-        # --- Comienzo llamada 58_10 ---
+        # --- Comienzo llamada 61_10 ---
         # Llamada estática sobre IO
         # Guardo la vtable de IO
         la $a0, vtable_IO
@@ -2251,7 +2585,7 @@
 
         # Body de imprimo_sucesion
 
-        # --- Comienzo llamada 62_10 ---
+        # --- Comienzo llamada 65_10 ---
         # Llamada estática sobre IO
         # Guardo la vtable de IO
         la $a0, vtable_IO
@@ -2278,9 +2612,10 @@
 
         # --- Evaluo parametros de out_int ---
         # Evaluo parametro n° 1
+        # Busco el parámetro en el RA
         lw $a0 4($fp)
         # Checkeo acceso nulo
-        li $a2 62
+        li $a2 65
         li $a3 21
         beqz $a0 runtime_null
         # Guardo parametro n° 1
@@ -2291,7 +2626,7 @@
         lw $a0 4($a0)
         jalr $a0
 
-        # --- Comienzo llamada 63_10 ---
+        # --- Comienzo llamada 66_10 ---
         # Llamada estática sobre IO
         # Guardo la vtable de IO
         la $a0, vtable_IO

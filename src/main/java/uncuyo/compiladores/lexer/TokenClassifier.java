@@ -152,7 +152,7 @@ public class TokenClassifier {
         return generateToken(lexeme, tokenType, lexer.getRowIndex(), initialPosition);
     }
 
-    public Token classifyKeywordOrIdentifier(){
+    public Token classifyKeywordOrIdentifier() throws LexicalException {
 
         StringBuilder buffer = new StringBuilder();
         int initialPosition = lexer.getColumnIndex();
@@ -160,6 +160,13 @@ public class TokenClassifier {
 
         do {
 
+            if (Alphabet.hasAccent(lexer.getCurrentChar())) {
+                throw new LexicalException(
+                        lexer.getRowIndex(),
+                        lexer.getColumnIndex(),
+                        "Caracter invalido en identificador: " + lexer.getCurrentChar()
+                );
+            }
             buffer.append(lexer.getCurrentData().charAt(lexer.getColumnIndex()));
             lexer.incrementPosition();
 
@@ -261,7 +268,7 @@ public class TokenClassifier {
                     );
                 }
 
-                if (!Alphabet.isValidCharacter(c)) {
+                if (!Alphabet.isValidStringCharacter(c)) {
                     throw new LexicalException(
                             lexer.getRowIndex(),
                             lexer.getColumnIndex(),

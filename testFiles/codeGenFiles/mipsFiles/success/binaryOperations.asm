@@ -741,6 +741,7 @@
 
         # --- Evaluo parametros de out_int ---
         # Evaluo parametro n° 1
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -889,6 +890,7 @@
 
         # --- Evaluo parametros de out_int ---
         # Evaluo parametro n° 1
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -1037,6 +1039,7 @@
 
         # --- Evaluo parametros de out_int ---
         # Evaluo parametro n° 1
+        # Busco la variable en el RA
         lw $a0 -12($fp)
         # Checkeo acceso nulo
         li $a2 4
@@ -1241,6 +1244,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria + en 44_19
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -1249,6 +1253,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -1423,6 +1428,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria + en 48_19
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -1431,6 +1437,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -12($fp)
         # Checkeo acceso nulo
         li $a2 4
@@ -1659,6 +1666,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria - en 58_19
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -1667,6 +1675,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -1841,6 +1850,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria - en 62_19
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -1849,6 +1859,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -2077,6 +2088,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria * en 72_19
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -2085,6 +2097,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -2259,6 +2272,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria * en 76_19
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -2267,6 +2281,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -12($fp)
         # Checkeo acceso nulo
         li $a2 4
@@ -2495,6 +2510,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria / en 86_19
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -2503,6 +2519,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -2679,6 +2696,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria / en 90_19
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -2687,6 +2705,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -12($fp)
         # Checkeo acceso nulo
         li $a2 4
@@ -2863,6 +2882,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria / en 94_19
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -2871,6 +2891,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -12($fp)
         # Checkeo acceso nulo
         li $a2 4
@@ -3101,6 +3122,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria == en 104_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -3109,6 +3131,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -3283,6 +3306,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria == en 108_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -3291,6 +3315,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -3519,6 +3544,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria != en 118_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -3527,6 +3553,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -3701,6 +3728,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria != en 122_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -3709,6 +3737,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -3937,6 +3966,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria < en 132_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -3945,6 +3975,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -4119,6 +4150,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria < en 136_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -4127,6 +4159,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -4355,6 +4388,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria <= en 146_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -4363,6 +4397,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -4537,6 +4572,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria <= en 150_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -4545,6 +4581,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -4719,6 +4756,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria <= en 154_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -4727,6 +4765,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -4955,6 +4994,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria > en 164_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -4963,6 +5003,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -5137,6 +5178,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria > en 168_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -5145,6 +5187,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -5373,6 +5416,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria >= en 178_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -5381,6 +5425,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -5555,6 +5600,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria >= en 182_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -5563,6 +5609,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -5737,6 +5784,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria >= en 186_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -5745,6 +5793,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -5973,6 +6022,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria && en 196_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -16($fp)
         # Checkeo acceso nulo
         li $a2 5
@@ -5981,6 +6031,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -16($fp)
         # Checkeo acceso nulo
         li $a2 5
@@ -6155,6 +6206,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria && en 200_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -16($fp)
         # Checkeo acceso nulo
         li $a2 5
@@ -6163,6 +6215,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -20($fp)
         # Checkeo acceso nulo
         li $a2 6
@@ -6337,6 +6390,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria && en 204_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -20($fp)
         # Checkeo acceso nulo
         li $a2 6
@@ -6345,6 +6399,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -16($fp)
         # Checkeo acceso nulo
         li $a2 5
@@ -6519,6 +6574,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria && en 208_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -20($fp)
         # Checkeo acceso nulo
         li $a2 6
@@ -6527,6 +6583,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -20($fp)
         # Checkeo acceso nulo
         li $a2 6
@@ -6755,6 +6812,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria || en 218_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -16($fp)
         # Checkeo acceso nulo
         li $a2 5
@@ -6763,6 +6821,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -16($fp)
         # Checkeo acceso nulo
         li $a2 5
@@ -6937,6 +6996,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria || en 222_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -16($fp)
         # Checkeo acceso nulo
         li $a2 5
@@ -6945,6 +7005,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -20($fp)
         # Checkeo acceso nulo
         li $a2 6
@@ -7119,6 +7180,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria || en 226_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -20($fp)
         # Checkeo acceso nulo
         li $a2 6
@@ -7127,6 +7189,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -16($fp)
         # Checkeo acceso nulo
         li $a2 5
@@ -7301,6 +7364,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria || en 230_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -20($fp)
         # Checkeo acceso nulo
         li $a2 6
@@ -7309,6 +7373,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -20($fp)
         # Checkeo acceso nulo
         li $a2 6
@@ -7537,6 +7602,7 @@
         # Evaluo parametro n° 1
         # Comienzo expresion binaria + en 241_19
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -7547,6 +7613,7 @@
         # Obtengo el valor del nodo derecho
         # Comienzo expresion binaria * en 241_23
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -7555,6 +7622,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -12($fp)
         # Checkeo acceso nulo
         li $a2 4
@@ -7755,6 +7823,7 @@
         # Obtengo el valor del nodo izquierdo
         # Comienzo expresion binaria + en 245_20
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -7763,6 +7832,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -7795,6 +7865,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -12($fp)
         # Checkeo acceso nulo
         li $a2 4
@@ -7971,6 +8042,7 @@
         # Obtengo el valor del nodo izquierdo
         # Comienzo expresion binaria - en 249_19
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -7979,6 +8051,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -8011,6 +8084,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -12($fp)
         # Checkeo acceso nulo
         li $a2 4
@@ -8187,6 +8261,7 @@
         # Obtengo el valor del nodo izquierdo
         # Comienzo expresion binaria / en 253_19
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -8195,6 +8270,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -8229,6 +8305,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -12($fp)
         # Checkeo acceso nulo
         li $a2 4
@@ -8459,6 +8536,7 @@
         # Obtengo el valor del nodo izquierdo
         # Comienzo expresion binaria > en 263_21
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -8467,6 +8545,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -8501,6 +8580,7 @@
         # Obtengo el valor del nodo derecho
         # Comienzo expresion binaria > en 263_32
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -8509,6 +8589,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -12($fp)
         # Checkeo acceso nulo
         li $a2 4
@@ -8709,6 +8790,7 @@
         # Obtengo el valor del nodo izquierdo
         # Comienzo expresion binaria < en 267_21
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -8717,6 +8799,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -8751,6 +8834,7 @@
         # Obtengo el valor del nodo derecho
         # Comienzo expresion binaria > en 267_32
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -8759,6 +8843,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -12($fp)
         # Checkeo acceso nulo
         li $a2 4
@@ -8959,6 +9044,7 @@
         # Obtengo el valor del nodo izquierdo
         # Comienzo expresion binaria == en 271_21
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -8967,6 +9053,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -9001,6 +9088,7 @@
         # Obtengo el valor del nodo derecho
         # Comienzo expresion binaria == en 271_33
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -9009,6 +9097,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -9209,6 +9298,7 @@
         # Obtengo el valor del nodo izquierdo
         # Comienzo expresion binaria != en 275_21
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -4($fp)
         # Checkeo acceso nulo
         li $a2 2
@@ -9217,6 +9307,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -9251,6 +9342,7 @@
         # Obtengo el valor del nodo derecho
         # Comienzo expresion binaria != en 275_33
         # Obtengo el valor del nodo izquierdo
+        # Busco la variable en el RA
         lw $a0 -8($fp)
         # Checkeo acceso nulo
         li $a2 3
@@ -9259,6 +9351,7 @@
         sw $a0 0($sp)
         addiu $sp $sp -4
         # Obtengo el valor del nodo derecho
+        # Busco la variable en el RA
         lw $a0 -12($fp)
         # Checkeo acceso nulo
         li $a2 4
@@ -9953,7 +10046,7 @@
         addiu $sp $sp -4
 
         # ========================================
-        # BODY length_str
+        # BODY length_array
         # ========================================
 
         # Como la longitud en el CIR del array es solo un literal, genero un nuevo CIR para int
@@ -9999,25 +10092,311 @@
         jr $ra
 
     has_next_array:
+        # ========================================
+        # PROLOGUE has_next_array
+        # ========================================
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp $sp
+
+        # Guardo la direccion de retorno de la llamada
+        sw $ra 0($fp)
+
+        # $sp apunta al siguiente word libre del frame
+        addiu $sp $sp -4
+
+
+        # ========================================
+        # BODY has_next_array
+        # ========================================
+
+        # Cargo el objeto iterator guardado en self
+        lw $a0 12($fp)
+
+        # Cargo el indice actual
+        lw $t0 4($a0)
+
+        # Cargo el array
+        lw $t1 0($a0)
+
+        # Cargo la longitud del array
+        lw $t1 4($t1)
+
+        # Incremento en uno el valor del indice actual para ver si entra en el rango de la longitud
+        addiu $t0 $t0 1
+
+        # Comparo el indice con la longitud -> indice < longitud ? 1 : 0
+        slt $t0 $t0 $t1
+
+        # Genero un CIR booleano
+        li $a0 8
+        li $v0 9
+        syscall
+
+        # Guardo el valor en el CIR
+        sw $t0 4($v0)
+
+        # Guardo el CIR booleano en el return
+        sw $v0 4($fp)
+
+        # ========================================
+        # EPILOGUE has_next_array
+        # ========================================
+
+        # Recupero la direccion de retorno
+        lw $ra 0($fp)
+
+        # 12($fp) -> Self
+        # 8($fp) -> $fp llamador
+        #  4($fp) -> return
+        #  0($fp) -> $ra
+
+        # Recupero el return
+        lw $a0 4($fp)
+
+        # Restauro $sp al primer word libre del caller
+        addiu $sp, $fp, 12
+
+        # Restauro el frame pointer del caller
+        lw $fp, 8($fp)
+
+        # Vuelvo a la instruccion siguiente al jalr
         jr $ra
 
     next_int_array:
-        jr $ra
+        li $t2 0
+        j next_array
+        nop
 
     next_str_array:
-        jr $ra
+        la $t2, vtable_str
+        j next_array
+        nop
 
     next_bool_array:
+        li $t2 0
+        j next_array
+        nop
+
+    next_array:
+
+        # ========================================
+        # PROLOGUE next_array
+        # ========================================
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp, $sp
+
+        # Guardo la direccion de retorno de la llamada
+        sw $ra, 0($fp)
+
+        # $sp apunta al siguiente word libre del frame
+        addiu $sp, $sp, -4
+
+
+        # ========================================
+        # BODY next_array
+        # ========================================
+
+        # Cargo el objeto iterator guardado en self
+        lw $a0, 12($fp)
+
+        # Cargo el indice actual
+        lw $t0, 4($a0)
+
+        # Incremento en uno el valor del indice actual
+        addiu $t0, $t0, 1
+
+        # Guardo el nuevo indice en el iterator
+        sw $t0, 4($a0)
+
+        # Multiplico por 4 el indice para acceder al elemento correspondiente
+        sll $t0, $t0, 2
+
+        # Cargo el array
+        lw $t1, 0($a0)
+
+        # Avanzo hasta la posicion del primer elemento del array
+        addiu $t1, $t1, 8
+
+        # Avanzo a la posicion correspondiente
+        addu $t1, $t1, $t0
+
+        # Cargo la direccion del CIR del elemento
+        lw $t1, 0($t1)
+
+        # Reservo 8 bytes para el nuevo CIR
+        li $a0, 8
+        li $v0, 9
+        syscall
+
+        # Guardo la vtable en caso de string, en otro caso es 0
+        sw $t2, 0($v0)
+
+        # Obtengo el valor del elemento actual
+        lw $t0, 4($t1)
+
+        # Guardo el valor en el nuevo CIR
+        sw $t0, 4($v0)
+
+        # Guardo el CIR en el return
+        sw $v0, 4($fp)
+
+
+        # ========================================
+        # EPILOGUE
+        # ========================================
+
+        # Recupero la direccion de retorno
+        lw $ra, 0($fp)
+
+        # Registro de activacion:
+        #
+        # 12($fp) -> Self
+        #  8($fp) -> $fp llamador
+        #  4($fp) -> return
+        #  0($fp) -> $ra
+
+        # Recupero el return
+        lw $a0, 4($fp)
+
+        # Restauro $sp al primer word libre del caller
+        addiu $sp, $fp, 12
+
+        # Restauro el frame pointer del caller
+        lw $fp, 8($fp)
+
+        # Vuelvo a la instruccion siguiente al jalr
         jr $ra
+        nop
 
     out_array_int:
-        jr $ra
+        li $t0 1
+        li $t4 0
+        j out_array
+
 
     out_array_str:
-        jr $ra
+        li $t0 4
+        li $t4 0
+        j out_array
 
     out_array_bool:
+        li $t0 4
+        li $t4 1
+
+    out_array:
+        # ========================================
+        # PROLOGUE out_array
+        # ========================================
+
+        # Fijo $fp en la posicion donde se guardara el $ra
+        move $fp $sp
+
+        # Guardo la direccion de retorno de la llamada
+        sw $ra 0($fp)
+
+        # $sp apunta al siguiente word libre del frame
+        addiu $sp $sp -4
+
+        # ========================================
+        # BODY out_array
+        # ========================================
+
+        # $t0 contiene el syscall correspondiente para imprimir int, str o bool
+        # $t4 indica si es bool o no
+
+        # Cargo el Param
+        lw $t1 4($fp)
+
+        # Cargo la longitud del array
+        lw $t2 4($t1)
+
+        # Inicio un contador en 0
+        li $t3 0
+
+        # Avanzo al primer elemento del array
+        addiu $t1 $t1 8
+
+        # Imprimo '['
+        li $a0 91
+        li $v0 11
+        syscall
+
+        loop_out_array:
+        # Imprimo el elemento actual
+        lw $a0 0($t1)
+        lw $a0 4($a0)
+
+        bnez $t4 cargar_bool
+        fin_cargar_bool:
+
+        move $v0 $t0
+        syscall
+
+        # Aumento contadores y posiciones
+        addiu $t1 $t1 4
+        addiu $t3 $t3 1
+
+        # Si la longitud es igual al contador, termino el loop
+        beq $t2 $t3 fin_loop_out_array
+
+        # Imprimo ','
+        li $a0 44
+        li $v0 11
+        syscall
+
+        # Imprimo ' '
+        li $a0 32
+        syscall
+
+        j loop_out_array
+
+        fin_loop_out_array:
+        # Imprimo ']'
+        li $a0 93
+        li $v0 11
+        syscall
+
+        # Imprimo '\n'
+        li $a0 10
+        syscall
+
+        # ========================================
+        # EPILOGUE out_array
+        # ========================================
+
+        # Recupero la direccion de retorno
+        lw $ra 0($fp)
+
+        #
+        # 16($fp) -> Self
+        # 12($fp) -> $fp llamador
+        #  8($fp) -> return
+        #  4($fp) -> Param1
+        #  0($fp) -> $ra
+
+        # Restauro $sp al primer word libre del caller
+        addiu $sp $fp 16
+
+        # Restauro el frame pointer del caller
+        lw $fp 12($fp)
+
+        # Vuelvo a la instruccion siguiente al jalr
         jr $ra
+
+    cargar_bool:
+        # $a0 contiene el valor del Bool (0 o 1)
+        beqz $a0 cargar_false
+
+        # Si es true (1)
+        la $a0 true_str
+        j fin_cargar_bool
+
+    cargar_false:
+        # Si es false (0)
+        la $a0 false_str
+        j fin_cargar_bool
 
     in_str:
         # ========================================
@@ -10089,10 +10468,10 @@
         lw $a0 4($fp)
 
         # Restauro $sp al primer word libre del caller
-        addiu $sp, $fp, 16
+        addiu $sp, $fp, 12
 
         # Restauro el frame pointer del caller
-        lw $fp, 12($fp)
+        lw $fp, 8($fp)
 
         # Vuelvo a la instruccion siguiente al jalr
         jr $ra

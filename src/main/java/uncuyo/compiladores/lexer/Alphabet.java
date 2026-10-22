@@ -37,4 +37,23 @@ public class Alphabet {
         return alphabet.contains(c);
     }
 
+    /**
+     * Método estático que verifica si un caracter dentro de un literal string pertenece al alfabeto
+     * @param c caracter a analizar
+     * @return true si el caracter pertenece al alfabeto o contiene las vocales con tilde, false en caso contrario
+     */
+    public static boolean isValidStringCharacter(char c) {
+        return isValidCharacter(c)
+                || hasAccent(c);
+    }
+
+    /**
+     * Método estático que verifica si un caracter tiene tilde
+     * @param c caracter a analizar
+     * @return true si el caracter contiene tilde
+     */
+    public static boolean hasAccent(char c) {
+        return "áéíóúÁÉÍÓÚ".indexOf(c) >= 0;
+    }
+
 }
