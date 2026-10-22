@@ -531,79 +531,101 @@ has_next_array:
     jr $ra
 
 next_int_array:
+    li $t2 0
+    j next_array
+    nop
+
+next_str_array:
+    la $t2, vtable_str
+    j next_array
+    nop
+
+next_bool_array:
+    li $t2 0
+    j next_array
+    nop
+
+next_array:
+
     # ========================================
-    # PROLOGUE next_int_array
+    # PROLOGUE next_array
     # ========================================
 
     # Fijo $fp en la posicion donde se guardara el $ra
-    move $fp $sp
+    move $fp, $sp
 
     # Guardo la direccion de retorno de la llamada
-    sw $ra 0($fp)
+    sw $ra, 0($fp)
 
     # $sp apunta al siguiente word libre del frame
-    addiu $sp $sp -4
+    addiu $sp, $sp, -4
 
 
     # ========================================
-    # BODY next_int_array
+    # BODY next_array
     # ========================================
 
     # Cargo el objeto iterator guardado en self
-    lw $a0 12($fp)
+    lw $a0, 12($fp)
 
     # Cargo el indice actual
-    lw $t0 4($a0)
+    lw $t0, 4($a0)
 
     # Incremento en uno el valor del indice actual
-    addiu $t0 $t0 1
+    addiu $t0, $t0, 1
 
     # Guardo el nuevo indice en el iterator
-    sw $t0 4($a0)
+    sw $t0, 4($a0)
 
     # Multiplico por 4 el indice para acceder al elemento correspondiente
     sll $t0, $t0, 2
 
     # Cargo el array
-    lw $t1 0($a0)
+    lw $t1, 0($a0)
 
     # Avanzo hasta la posicion del primer elemento del array
-    addiu $t1 $t1 8
+    addiu $t1, $t1, 8
 
     # Avanzo a la posicion correspondiente
-    add $t1 $t1 $t0
+    addu $t1, $t1, $t0
 
-    # Cargo la direccion que contiene ese elemento
-    lw $t1 0($t1)
+    # Cargo la direccion del CIR del elemento
+    lw $t1, 0($t1)
 
-    # Genero un CIR entero
-    li $a0 8
-    li $v0 9
+    # Reservo 8 bytes para el nuevo CIR
+    li $a0, 8
+    li $v0, 9
     syscall
 
+    # Guardo la vtable en caso de string, en otro caso es 0
+    sw $t2, 0($v0)
+
     # Obtengo el valor del elemento actual
-    lw $t0 4($t1)
+    lw $t0, 4($t1)
 
     # Guardo el valor en el nuevo CIR
-    sw $t0 4($v0)
+    sw $t0, 4($v0)
 
-    # Guardo el CIR entero en el return
-    sw $v0 4($fp)
+    # Guardo el CIR en el return
+    sw $v0, 4($fp)
+
 
     # ========================================
-    # EPILOGUE next_int_array
+    # EPILOGUE
     # ========================================
 
     # Recupero la direccion de retorno
-    lw $ra 0($fp)
+    lw $ra, 0($fp)
 
+    # Registro de activacion:
+    #
     # 12($fp) -> Self
-    # 8($fp) -> $fp llamador
+    #  8($fp) -> $fp llamador
     #  4($fp) -> return
     #  0($fp) -> $ra
 
     # Recupero el return
-    lw $a0 4($fp)
+    lw $a0, 4($fp)
 
     # Restauro $sp al primer word libre del caller
     addiu $sp, $fp, 12
@@ -613,12 +635,7 @@ next_int_array:
 
     # Vuelvo a la instruccion siguiente al jalr
     jr $ra
-
-next_str_array:
-    jr $ra
-
-next_bool_array:
-    jr $ra
+    nop
 
 out_array_int:
     li $t0 1
