@@ -35,6 +35,7 @@ public class Type {
     }
 
     public static boolean areCompatible(Type t1, Type t2) {
+        boolean isLeftSideArray = t1.getTokenType() == TokenType.ARRAY_CLASS;
         TokenType a = t1 != null ?
                 (t1.getTokenType() != TokenType.ARRAY_CLASS ? t1.getTokenType() : ((ArrayType) t1).getSubType().getTokenType())
                 : null;
@@ -50,7 +51,9 @@ public class Type {
                 || (a == TokenType.BOOL_CLASS && b == TokenType.BOOLEAN_CONSTANT)
                 || (a == TokenType.BOOLEAN_CONSTANT && b == TokenType.BOOL_CLASS)
                 || (a == TokenType.KW_VOID && b == null)
-                || (a == null && b == TokenType.KW_VOID);
+                || (a == null && b == TokenType.KW_VOID)
+                || (a == TokenType.IDENTIFIER_CLASS && b == TokenType.KW_NIL)
+                || (isLeftSideArray && b == TokenType.KW_NIL);
     }
 
     public String getTypeName() {
