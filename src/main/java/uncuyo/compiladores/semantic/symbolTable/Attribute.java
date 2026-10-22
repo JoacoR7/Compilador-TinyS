@@ -21,6 +21,15 @@ public class Attribute implements JsonSerializable {
         this.isPrivate = isPrivate;
     }
 
+    public Attribute(Attribute other) {
+        this.type = other.type;
+        this.position = other.position;
+        this.token = other.token;
+        this.isPrivate = other.isPrivate;
+        this.isInherited = other.isInherited;
+        this.className = other.className;
+    }
+
     public Type getType() {
         return type;
     }

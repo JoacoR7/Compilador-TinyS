@@ -17,11 +17,24 @@ public class Method implements JsonSerializable {
     private boolean isStatic;
     private String className;
     private int position;
+    private boolean isOverride = false;
 
     public Method(Token token, Type type, boolean isStatic) {
         this.token = token;
         this.type = type;
         this.isStatic = isStatic;
+    }
+
+    public Method(Method other) {
+        this.token = other.token;
+        this.parameters = new LinkedHashMap<>(other.parameters);
+        this.variables = new LinkedHashMap<>(other.variables);
+        this.blocks = new LinkedList<>(other.blocks);
+        this.type = other.type;
+        this.isStatic = other.isStatic;
+        this.className = other.className;
+        this.position = other.position;
+        this.isOverride = other.isOverride;
     }
 
     public Token getToken() {
@@ -82,6 +95,14 @@ public class Method implements JsonSerializable {
 
     public String getName() {
         return token.getLexeme();
+    }
+
+    public boolean isOverride() {
+        return isOverride;
+    }
+
+    public void setOverride(boolean override) {
+        isOverride = override;
     }
 
     public LinkedList<Block> getBlocks() {

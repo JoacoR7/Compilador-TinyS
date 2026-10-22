@@ -260,7 +260,13 @@ public class Class implements JsonSerializable {
             }
         }
 
-        LinkedHashMap<String, Attribute> newAttributeList = new LinkedHashMap<>(parentAttributes);
+        LinkedHashMap<String, Attribute> newAttributeList = new LinkedHashMap<>();
+        for (Attribute attribute : parentAttributes.values()) {
+            Attribute inheritedAttribute = new Attribute(attribute);
+            inheritedAttribute.setInherited(true);
+            newAttributeList.put(attribute.getName(), inheritedAttribute);
+
+        }
 
         for (Attribute attribute : currentAttributes.values()) {
             attribute.setPosition(newAttributeList.size());
@@ -303,13 +309,22 @@ public class Class implements JsonSerializable {
             }
         }
 
-        LinkedHashMap<String, Method> newMethodList = new LinkedHashMap<>(parentMethods);
+        LinkedHashMap<String, Method> newMethodList = new LinkedHashMap<>();
+
+        for (Method method : parentMethods.values()) {
+            Method inheritedMethod = new Method(method);
+            newMethodList.put(method.getName(), inheritedMethod);
+
+        }
 
         for (Method method : currentMethods.values()) {
             if (!newMethodList.containsKey(method.getName())) {
                 method.setPosition(newMethodList.size());
                 method.setClassName(this.getName());
                 newMethodList.put(method.getToken().getLexeme(), method);
+            } else {
+                newMethodList.get(method.getToken().getLexeme()).setOverride(true);
+                newMethodList.get(method.getToken().getLexeme()).setClassName(this.getName());
             }
         }
 

@@ -720,7 +720,6 @@ public class CodeGenVisitor implements Visitor<Void> {
                 } else {
                     AST.getSymbolTable().setCurrentMethod(AST.getSymbolTable().getClasses().get(className).getMethods().get(methodName));
                     AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(className));
-                    codeGenerator.emitVtableFunction(className + "_" + methodName);
                 }
 
                 codeGenerator.emitLabel(className + "_" + methodName);

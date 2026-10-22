@@ -293,6 +293,17 @@ public class CodeGenerator {
         emitBlankLine();
     }
 
+    public void generateVTable(Class currentClass) {
+
+        emitVtableDataLabel("vtable_" + currentClass.getName());
+
+        for (Method method : currentClass.getMethods().values()) {
+            emitVtableFunction(method.getClassName() + "_" + method.getName());
+
+        }
+
+    }
+
     public void generateMethodPrologue(Method method) {
 
         int variableCount = method.getVariables().size();
@@ -414,6 +425,10 @@ public class CodeGenerator {
             emitComment("Guardo la direccion del atributo " + attribute.getName());
             emitText("lw $t0 4($sp)");
             emitText("sw $v0 " + getAttributeOffset(attribute) + "($t0)");
+        }
+        if(classEntry.getAttributes().isEmpty()) {
+            emitComment("No tiene atributos, recupero el valor del CIR de " + classEntry.getName());
+            emitText("move $t0 $v0");
         }
         emitComment("Guardo la direccion de la vtable de " + classEntry.getName());
         emitText("la $a0 vtable_" + classEntry.getName());

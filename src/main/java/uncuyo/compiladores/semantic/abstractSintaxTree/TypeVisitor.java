@@ -675,7 +675,12 @@ public class TypeVisitor implements Visitor<Type> {
         Class currentClass = blockNode.getClassName() != null ? symbolTable.getClasses().get(blockNode.getClassName()) : null;
         symbolTable.setCurrentClass(currentClass);
         if (currentClass != null) {
-            symbolTable.setCurrentMethod(currentClass.getMethods().get(blockNode.getMethodName()));
+            if (blockNode.getMethodName().equals(".")) {
+                symbolTable.setCurrentMethod(currentClass.getConstructor());
+            } else {
+                symbolTable.setCurrentMethod(currentClass.getMethods().get(blockNode.getMethodName()));
+            }
+
         } else {
             if (blockNode.getMethodName().equals("start")) {
                 symbolTable.setCurrentMethod(symbolTable.getStart());
@@ -688,7 +693,7 @@ public class TypeVisitor implements Visitor<Type> {
             }
         }
         if (symbolTable.getCurrentMethod() != null) {
-            if (!symbolTable.getCurrentMethod().getType().getLexeme().equals("void")) {
+            if (!symbolTable.getCurrentMethod().getType().getLexeme().equals("void") && !symbolTable.getCurrentMethod().getName().equals(".")) {
                 if (!blockNode.isHasReturn() && blockNode.isMethod()) {
                     throw new MissingReturnException(symbolTable.getCurrentMethod());
                 }
