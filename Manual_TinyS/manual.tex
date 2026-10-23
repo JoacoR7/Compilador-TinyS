@@ -1,0 +1,37 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{lmodern}
+\geometry{margin=2.5cm}
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{1.0cm}
+{\Huge\bfseries Manual de Desarrollador\par}
+\vspace{0.5cm}
+{\LARGE\bfseries Compiladores\par}
+\vspace{0.35cm}
+{\Large 2026\par}
+\vspace{1.2cm}
+\includegraphics[height=10cm,keepaspectratio]{img/escudo_uncuyo.png}
+\vfill
+\begin{flushleft}
+\textbf{Alumno:} Joaquin Ruiz\\
+\textbf{Profesores:} Dra. Ana Carolina Olivera, Dr. Matías Rojas
+\end{flushleft}
+\end{titlepage}
+\tableofcontents
+\clearpage
+\include{capitulos/01_introduccion}
+\include{capitulos/02_desarrollo}
+\end{document}

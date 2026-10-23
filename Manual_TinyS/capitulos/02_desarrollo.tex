@@ -1,0 +1,18 @@
+\chapter{Desarrollo}
+\section{Analizador léxico}
+\subsection{Alfabeto de entrada}
+\begin{itemize}[leftmargin=*]
+  \item Letras minúsculas: abcdefghijklmnñopqrstuvwxyz
+  \item Letras mayúsculas: ABCDEFGHIJKLMNÑOPQRSTUVWXYZ
+  \item Números: 0123456789
+  \item Símbolos especiales: \verb~+-*/=<>!&|;:,.$#%@^%¿?¡!(){}[]_~
+  \item A literales str se agrega: áéíóúÁÉÍÓÚ
+\end{itemize}
+\subsection{Tokens reconocidos}
+\subsubsection{Identificador de método o variable}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth,keepaspectratio]{img/automata_identificador.png}
+  \caption{Autómata del identificador de método o variable.}
+  \label{fig:identificador}
+\end{figure}
