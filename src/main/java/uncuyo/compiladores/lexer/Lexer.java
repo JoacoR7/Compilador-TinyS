@@ -17,12 +17,19 @@ import java.util.List;
  */
 public class Lexer {
 
+    /** Ubicación del archivo a analizar. */
     private String path;
+    /** Índice de la fila actual en el archivo. */
     private int rowIndex;
+    /** Índice de la columna actual en el archivo. */
     private int columnIndex;
+    /** Clasificador de tokens. */
     private final TokenClassifier tokenClassifier;
+    /** Lector de archivos. */
     private final BufferedReader reader;
+    /** Línea actual del archivo. */
     private String currentData;
+    /** Definición de tokens. */
     private final TokenDefinitions tokenDefinitions;
 
     /**

@@ -5,15 +5,35 @@ import uncuyo.compiladores.exceptions.lexical.LexicalException;
 
 import java.util.Optional;
 
+/**
+ * Es el encargado de verificar y clasificar los tokens
+ * <p>
+ * Es un autómata finito determinista que devuelve el token
+ * con su lexema, tipo, fila y columna correspondientes
+ */
 public class TokenClassifier {
+    /** Analizador léxico. */
     private Lexer lexer;
+    /** Definiciones de tokens. */
     private TokenDefinitions tokenDefinitions;
 
+
+    /**
+     * Construye un clasificador de tokens a partir del analizador léxico
+     * y las definiciones predefinidas de tokens
+     */
     public TokenClassifier(Lexer lexer) {
         this.lexer = lexer;
         this.tokenDefinitions = new TokenDefinitions();
     }
 
+    /**
+     * Método que analiza si la posición actual es una división o el comienzo
+     * de un comentario simple o un comentario multilinea
+     * @return Token
+     * @throws LexerFileReadException ocasionado al leer el archivo
+     * @throws LexicalException ocasionado por un error léxico
+     */
     public Token isCommentOrDiv() throws LexerFileReadException, LexicalException {
 
         if (lexer.getColumnIndex() + 1 >= lexer.getCurrentData().length()){
@@ -40,6 +60,13 @@ public class TokenClassifier {
         }
     }
 
+    /**
+     * Método que procesa el comentario multilinea
+     * @param initRowIndex índice de fila donde comenzó el comentario multilinea
+     * @param initColumnIndex índice de columna donde comenzó el comentario multilinea
+     * @throws LexerFileReadException ocasionado al leer el archivo
+     * @throws LexicalException si el comentario no fue cerrado
+     */
     public void multiComment(int initRowIndex, int initColumnIndex) throws LexerFileReadException, LexicalException {
         while (true) {
 
@@ -65,10 +92,19 @@ public class TokenClassifier {
             lexer.incrementPosition();
         }
     }
+
+    /**
+     * Método que procesa el comentario simple
+     * @throws LexerFileReadException ocasionado al leer el archivo
+     */
     public void simpleComment() throws LexerFileReadException {
         lexer.loadNextLine();
     }
 
+    /**
+     * Método que clasifica el símbolo actual y determina qué operador es
+     * @throws LexicalException si el símbolo no se reconoce
+     */
     public Token classifyOperator() throws LexicalException {
 
         String operator = String.valueOf(lexer.getCurrentData().charAt(lexer.getColumnIndex()));
@@ -79,11 +115,18 @@ public class TokenClassifier {
 
             if (lexer.getColumnIndex() + 1 < lexer.getCurrentData().length()) {
                 char vistazo = lexer.getCurrentData().charAt(lexer.getColumnIndex() + 1);
+                // Checkeo si el operador continua, por ejemplo tenia < y el vistazo encuentra =
+                // Entonces el operador será <=
                 if (tokenDefinitions.getOperators().containsKey(operator + vistazo)) {
                     tokenType = tokenDefinitions.getOperators().get(operator + vistazo);
                     operator = operator + vistazo;
                     lexer.incrementPosition();
-                }else {
+                } else {
+                    /*
+                    if (tokenDefinitions.getOperators().containsKey(String.valueOf(vistazo))) {
+                        throw new LexicalException(lexer.getRowIndex(), initialPosition, "Operador " + (operator + vistazo) + " no reconocido");
+                    }
+                    */
                     tokenType = tokenDefinitions.getOperators().get(operator);
                 }
             } else {
@@ -104,6 +147,11 @@ public class TokenClassifier {
         return generateToken(operator, tokenType, lexer.getRowIndex(), initialPosition);
     }
 
+
+    /**
+     * Método que determina si la información leída es un literal entero
+     * @return token
+     */
     public Token isNumber() {
         int initialPosition = lexer.getColumnIndex();
         StringBuilder digits = new StringBuilder();
@@ -123,6 +171,10 @@ public class TokenClassifier {
         return generateToken(digits.toString(), TokenType.INT_CONSTANT, lexer.getRowIndex(), initialPosition);
     }
 
+    /**
+     * Método que determina si la información actual es un identificador de clase
+     * @return token
+     */
     public Token classifyClassIdentifier(){
 
         StringBuilder buffer = new StringBuilder();
@@ -152,6 +204,10 @@ public class TokenClassifier {
         return generateToken(lexeme, tokenType, lexer.getRowIndex(), initialPosition);
     }
 
+    /**
+     * Método que determina si la información actual es un identificador de variable o método o una palabra reservada
+     * @return token
+     */
     public Token classifyKeywordOrIdentifier() throws LexicalException {
 
         StringBuilder buffer = new StringBuilder();
@@ -187,6 +243,10 @@ public class TokenClassifier {
         return generateToken(palabra, tokenType.orElse(TokenType.IDENTIFIER_VAR_METHOD), lexer.getRowIndex(), initialPosition);
     }
 
+    /**
+     * Método que determina si la información actual es un símbolo especial
+     * @return token
+     */
     public Token classifySpecialSymbol() {
 
         String palabra = String.valueOf(lexer.getCurrentData().charAt(lexer.getColumnIndex()));
@@ -198,6 +258,10 @@ public class TokenClassifier {
         return generateToken(palabra, tokenType, lexer.getRowIndex(), initialPosition);
     }
 
+    /**
+     * Método que procesa un literal str
+     * @return token
+     */
     public Token classifyString() throws LexicalException {
 
         StringBuilder buffer = new StringBuilder();
@@ -280,7 +344,7 @@ public class TokenClassifier {
                 lexer.incrementPosition();
             }
 
-            if (buffer.length() > 1024) {
+            if (buffer.length() > 1026) {
                 throw new LexicalException(
                         lexer.getRowIndex(),
                         initialPosition + 1,
@@ -296,6 +360,14 @@ public class TokenClassifier {
         );
     }
 
+    /**
+     * Método que genera un nuevo token a partir de la información dada por los parámetros
+     * @param lexema palabra que forma el token
+     * @param tokenType tipo de token
+     * @param indexRow indice de fila
+     * @param indexColumn indice de columna
+     * @return token
+     */
     private Token generateToken(String lexema, TokenType tokenType, int indexRow, int indexColumn){
         return new Token(lexema , tokenType, indexRow, indexColumn + 1);
     }
