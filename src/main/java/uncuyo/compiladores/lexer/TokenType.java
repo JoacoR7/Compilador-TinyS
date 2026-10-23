@@ -36,7 +36,7 @@ public enum TokenType {
     IDENTIFIER_CLASS,
     /** Variable or method identifier **/
     IDENTIFIER_VAR_METHOD,
-    /**  **/
+
     /** Object class */
     OBJECT_CLASS,
     /** Primitive class: integer type */
@@ -76,7 +76,7 @@ public enum TokenType {
     /** Special symbol '[' **/
     SPECIAL_SYMBOL_LB, // LEFT BRACKET [
     /** Special symbol ']' **/
-    SPECIAL_SYMBOL_RB, // RIGHT BRACKT ]
+    SPECIAL_SYMBOL_RB, // RIGHT BRACKET ]
 
     /** Operator '=' **/
     OPERATOR_ASSIGN, // =

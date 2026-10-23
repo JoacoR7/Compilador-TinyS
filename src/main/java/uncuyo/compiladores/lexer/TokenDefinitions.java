@@ -1,17 +1,59 @@
+
 package uncuyo.compiladores.lexer;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+/**
+ * Define y administra los elementos léxicos reconocidos por el analizador
+ * léxico, incluyendo palabras reservadas, símbolos especiales, operadores,
+ * símbolos no definidos y tipos primitivos.
+ *
+ * <p>Las definiciones se almacenan en maps que relacionan cada lexema con
+ * su correspondiente tipo de token ({@link TokenType}).</p>
+ */
 public class TokenDefinitions {
+
+    /**
+     * Map que relaciona las palabras reservadas del lenguaje con sus
+     * respectivos tipos de token.
+     */
     private final Map<String, TokenType> keywords = new HashMap<>();
+
+    /**
+     * Map que relaciona los símbolos especiales de un único carácter
+     * con sus respectivos tipos de token.
+     */
     private final Map<Character, TokenType> specialSymbols = new HashMap<>();
+
+    /**
+     * Map que relaciona los operadores del lenguaje con sus
+     * respectivos tipos de token.
+     */
     private final Map<String, TokenType> operators = new HashMap<>();
+
+    /**
+     * Map que relaciona los símbolos no definidos del lenguaje con
+     * el tipo de token {@link TokenType#UNDEFINED}.
+     */
     private final Map<Character, TokenType> undefinedSimbols = new HashMap<>();
+
+    /**
+     * Map que relaciona los nombres de los tipos primitivos del lenguaje
+     * con sus respectivos tipos de token.
+     */
     private final Map<String, TokenType> primitiveTypes = new HashMap<>();
 
-
+    /**
+     * Inicializa las palabras reservadas del lenguaje y las asocia con
+     * sus respectivos tipos de token.
+     *
+     * <p>Incluye palabras como {@code class}, {@code if}, {@code else},
+     * {@code fn}, {@code ret}, {@code while}, {@code new}, {@code self},
+     * entre otras. También contempla las constantes booleanas
+     * {@code true} y {@code false}.</p>
+     */
     private void initKeywords() {
         keywords.put("class", TokenType.KW_CLASS);
         keywords.put("if", TokenType.KW_IF);
@@ -32,6 +74,13 @@ public class TokenDefinitions {
         keywords.put("void", TokenType.KW_VOID);
     }
 
+    /**
+     * Inicializa los símbolos especiales del lenguaje y los asocia con
+     * sus respectivos tipos de token.
+     *
+     * <p>Incluye llaves, paréntesis, corchetes, punto y coma, coma,
+     * punto y dos puntos.</p>
+     */
     private void initSpecialSymbols() {
         specialSymbols.put('{', TokenType.SPECIAL_SYMBOL_LCB);
         specialSymbols.put('}', TokenType.SPECIAL_SYMBOL_RCB);
@@ -45,9 +94,18 @@ public class TokenDefinitions {
         specialSymbols.put(':', TokenType.SPECIAL_SYMBOL_CL);
     }
 
+    /**
+     * Inicializa los operadores del lenguaje y los asocia con sus
+     * respectivos tipos de token.
+     *
+     * <p>Contempla operadores de asignación, aritméticos, relacionales,
+     * lógicos y de incremento y decremento. Los símbolos {@code &} y
+     * {@code |} se clasifican como no definidos cuando aparecen
+     * individualmente.</p>
+     */
     private void initOperators() {
         // Operador de asignación
-        operators.put("=", TokenType.OPERATOR_ASSIGN);   // Asignación
+        operators.put("=", TokenType.OPERATOR_ASSIGN);
         operators.put("&", TokenType.UNDEFINED);
         operators.put("|", TokenType.UNDEFINED);
 
@@ -76,7 +134,11 @@ public class TokenDefinitions {
 
     }
 
-    private void initUndefinedSymbols(){
+    /**
+     * Inicializa los símbolos considerados no definidos por el lenguaje
+     * y los asocia con el tipo de token {@link TokenType#UNDEFINED}.
+     */
+    private void initUndefinedSymbols() {
         undefinedSimbols.put('@', TokenType.UNDEFINED);
         undefinedSimbols.put('$', TokenType.UNDEFINED);
         undefinedSimbols.put('#', TokenType.UNDEFINED);
@@ -87,13 +149,24 @@ public class TokenDefinitions {
         undefinedSimbols.put('_', TokenType.UNDEFINED);
     }
 
-    private void initPrimitiveTypes(){
+    /**
+     * Inicializa los tipos primitivos del lenguaje y los asocia con
+     * sus respectivos tipos de token.
+     *
+     * <p>Los tipos contemplados son {@code Str}, {@code Bool},
+     * {@code Int} y {@code Array}.</p>
+     */
+    private void initPrimitiveTypes() {
         primitiveTypes.put("Str", TokenType.STR_CLASS);
         primitiveTypes.put("Bool", TokenType.BOOL_CLASS);
         primitiveTypes.put("Int", TokenType.INT_CLASS);
         primitiveTypes.put("Array", TokenType.ARRAY_CLASS);
     }
 
+    /**
+     * Construye una instancia de {@code TokenDefinitions} e inicializa
+     * todas las definiciones léxicas del lenguaje.
+     */
     public TokenDefinitions() {
         initKeywords();
         initSpecialSymbols();
@@ -102,24 +175,64 @@ public class TokenDefinitions {
         initPrimitiveTypes();
     }
 
+    /**
+     * Obtiene el map de palabras reservadas del lenguaje.
+     *
+     * @return map que relaciona cada palabra reservada con su tipo de token
+     */
     public Map<String, TokenType> getKeywords() {
         return keywords;
     }
 
+    /**
+     * Obtiene el map de símbolos especiales del lenguaje.
+     *
+     * @return map que relaciona cada símbolo especial con su tipo de token
+     */
     public Map<Character, TokenType> getSpecialSymbols() {
         return specialSymbols;
     }
 
+    /**
+     * Obtiene el map de operadores del lenguaje.
+     *
+     * @return map que relaciona cada operador con su tipo de token
+     */
     public Map<String, TokenType> getOperators() {
         return operators;
     }
 
-    public Map<Character, TokenType> getUndefinedSymbols(){
+    /**
+     * Obtiene el map de símbolos no definidos.
+     *
+     * @return map que relaciona cada símbolo no definido con su tipo de token
+     */
+    public Map<Character, TokenType> getUndefinedSymbols() {
         return undefinedSimbols;
     }
 
-    public Map<String, TokenType> getPrimitiveTypes() {return primitiveTypes;}
+    /**
+     * Obtiene el map de tipos primitivos del lenguaje.
+     *
+     * @return map que relaciona cada tipo primitivo con su tipo de token
+     */
+    public Map<String, TokenType> getPrimitiveTypes() {
+        return primitiveTypes;
+    }
 
+    /**
+     * Obtiene un lexema representativo asociado a un tipo de token.
+     *
+     * <p>Busca el primer lexema cuyo valor esté asociado al tipo de token
+     * recibido, recorriendo las definiciones de palabras reservadas,
+     * operadores, tipos primitivos, símbolos especiales y símbolos
+     * no definidos. Si no encuentra un lexema asociado, devuelve el
+     * nombre del tipo de token.</p>
+     *
+     * @param tokenType tipo de token cuyo lexema se desea obtener
+     * @return primer lexema encontrado para el tipo indicado o el nombre
+     *         del tipo de token si no existe una asociación
+     */
     public static String getLexeme(TokenType tokenType) {
         TokenDefinitions defs = new TokenDefinitions();
 
