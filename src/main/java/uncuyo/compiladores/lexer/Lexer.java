@@ -20,15 +20,15 @@ public class Lexer {
     private String path;
     private int rowIndex;
     private int columnIndex;
-    private TokenClassifier tokenClassifier;
-    private BufferedReader reader;
+    private final TokenClassifier tokenClassifier;
+    private final BufferedReader reader;
     private String currentData;
-    private TokenDefinitions tokenDefinitions;
+    private final TokenDefinitions tokenDefinitions;
 
     /**
      * Constructor
      * @param path Archivo de entrada
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException si el archivo no existe o no se puede encontrar
      * @author Victor Ramirez
      * @author Joaquin Ruiz
      */
@@ -111,9 +111,6 @@ public class Lexer {
                 return tokenClassifier.classifyString();
             }
 
-            // REVISAR, CREO QUE NO DEBERÍA AUMENTAR EL COLUMN INDEX, SINO DIRECTAMENTE RETORNAR NULO O ERROR
-            // YA QUE SI LLEGÓ A ESTE PUNTO SIGNIFICA QUE NO RECONOCIÓ EL CARACTER ACTUAL
-            // ESTO PASA POR EJEMPLO CON EL SÍMBOLO "@"
             columnIndex++;
         }
     }
@@ -182,35 +179,11 @@ public class Lexer {
     }
 
     /**
-     * Getter de BufferedReader
-     * @return objeto BufferedReader
-     */
-    public BufferedReader getReader() {
-        return reader;
-    }
-
-    /**
-     * Setter de BufferedReader
-     * @param reader
-     */
-    public void setReader(BufferedReader reader) {
-        this.reader = reader;
-    }
-
-    /**
      * Getter de currentData
      * @return fila actual
      */
     public String getCurrentData() {
         return currentData;
-    }
-
-    /**
-     * Setter de currentData
-     * @param currentData
-     */
-    public void setCurrentData(String currentData) {
-        this.currentData = currentData;
     }
 
     /**
@@ -230,7 +203,7 @@ public class Lexer {
 
     /**
      * Setter de robIndex
-     * @param rowIndex
+     * @param rowIndex fila actual
      */
     public void setRowIndex(int rowIndex) {
         this.rowIndex = rowIndex;
@@ -246,26 +219,10 @@ public class Lexer {
 
     /**
      * Setter de columnIndex
-     * @param columnIndex
+     * @param columnIndex columna actual
      */
     public void setColumnIndex(int columnIndex) {
         this.columnIndex = columnIndex;
-    }
-
-    /**
-     * Getter de TokenClassifier
-     * @return objeto TokenClassifier
-     */
-    public TokenClassifier getTokenClasiffier() {
-        return tokenClassifier;
-    }
-
-    /**
-     * Setter de TokenClassifier
-     * @param tokenClassifier
-     */
-    public void setTokenClasiffier(TokenClassifier tokenClassifier) {
-        this.tokenClassifier = tokenClassifier;
     }
 
     /**
@@ -278,7 +235,7 @@ public class Lexer {
 
     /**
      * Setter del path del archivo fuente
-     * @param path
+     * @param path ubicación del archivo fuente
      */
     public void setPath(String path) {
         this.path = path;
