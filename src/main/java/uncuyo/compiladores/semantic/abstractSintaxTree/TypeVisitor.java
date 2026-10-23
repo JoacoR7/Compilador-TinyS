@@ -482,7 +482,7 @@ public class TypeVisitor implements Visitor<Type> {
             if (unaryExpressionNode.getExpressionNode().getType().getTokenType() != TokenType.BOOLEAN_CONSTANT &&
                     unaryExpressionNode.getExpressionNode().getType().getTokenType() != TokenType.BOOL_CLASS) {
                 throw new TypeMismatchException(unaryExpressionNode.getUnaryOperatorToken().getRowIndex(), unaryExpressionNode.getUnaryOperatorToken().getColumnIndex(),
-                        "Bool", TokenDefinitions.getLexeme(unaryExpressionNode.getExpressionNode().getType().getTokenType()));
+                        "Bool", unaryExpressionNode.getExpressionNode().getType().getTypeName());
             }
         }
         return unaryExpressionNode.getExpressionNode().getType();
