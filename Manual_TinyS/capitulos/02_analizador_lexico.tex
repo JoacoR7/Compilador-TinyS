@@ -1,5 +1,4 @@
 \chapter{Analizador léxico}
-\newcommand{\lexcode}[1]{\texttt{\detokenize{#1}}}
 
 El analizador léxico transforma el archivo fuente en una secuencia de tokens.
 Cada token conserva su tipo, lexema y posición de inicio, de modo que las etapas
@@ -371,27 +370,40 @@ mvn -Dtest=LexerTest test
 En cada caso se espera que el análisis llegue a EOF sin excepciones.
 \begingroup
 \small
-\begin{longtable}{p{0.42\textwidth}>{\raggedright\arraybackslash}p{0.51\textwidth}}
-\textbf{Archivo} & \textbf{Propósito y resultado esperado} \\
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{5pt}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|
+>{\raggedright\arraybackslash}p{0.40\textwidth}|
+>{\raggedright\arraybackslash}p{0.28\textwidth}|
+>{\raggedright\arraybackslash}p{\dimexpr0.32\textwidth-6\tabcolsep-4\arrayrulewidth\relax}|}
+\caption{Casos válidos del analizador léxico}\label{tab:lexico-validos}\\
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\
 \hline
 \endhead
-\lexcode{adjacentTokens.s} & Reconocer identificadores, operadores y delimitadores consecutivos sin espacios. \\
-\lexcode{colon.s} & Reconocer dos puntos como \lexcode{SPECIAL_SYMBOL_CL}. \\
-\lexcode{comments.s} & Descartar ambos tipos de comentario y reconocer el entero y la cadena restantes. \\
-\lexcode{escapedSingleQuoteString.s} & Aceptar el escape de comilla simple dentro de una cadena. \\
-\lexcode{escapeStrings.s} & Aceptar los escapes de salto de línea, tabulación, comillas, barra y retorno. \\
-\lexcode{identifiers.s} & Reconocer identificadores con letras, dígitos y guion bajo. \\
-\lexcode{identifiersAndCase.s} & Distinguir mayúsculas, palabras reservadas, tipos y constantes booleanas. \\
-\lexcode{integers.s} & Reconocer cero y secuencias de varios dígitos como constantes enteras. \\
-\lexcode{keywordPrefixes.s} & Reconocer nombres que comienzan con palabras reservadas como identificadores completos. \\
-\lexcode{keywords.s} & Reconocer las palabras reservadas y los dos valores booleanos. \\
-\lexcode{operators.s} & Reconocer operadores de uno y dos caracteres. \\
-\lexcode{specialSymbols.s} & Reconocer los delimitadores y signos de puntuación incluidos en el archivo. \\
-\lexcode{stringContent.s} & Aceptar marcas de comentario como texto, vocales acentuadas, eñes y escapes dentro de cadenas. \\
-\lexcode{stringLengthLimit.s} & Aceptar una cadena de exactamente 1024 caracteres de contenido. \\
-\lexcode{strings.s} & Aceptar cadenas vacías, con espacios, símbolos, escapes y cadenas consecutivas. \\
-\lexcode{unescapedSingleQuoteString.s} & Aceptar una comilla simple sin escape dentro de una cadena. \\
-\lexcode{whitespaceAndComments.s} & Omitir separadores y comentarios con símbolos y conservar el entero final. \\
+\lexcode{adjacentTokens.s} & Reconocer lexemas consecutivos sin espacios. & Tokens correctamente separados y EOF. \\ \hline
+\lexcode{colon.s} & Reconocer el carácter de dos puntos. & \lexcode{SPECIAL_SYMBOL_CL} y EOF. \\ \hline
+\lexcode{comments.s} & Procesar comentarios simples y multilínea. & Sólo el entero, la cadena y EOF. \\ \hline
+\lexcode{escapedSingleQuoteString.s} & Validar el escape de comilla simple. & Una cadena válida y EOF. \\ \hline
+\lexcode{escapeStrings.s} & Validar escapes de salto, tabulación, comillas, barra y retorno. & Cadenas válidas y EOF. \\ \hline
+\lexcode{identifiers.s} & Reconocer nombres con letras, dígitos y guion bajo. & Identificadores de clase o variable y método, y EOF. \\ \hline
+\lexcode{identifiersAndCase.s} & Comprobar la distinción entre mayúsculas y minúsculas. & Clasificación correcta de cada lexema. \\ \hline
+\lexcode{integers.s} & Reconocer cero y secuencias de varios dígitos. & Constantes enteras y EOF. \\ \hline
+\lexcode{keywordPrefixes.s} & Reconocer nombres que comienzan con una palabra reservada. & Identificadores completos, sin dividir sus prefijos. \\ \hline
+\lexcode{keywords.s} & Reconocer palabras reservadas y valores booleanos. & Palabras reservadas y booleanos bien clasificados. \\ \hline
+\lexcode{operators.s} & Reconocer operadores de uno y dos caracteres. & Operadores correctamente agrupados y EOF. \\ \hline
+\lexcode{specialSymbols.s} & Reconocer delimitadores y signos de puntuación. & Tokens de símbolos especiales y EOF. \\ \hline
+\lexcode{stringContent.s} & Validar marcas de comentario, tildes, eñes y escapes en cadenas. & El contenido se conserva dentro de los literales. \\ \hline
+\lexcode{stringLengthLimit.s} & Comprobar el máximo permitido de longitud. & Una cadena de 1024 caracteres aceptada y EOF. \\ \hline
+\lexcode{strings.s} & Reconocer cadenas vacías, consecutivas y con distintos contenidos. & Constantes de cadena válidas y EOF. \\ \hline
+\lexcode{unescapedSingleQuoteString.s} & Validar la comilla simple sin escape. & Una cadena válida y EOF. \\ \hline
+\lexcode{whitespaceAndComments.s} & Descartar separadores y comentarios con símbolos. & Sólo el entero final y EOF. \\ \hline
 \end{longtable}
 \endgroup
 
@@ -399,20 +411,33 @@ En cada caso se espera que el análisis llegue a EOF sin excepciones.
 En cada caso se espera una \lexcode{LexicalException} por el motivo indicado.
 \begingroup
 \small
-\begin{longtable}{p{0.42\textwidth}>{\raggedright\arraybackslash}p{0.51\textwidth}}
-\textbf{Archivo} & \textbf{Propósito y resultado esperado} \\
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{5pt}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|
+>{\raggedright\arraybackslash}p{0.40\textwidth}|
+>{\raggedright\arraybackslash}p{0.28\textwidth}|
+>{\raggedright\arraybackslash}p{\dimexpr0.32\textwidth-6\tabcolsep-4\arrayrulewidth\relax}|}
+\caption{Casos inválidos del analizador léxico}\label{tab:lexico-invalidos}\\
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\
 \hline
 \endhead
-\lexcode{dollarSymbol.s} & Rechazar el símbolo de dólar fuera de cadenas y comentarios. \\
-\lexcode{error.s} & Detectar una cadena sin cerrar. \\
-\lexcode{invalidEscape.s} & Rechazar el escape no definido \texttt{\textbackslash x}. \\
-\lexcode{leadingUnderscore.s} & Rechazar un identificador que comienza con guion bajo. \\
-\lexcode{longitudStrInvalida.s} & Detectar una cadena que supera el límite de longitud. \\
-\lexcode{singleAmpersand.s} & Rechazar un ampersand aislado. \\
-\lexcode{singlePipe.s} & Rechazar una barra vertical aislada. \\
-\lexcode{unclosedMultilineComment.s} & Detectar el fin de archivo antes de cerrar un comentario multilínea. \\
-\lexcode{unclosedString.s} & Detectar el final de línea sin comilla de cierre. \\
-\lexcode{undefinedSymbol.s} & Rechazar el símbolo arroba fuera de cadenas y comentarios. \\
+\lexcode{dollarSymbol.s} & Validar el símbolo de dólar fuera de cadenas y comentarios. & Error por símbolo no reconocido. \\ \hline
+\lexcode{error.s} & Detectar la ausencia de la comilla de cierre. & Error por cadena sin cerrar. \\ \hline
+\lexcode{invalidEscape.s} & Validar la secuencia \texttt{\textbackslash x}. & Error por escape no admitido. \\ \hline
+\lexcode{leadingUnderscore.s} & Comprobar el inicio de un nombre con guion bajo. & Error por símbolo inicial no reconocido. \\ \hline
+\lexcode{longitudStrInvalida.s} & Comprobar una cadena que excede el máximo. & Error por superar los 1024 caracteres. \\ \hline
+\lexcode{singleAmpersand.s} & Validar un ampersand aislado. & Error por símbolo no reconocido. \\ \hline
+\lexcode{singlePipe.s} & Validar una barra vertical aislada. & Error por símbolo no reconocido. \\ \hline
+\lexcode{unclosedMultilineComment.s} & Detectar EOF antes de cerrar un comentario multilínea. & Error por comentario sin cerrar. \\ \hline
+\lexcode{unclosedString.s} & Detectar el fin de línea dentro de una cadena sin cerrar. & Error por cadena sin cerrar. \\ \hline
+\lexcode{undefinedSymbol.s} & Validar la arroba fuera de cadenas y comentarios. & Error por símbolo no reconocido. \\ \hline
 \end{longtable}
 \endgroup
 
