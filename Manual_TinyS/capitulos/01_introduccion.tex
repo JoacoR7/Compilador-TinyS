@@ -1,4 +1,136 @@
 \chapter{Introducción}
 En este informe se describe el proceso llevado a cabo por los integrantes para desarrollar el proyecto final de la asignatura Compiladores, el cual comprende las etapas de análisis léxico, sintáctico y semántico, así como la generación de código. Estas fases se implementaron sobre TinyS, un lenguaje académico orientado a objetos.
 
-Para la implementación del proyecto se utilizó Java SDK 21, sin emplear librerías externas. Asimismo, para la realización de las pruebas se utilizó la librería JUnit 6.
+\section{Entorno de desarrollo y pruebas}
+Todas las etapas del compilador se implementaron en Java utilizando el
+JDK 21 y la biblioteca estándar del lenguaje. Para compilar y ejecutar el
+proyecto se requiere que el JDK 21 y Maven estén disponibles en la línea
+de comandos. Maven administra las dependencias, la compilación y la
+generación de los archivos JAR.
+
+Las pruebas automatizadas de todas las etapas utilizan JUnit 6. Esta
+biblioteca se emplea exclusivamente para las pruebas y sus dependencias
+se declaran en el archivo \texttt{pom.xml}. El procedimiento común de
+compilación y ejecución se describe a continuación. Los escenarios y las
+pruebas de cada etapa se detallan en el capítulo correspondiente.
+
+\section{Compilación y ejecución}
+\label{sec:compilacion-ejecucion}
+Los comandos se ejecutan desde la raíz del proyecto, es decir, el directorio
+que contiene el archivo \texttt{pom.xml}. Maven utiliza un perfil por etapa
+para seleccionar la clase principal y el nombre del archivo JAR generado.
+
+\subsection{Compilación}
+Para compilar y empaquetar una etapa numerada se utiliza el siguiente esquema,
+reemplazando \texttt{N} por un número del 1 al 4:
+\begin{verbatim}
+mvn -PetapaN -DskipTests package
+\end{verbatim}
+El parámetro \texttt{-DskipTests} omite la ejecución de las pruebas durante
+el empaquetado. Si se desea ejecutarlas también, se retira ese parámetro.
+Los perfiles disponibles son:
+\begin{center}
+\begin{tabular}{lll}
+\textbf{Perfil} & \textbf{Clase principal} & \textbf{Archivo generado} \\
+\hline
+\texttt{etapa1} & \texttt{Etapa1} & \texttt{target/etapa1.jar} \\
+\texttt{etapa2} & \texttt{Etapa2} & \texttt{target/etapa2.jar} \\
+\texttt{etapa3} & \texttt{Etapa3} & \texttt{target/etapa3.jar} \\
+\texttt{etapa4} & \texttt{Etapa4} & \texttt{target/etapa4.jar} \\
+\texttt{tinyS} & \texttt{TinyS} & \texttt{target/tinyS.jar} \\
+\end{tabular}
+\end{center}
+Las clases principales pertenecen al paquete \texttt{uncuyo.compiladores}.
+La primera etapa realiza el análisis léxico y la segunda, el sintáctico.
+La tercera etapa construye y consolida la tabla de símbolos y realiza el
+chequeo de declaraciones. La cuarta etapa agrega la construcción del AST y
+el chequeo de sentencias, sin generar código ensamblador. El ejecutador
+\texttt{TinyS} realiza todas las etapas y genera el código MIPS.
+
+Por ejemplo, para compilar las etapas disponibles:
+\begin{verbatim}
+mvn -Petapa1 -DskipTests package
+mvn -Petapa2 -DskipTests package
+mvn -Petapa3 -DskipTests package
+mvn -Petapa4 -DskipTests package
+mvn -PtinyS -DskipTests package
+\end{verbatim}
+Cada comando genera su JAR en \texttt{target}. Para incorporar otra etapa,
+se agrega su ejecutador y un perfil en \texttt{pom.xml} con la propiedad
+\texttt{app.mainClass} y el nombre de salida \texttt{finalName}.
+
+\subsection{Ejecución}
+Una vez generado el JAR, se ejecuta con el siguiente esquema, reemplazando
+\texttt{N} por el número de la etapa y el argumento por la ruta del archivo
+fuente:
+\begin{verbatim}
+java -jar target/etapaN.jar <ARCHIVO_FUENTE>
+\end{verbatim}
+Para el compilador completo, la invocación es:
+\begin{verbatim}
+java -jar target/tinyS.jar <ARCHIVO_FUENTE>.s
+\end{verbatim}
+Por ejemplo, para analizar léxicamente uno de los casos de prueba:
+\begin{verbatim}
+java -jar target/etapa1.jar tc/etapa1/success/integers.s
+\end{verbatim}
+Los argumentos adicionales dependen del ejecutador. En la etapa léxica se
+puede indicar un archivo de salida para guardar el listado de tokens:
+\begin{verbatim}
+java -jar target/etapa1.jar tc/etapa1/success/integers.s salida.txt
+\end{verbatim}
+Sin ese argumento, el listado se muestra por pantalla; con él, se escribe
+en el archivo indicado y se reemplaza su contenido si ya existe.
+Los ejecutadores \texttt{Etapa2}, \texttt{Etapa3}, \texttt{Etapa4} y
+\texttt{TinyS} utilizan solamente el archivo fuente.
+
+\subsection{Archivos generados y separación de fases}
+Si el análisis es exitoso, las salidas se guardan en el mismo directorio
+que el archivo fuente, conservando su nombre base. Para \texttt{fuente.s}:
+\begin{center}
+\begin{tabular}{lp{0.68\textwidth}}
+\textbf{Ejecutador} & \textbf{Archivos generados} \\
+\hline
+\texttt{Etapa3} & \texttt{fuente.ts.json}. \\
+\texttt{Etapa4} & \texttt{fuente.ts.json} y \texttt{fuente.ast.json}. \\
+\texttt{TinyS} & \texttt{fuente.ts.json}, \texttt{fuente.ast.json} y \texttt{fuente.asm}. \\
+\end{tabular}
+\end{center}
+Los mensajes de éxito de los ejecutadores son:
+\begin{itemize}[leftmargin=*]
+  \item Etapa 3: \texttt{CORRECTO: SEMANTICO - DECLARACIONES}.
+  \item Etapa 4: \texttt{CORRECTO: SEMANTICO - SENTENCIAS}.
+  \item Compilador completo: \texttt{CORRECTO: GENERACION DE CODIGO}.
+\end{itemize}
+
+Las etapas 4 y final comprueban primero las declaraciones. Luego construyen
+y verifican el AST. Sólo el compilador completo ejecuta la generación de
+código. Ante el primer error léxico, sintáctico o semántico se interrumpe el
+proceso y no se escriben los archivos de salida. Los errores semánticos se
+informan con la fase correspondiente: declaraciones o sentencias.
+
+El archivo \texttt{.ast.json} contiene una lista \texttt{classes}, que
+incluye las clases del programa y las predefinidas, y una entrada
+\texttt{startMethod}. Cada clase conserva su nombre, padre, atributos,
+constructor y métodos. Cada método contiene sus parámetros, variables y
+un \texttt{body} con las sentencias en su orden original. Los nodos se
+identifican mediante \texttt{nodeType} y contienen sus expresiones e hijos.
+Los métodos predefinidos implementados por el entorno de ejecución tienen
+\texttt{body} nulo, ya que no proceden de un bloque del archivo fuente.
+La exportación se realiza mediante \texttt{AstJsonVisitor} y
+\texttt{JsonWriter}, sin bibliotecas externas.
+
+Los casos de los nuevos ejecutadores están en \texttt{tc/etapa4} y
+\texttt{tc/tinyS}. Cada directorio contiene seis casos válidos y cuatro
+inválidos, separados en \texttt{success} y \texttt{error}. Los archivos
+fuente incluyen comentarios con su propósito y resultado esperado.
+Las pruebas automatizadas se ejecutan con:
+\begin{verbatim}
+mvn -Dtest=SemanticStagesTest test
+\end{verbatim}
+
+Para preparar una entrega, se copia el JAR correspondiente desde
+\texttt{target} al directorio de entrega. Desde allí puede ejecutarse con
+\texttt{java -jar etapaN.jar} para las etapas numeradas o
+\texttt{java -jar tinyS.jar} para el compilador completo, seguido de la ruta
+del archivo fuente y de los argumentos admitidos por el ejecutador.

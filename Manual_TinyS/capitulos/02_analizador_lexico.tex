@@ -1,0 +1,418 @@
+\chapter{Analizador léxico}
+\newcommand{\lexcode}[1]{\texttt{\detokenize{#1}}}
+
+El analizador léxico transforma el archivo fuente en una secuencia de tokens.
+Cada token conserva su tipo, lexema y posición de inicio, de modo que las etapas
+posteriores puedan reconocer las construcciones del lenguaje e informar errores.
+Los espacios en blanco y los comentarios se descartan durante este proceso.
+
+% ############################################################
+% #                                                          #
+% #               ALFABETO DE ENTRADA                        #
+% #                                                          #
+% ############################################################
+
+\section{Alfabeto de entrada}
+Se denomina $\Sigma$ al conjunto de caracteres considerado para describir las
+reglas léxicas. La pertenencia al alfabeto no implica que un carácter pueda
+aparecer en cualquier contexto: por ejemplo, \verb~@~ puede aparecer dentro de
+un comentario o una cadena, pero no constituye un token válido por sí solo.
+\begin{itemize}[leftmargin=*]
+  \item Letras minúsculas: abcdefghijklmnñopqrstuvwxyz
+  \item Letras mayúsculas: ABCDEFGHIJKLMNÑOPQRSTUVWXYZ
+  \item Números: 0123456789
+  \item Símbolos: \verb~+-*/=<>!&|;:,.$#%@^¿?¡(){}[]_~
+  \item Comillas y barra invertida: \verb~"~ (delimitador de cadenas),
+        \verb~'~ (comilla simple) y \verb~\~ (inicio de una secuencia de escape).
+  \item Espacio en blanco: espacio, \verb~\n~, \verb~\r~, \verb~\t~ y \verb~\v~.
+  \item En los literales \texttt{Str} se admiten además las vocales acentuadas:
+        áéíóúÁÉÍÓÚ.
+\end{itemize}
+Las restricciones particulares de las cadenas se detallan en su definición.
+El fin de archivo (EOF) es una condición de lectura, no un carácter de $\Sigma$.
+
+% ############################################################
+% #                                                          #
+% #               TOKENS RECONOCIDOS                         #
+% #                                                          #
+% ############################################################
+
+\section{Tokens reconocidos}
+En las expresiones regulares, el punto indica concatenación, la barra vertical
+indica alternativa, el asterisco indica cero o más repeticiones y el superíndice
+$+$ indica una o más repeticiones. Los corchetes describen clases de caracteres.
+Cuando se enumera un símbolo del lenguaje, este se interpreta literalmente;
+por ejemplo, el punto de la subsección de símbolos representa el carácter
+\verb~.~. Las palabras reservadas se distinguen entre mayúsculas y minúsculas.
+
+% ============================================================
+%                IDENTIFICADOR MET_VAR
+% ============================================================
+
+\subsection{Identificador de método o variable}
+\begin{itemize}[leftmargin=*]
+  \item Expresión regular: \verb~[a-zñ] . ([a-zñ] | [A-ZÑ] | [0-9] | [_])*~
+  \item Tipo de token: \lexcode{IDENTIFIER_VAR_METHOD}.
+  \item Ejemplos: \lexcode{nombre}, \lexcode{numero_1}, \lexcode{año}.
+\end{itemize}
+Se consume el identificador completo y luego se consulta la tabla de palabras
+reservadas. Por ello, \lexcode{if} es una palabra reservada, mientras que
+\lexcode{ifElse} es un único identificador.
+
+% ============================================================
+%                IDENTIFICADOR CLASE
+% ============================================================
+
+\subsection{Identificador de clase}
+\begin{itemize}[leftmargin=*]
+  \item Expresión regular: \verb~[A-ZÑ] . ([a-zñ] | [A-ZÑ] | [0-9] | [_])*~
+  \item Tipo general: \lexcode{IDENTIFIER_CLASS}.
+  \item Ejemplos: \lexcode{Persona}, \lexcode{Clase_1}, \lexcode{Ñandu}.
+\end{itemize}
+Los nombres \lexcode{Int}, \lexcode{Str}, \lexcode{Bool} y \lexcode{Array}
+se reclasifican mediante la tabla de tipos predefinidos.
+
+% ============================================================
+%                PALABRAS RESERVADAS
+% ============================================================
+
+\subsection{Palabras reservadas}
+Salvo las constantes booleanas, cada palabra se asocia al tipo
+\lexcode{KW_} seguido de su nombre en mayúsculas; por ejemplo,
+\lexcode{class} produce \lexcode{KW_CLASS} y \lexcode{void} produce
+\lexcode{KW_VOID}. Los lexemas \lexcode{true} y \lexcode{false} producen
+\lexcode{BOOLEAN_CONSTANT}. El literal nulo \lexcode{nil} produce
+\lexcode{KW_NIL}.
+\begin{itemize}[leftmargin=*]
+  \item Expresiones regulares:
+  \subitem \verb~class: c.l.a.s.s~
+  \subitem \verb~if: i.f~
+  \subitem \verb~impl: i.m.p.l~
+  \subitem \verb~in: i.n~
+  \subitem \verb~else: e.l.s.e~
+  \subitem \verb~false: f.a.l.s.e~
+  \subitem \verb~fn: f.n~
+  \subitem \verb~for: f.o.r~
+  \subitem \verb~ret: r.e.t~
+  \subitem \verb~while: w.h.i.l.e~
+  \subitem \verb~true: t.r.u.e~
+  \subitem \verb~new: n.e.w~
+  \subitem \verb~nil: n.i.l~
+  \subitem \verb~st: s.t~
+  \subitem \verb~self: s.e.l.f~
+  \subitem \verb~pub: p.u.b~
+  \subitem \verb~void: v.o.i.d~
+\end{itemize}
+
+% ============================================================
+%                LITERALES ENTEROS
+% ============================================================
+
+\subsection{Literales enteros}
+\begin{itemize}[leftmargin=*]
+  \item Expresión regular: \verb~[0-9]+~
+  \item Tipo de token: \lexcode{INT_CONSTANT}.
+\end{itemize}
+El signo no forma parte del literal: \verb~-42~ se reconoce como el operador
+de resta seguido del entero \verb~42~. En esta etapa se conserva el lexema
+sin convertirlo a un valor numérico ni comprobar su rango.
+
+% ============================================================
+%                LITERALES STRING
+% ============================================================
+
+\subsection{Literales string}
+\shorthandoff{"}
+Sea $C$ el conjunto de caracteres ordinarios admitidos dentro de una cadena:
+letras, dígitos, símbolos del alfabeto, espacio, tabulador y vocales acentuadas,
+excluyendo la comilla doble, la barra invertida, los saltos de línea y el
+carácter nulo. Las comillas dobles y las barras invertidas internas se
+representan mediante escapes. La expresión regular es:
+\[
+\texttt{"}\cdot
+\left(C\mid
+\backslash\cdot
+(\texttt{n}\mid\texttt{t}\mid\texttt{r}\mid
+\texttt{"}\mid\texttt{'}\mid\backslash)
+\right)^*\cdot\texttt{"}
+\]
+\begin{itemize}[leftmargin=*]
+  \item Tipo de token: \lexcode{STRING_CONSTANT}.
+  \item Se admiten los escapes \verb~\n~, \verb~\t~, \verb~\r~,
+        \verb~\"~, \verb~\'~ y \verb~\\~.
+  \item La cadena puede estar vacía y debe cerrarse en la misma línea física.
+        El escape \verb~\n~ permite representar un salto de línea en su valor.
+  \item El tamaño máximo es de 1024 caracteres de contenido.
+  \item No se admite el carácter nulo ni llegar al fin de archivo sin cerrar
+        la cadena.
+\end{itemize}
+El token conserva las comillas delimitadoras y los escapes tal como aparecen
+en el archivo. Actualmente, el límite se controla sobre el lexema sin sus
+comillas, por lo que cada escape ocupa dos posiciones en el contador.
+\shorthandon{"}
+
+% ============================================================
+%                ESPACIOS EN BLANCO
+% ============================================================
+
+\subsection{Espacios en blanco}
+\begin{itemize}[leftmargin=*]
+  \item Expresión regular para una secuencia no vacía:
+        \verb~(" " | \n | \t | \r | \v)+~
+\end{itemize}
+Estos caracteres separan lexemas y no producen tokens. La implementación lee
+líneas mediante \lexcode{BufferedReader.readLine()}, que elimina sus
+terminadores, y descarta los restantes espacios con
+\lexcode{Character.isWhitespace()}.
+
+% ============================================================
+%                COMENTARIOS
+% ============================================================
+
+\subsection{Comentarios}
+Sea $U$ el conjunto de caracteres que pueden aparecer en el contenido de un
+comentario. La implementación los omite sin aplicar el filtro de
+\lexcode{Alphabet}. Definimos $L=U-\{\mathrm{LF},\mathrm{CR}\}$,
+$A=U-\{\texttt{*}\}$ y $B=U-\{\texttt{*},\texttt{/}\}$.
+\begin{itemize}[leftmargin=*]
+  \item Expresión regular para comentario simple:
+  \[
+  \texttt{//}\cdot L^*
+  \]
+  Termina al finalizar la línea o el archivo; no necesita un salto de línea
+  final para ser válido.
+  \item Expresión regular para comentario multilínea:
+  \[
+  \texttt{/*}\cdot
+  (A\mid\texttt{*}^{+}\cdot B)^*\cdot
+  \texttt{*}^{+}\cdot\texttt{/}
+  \]
+  Termina en el primer cierre \verb~*/~. No se admite anidamiento y llegar
+  al fin del archivo antes del cierre genera un error léxico.
+\end{itemize}
+Los comentarios no producen tokens. Dentro de una cadena, los caracteres
+\verb~//~ y \verb~/*~ forman parte del contenido y no inician comentarios.
+
+% ============================================================
+%                CLASES PREDEFINIDAS DE TINYS
+% ============================================================
+
+\subsection{Clases predefinidas}
+Debe distinguirse entre el nombre de una clase predefinida y su clasificación
+léxica. En la implementación, \lexcode{Int}, \lexcode{Str}, \lexcode{Bool}
+y \lexcode{Array} producen, respectivamente, \lexcode{INT_CLASS},
+\lexcode{STR_CLASS}, \lexcode{BOOL_CLASS} y \lexcode{ARRAY_CLASS}.
+Los nombres \lexcode{Object}, \lexcode{IO} e \lexcode{Iterator} producen
+\lexcode{IDENTIFIER_CLASS}; el tratamiento de las entidades predefinidas
+corresponde a las etapas posteriores.
+\begin{itemize}[leftmargin=*]
+  \item Expresiones regulares:
+  \subitem \verb~Object: O.b.j.e.c.t~
+  \subitem \verb~IO: I.O~
+  \subitem \verb~Iterator: I.t.e.r.a.t.o.r~
+  \subitem \verb~Array: A.r.r.a.y~
+  \subitem \verb~Int: I.n.t~
+  \subitem \verb~Str: S.t.r~
+  \subitem \verb~Bool: B.o.o.l~
+\end{itemize}
+
+% ============================================================
+%                OPERADORES DE TINYS
+% ============================================================
+
+\subsection{Operadores}
+\begin{itemize}[leftmargin=*]
+  \item Expresiones regulares:
+
+  \subitem \textbf{Operadores aritméticos:}
+  \subitem \verb~Suma: +~
+  \subitem \verb~Resta: -~
+  \subitem \verb~Multiplicación: *~
+  \subitem \verb~División: /~
+  \subitem \verb~Incremento: +.+~
+  \subitem \verb~Decremento: -.-~
+
+  \subitem \textbf{Operadores relacionales:}
+  \subitem \verb~Menor: <~
+  \subitem \verb~Menor o igual: <.=~
+  \subitem \verb~Mayor: >~
+  \subitem \verb~Mayor o igual: >.=~
+  \subitem \verb~Igualdad: =.=~
+  \subitem \verb~Desigualdad: !.=~
+
+  \subitem \textbf{Operadores lógicos:}
+  \subitem \verb~AND: &.&~
+  \subitem \verb~OR: |.|~
+  \subitem \verb~NOT: !~
+
+  \subitem \textbf{Operador de asignación:}
+  \subitem \verb~Asignación: =~
+\end{itemize}
+
+% ============================================================
+%                SÍMBOLOS DE TINYS
+% ============================================================
+
+\subsection{Símbolos}
+\begin{itemize}[leftmargin=*]
+  \item Expresiones regulares:
+  \subitem \verb~Paréntesis izquierdo: (~
+  \subitem \verb~Paréntesis derecho: )~
+  \subitem \verb~Llave izquierda: {~
+  \subitem \verb~Llave derecha: }~
+  \subitem \verb~Corchete izquierdo: [~
+  \subitem \verb~Corchete derecho: ]~
+  \subitem \verb~Punto y coma: ;~
+  \subitem \verb~Coma: ,~
+  \subitem \verb~Punto: .~
+  \subitem \verb~Dos puntos: :~
+\end{itemize}
+
+\subsection{Fin de archivo}
+Al terminar el archivo, se devuelve un token de tipo \lexcode{EOF} y lexema
+\lexcode{EOF}. Este token no tiene una expresión regular sobre el alfabeto:
+se genera al detectar que no quedan líneas por leer. La palabra escrita
+\lexcode{EOF} en un archivo fuente se clasifica como identificador de clase.
+El valor \lexcode{UNDEFINED} se utiliza internamente para símbolos rechazados;
+no se entrega como un token válido al analizador sintáctico.
+
+\section{Diseño e implementación}
+La implementación se divide en dos módulos: el analizador, ubicado en el
+paquete \lexcode{uncuyo.compiladores.lexer}, y el ejecutador
+\lexcode{uncuyo.compiladores.Etapa1}. El primero ofrece tokens a demanda;
+el segundo reúne la secuencia y presenta el resultado por pantalla o archivo.
+Esta separación permite reutilizar el mismo analizador en las etapas posteriores.
+
+\subsection{Clases y responsabilidades}
+\begin{description}[style=nextline]
+  \item[\lexcode{Lexer}]
+  Abre el archivo con un \lexcode{BufferedReader}, conserva la línea y posición
+  actuales, omite espacios y solicita la clasificación del siguiente lexema.
+  \lexcode{getNextToken()} devuelve un token por llamada y
+  \lexcode{getAllTokens()} reúne la secuencia hasta incluir EOF.
+  \item[\lexcode{TokenClassifier}]
+  Implementa mediante métodos y ciclos las transiciones necesarias para
+  reconocer identificadores, enteros, cadenas, operadores, símbolos y
+  comentarios. Comparte el estado de lectura del \lexcode{Lexer}.
+  \item[\lexcode{TokenDefinitions}]
+  Mantiene mapas entre lexemas y tipos de token para palabras reservadas,
+  operadores, símbolos, tipos predefinidos y símbolos no definidos.
+  \item[\lexcode{Alphabet}]
+  Agrupa caracteres y ofrece comprobaciones de pertenencia y de vocales
+  acentuadas. El reconocimiento de cadenas utiliza estas comprobaciones.
+  \item[\lexcode{Token} y \lexcode{TokenType}]
+  El primero almacena lexema, tipo, fila y columna de inicio. El segundo es
+  la enumeración de categorías que comparten las etapas del compilador.
+  \item[\lexcode{Etapa1}]
+  Interpreta los argumentos, solicita tokens hasta EOF y escribe el listado.
+  \item[Excepciones]
+  \lexcode{LexicalException} comunica errores léxicos.\par
+  \lexcode{LexerFileReadException} comunica problemas de lectura del archivo.
+\end{description}
+
+\subsection{Posiciones y representación de lexemas}
+La primera línea del archivo se enumera con uno. El índice interno de columna
+comienza en cero. Los lexemas se conservan como cadenas de caracteres, incluyendo los delimitadores y escapes de los
+literales \texttt{Str}.
+
+\section{Manejo de errores léxicos}
+La política es detener el análisis ante el primer error mediante una excepción
+de tipo \lexcode{LexicalException}. No se intenta recuperar la lectura ni producir
+tokens posteriores al error. El ejecutador reúne todos los tokens antes de emitir el
+listado de éxito, por lo que un error impide mostrar un listado parcial exitoso.
+
+\subsection{Errores detectados}
+\begin{itemize}[leftmargin=*]
+  \item Símbolos registrados como no definidos, como \verb~@~, \verb~$~,
+        \verb~#~, \verb~%~, \verb~?~, \verb~¿~, \verb~^~ y \verb~_~ al inicio
+        de un lexema; también \verb~&~ y \verb~|~ aislados.
+  \item Vocales acentuadas dentro del recorrido de identificadores que comienza
+        con una letra minúscula.
+  \item Comentario multilínea sin cierre al finalizar el archivo.
+  \item Cadena sin cerrar antes del final de su línea.
+  \item Escape incompleto o no admitido, como \verb~\x~.
+  \item Carácter nulo o carácter fuera del conjunto permitido dentro de una cadena.
+  \item Cadena que supera el límite de longitud controlado por el reconocedor.
+\end{itemize}
+Los errores de apertura y lectura son problemas de entrada y salida, y se
+distinguen de un programa con contenido léxicamente incorrecto.
+
+\section{Salida del analizador léxico}
+El procedimiento de compilación y ejecución se describe en la
+sección~\ref{sec:compilacion-ejecucion} de la introducción.
+Cada fila contiene el tipo, el lexema y la posición del token. El listado
+incluye EOF. Al imprimir, \lexcode{TokenType.toString()} muestra los nombres
+\texttt{Int}, \texttt{Str} y \texttt{Bool} para las categorías de constantes.
+El encabezado de éxito es \texttt{CORRECTO: ANALISIS LEXICO}.
+
+\section{Escenarios y casos de prueba}
+Los archivos se encuentran en la carpeta \lexcode{tc/etapa1}, dentro de
+la raíz del proyecto, y se distribuyen en dos directorios:
+\begin{itemize}[leftmargin=*]
+  \item Casos válidos: \lexcode{tc/etapa1/success}, con 17 archivos de prueba.
+  \item Casos inválidos: \lexcode{tc/etapa1/error}, con 10 archivos de prueba.
+\end{itemize}
+Los escenarios cubren familias de tokens, separadores, comentarios,
+cadenas con escapes, límites de longitud y entradas rechazadas.
+Esta organización utiliza el directorio \lexcode{tc} solicitado
+por el enunciado.
+
+\subsection{Técnica y alcance de la verificación}
+Las pruebas de esta etapa se implementan en \lexcode{LexerTest}.
+Los casos se agrupan en particiones
+de entradas aceptadas y rechazadas. En los casos válidos, \lexcode{assertDoesNotThrow} comprueba que se
+alcance el final del análisis; en los inválidos, \lexcode{assertThrows} exige
+una \lexcode{LexicalException}. Desde la raíz del proyecto, se ejecutan mediante:
+\begin{verbatim}
+mvn -Dtest=LexerTest test
+\end{verbatim}
+
+\subsection{Casos que deben aceptarse}
+En cada caso se espera que el análisis llegue a EOF sin excepciones.
+\begingroup
+\small
+\begin{longtable}{p{0.42\textwidth}>{\raggedright\arraybackslash}p{0.51\textwidth}}
+\textbf{Archivo} & \textbf{Propósito y resultado esperado} \\
+\hline
+\endhead
+\lexcode{adjacentTokens.s} & Reconocer identificadores, operadores y delimitadores consecutivos sin espacios. \\
+\lexcode{colon.s} & Reconocer dos puntos como \lexcode{SPECIAL_SYMBOL_CL}. \\
+\lexcode{comments.s} & Descartar ambos tipos de comentario y reconocer el entero y la cadena restantes. \\
+\lexcode{escapedSingleQuoteString.s} & Aceptar el escape de comilla simple dentro de una cadena. \\
+\lexcode{escapeStrings.s} & Aceptar los escapes de salto de línea, tabulación, comillas, barra y retorno. \\
+\lexcode{identifiers.s} & Reconocer identificadores con letras, dígitos y guion bajo. \\
+\lexcode{identifiersAndCase.s} & Distinguir mayúsculas, palabras reservadas, tipos y constantes booleanas. \\
+\lexcode{integers.s} & Reconocer cero y secuencias de varios dígitos como constantes enteras. \\
+\lexcode{keywordPrefixes.s} & Reconocer nombres que comienzan con palabras reservadas como identificadores completos. \\
+\lexcode{keywords.s} & Reconocer las palabras reservadas y los dos valores booleanos. \\
+\lexcode{operators.s} & Reconocer operadores de uno y dos caracteres. \\
+\lexcode{specialSymbols.s} & Reconocer los delimitadores y signos de puntuación incluidos en el archivo. \\
+\lexcode{stringContent.s} & Aceptar marcas de comentario como texto, vocales acentuadas, eñes y escapes dentro de cadenas. \\
+\lexcode{stringLengthLimit.s} & Aceptar una cadena de exactamente 1024 caracteres de contenido. \\
+\lexcode{strings.s} & Aceptar cadenas vacías, con espacios, símbolos, escapes y cadenas consecutivas. \\
+\lexcode{unescapedSingleQuoteString.s} & Aceptar una comilla simple sin escape dentro de una cadena. \\
+\lexcode{whitespaceAndComments.s} & Omitir separadores y comentarios con símbolos y conservar el entero final. \\
+\end{longtable}
+\endgroup
+
+\subsection{Casos que deben rechazarse}
+En cada caso se espera una \lexcode{LexicalException} por el motivo indicado.
+\begingroup
+\small
+\begin{longtable}{p{0.42\textwidth}>{\raggedright\arraybackslash}p{0.51\textwidth}}
+\textbf{Archivo} & \textbf{Propósito y resultado esperado} \\
+\hline
+\endhead
+\lexcode{dollarSymbol.s} & Rechazar el símbolo de dólar fuera de cadenas y comentarios. \\
+\lexcode{error.s} & Detectar una cadena sin cerrar. \\
+\lexcode{invalidEscape.s} & Rechazar el escape no definido \texttt{\textbackslash x}. \\
+\lexcode{leadingUnderscore.s} & Rechazar un identificador que comienza con guion bajo. \\
+\lexcode{longitudStrInvalida.s} & Detectar una cadena que supera el límite de longitud. \\
+\lexcode{singleAmpersand.s} & Rechazar un ampersand aislado. \\
+\lexcode{singlePipe.s} & Rechazar una barra vertical aislada. \\
+\lexcode{unclosedMultilineComment.s} & Detectar el fin de archivo antes de cerrar un comentario multilínea. \\
+\lexcode{unclosedString.s} & Detectar el final de línea sin comilla de cierre. \\
+\lexcode{undefinedSymbol.s} & Rechazar el símbolo arroba fuera de cadenas y comentarios. \\
+\end{longtable}
+\endgroup
+

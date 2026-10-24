@@ -247,4 +247,8 @@ public class Lexer {
     public void setPath(String path) {
         this.path = path;
     }
+
+    public void close() throws IOException {
+        reader.close();
+    }
 }

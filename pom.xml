@@ -36,6 +36,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <app.mainClass>uncuyo.compiladores.Etapa2</app.mainClass>
     </properties>
 
     <build>
@@ -47,12 +48,60 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>uncuyo.compiladores.Etapa2</mainClass>
+                            <mainClass>${app.mainClass}</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>etapa1</id>
+            <properties>
+                <app.mainClass>uncuyo.compiladores.Etapa1</app.mainClass>
+            </properties>
+            <build>
+                <finalName>etapa1</finalName>
+            </build>
+        </profile>
+        <profile>
+            <id>etapa2</id>
+            <properties>
+                <app.mainClass>uncuyo.compiladores.Etapa2</app.mainClass>
+            </properties>
+            <build>
+                <finalName>etapa2</finalName>
+            </build>
+        </profile>
+        <profile>
+            <id>etapa3</id>
+            <properties>
+                <app.mainClass>uncuyo.compiladores.Etapa3</app.mainClass>
+            </properties>
+            <build>
+                <finalName>etapa3</finalName>
+            </build>
+        </profile>
+        <profile>
+            <id>etapa4</id>
+            <properties>
+                <app.mainClass>uncuyo.compiladores.Etapa4</app.mainClass>
+            </properties>
+            <build>
+                <finalName>etapa4</finalName>
+            </build>
+        </profile>
+        <profile>
+            <id>tinyS</id>
+            <properties>
+                <app.mainClass>uncuyo.compiladores.TinyS</app.mainClass>
+            </properties>
+            <build>
+                <finalName>tinyS</finalName>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
