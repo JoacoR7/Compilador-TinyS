@@ -50,3 +50,5 @@ Manual_TinyS/**/*.aux
 Manual_TinyS/**/*.log
 Manual_TinyS/**/*.out
 Manual_TinyS/**/*.toc
+Manual_TinyS/manual.synctex.gz
+enunciado_proyecto.pdf
