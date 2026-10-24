@@ -23,7 +23,7 @@ public class SyntacticTest {
     *********************************************/
     @Test
     public void errorCases() throws FileNotFoundException, LexicalException {
-        fileUtils = new FileUtils("testFiles/syntacticFiles/error/");
+        fileUtils = new FileUtils("tc/etapa2/error/");
         List<String> testFiles = fileUtils.traverseFiles();
         HashMap<String, String> testsPassed = new HashMap<>();
         HashMap<String, String> testsFailed = new HashMap<>();
@@ -81,7 +81,7 @@ public class SyntacticTest {
      *********************************************/
     @Test
     public void successCases() throws FileNotFoundException, LexicalException {
-        fileUtils = new FileUtils("testFiles/syntacticFiles/success/");
+        fileUtils = new FileUtils("tc/etapa2/success/");
         List<String> testPassed = new ArrayList<>();
         HashMap<String, String> testFailed = new HashMap<>();
         List<String> testFiles = fileUtils.traverseFiles();

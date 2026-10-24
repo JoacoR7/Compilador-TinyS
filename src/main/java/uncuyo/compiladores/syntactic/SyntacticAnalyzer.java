@@ -64,6 +64,15 @@ public class SyntacticAnalyzer {
         matchTokenType(TokenType.EOF);
     }
 
+    /**
+     * Reconoce las sentencias de un bloque y devuelve la llave de cierre sin
+     * consumirla, para continuar el análisis con el mismo lector de tokens.
+     */
+    public Token parseStatements() throws LexicalException, SyntacticException {
+        sentenciaK();
+        return currentToken;
+    }
+
     /*
         ⟨Start⟩ ::= start ⟨Bloque-Método⟩
     */

@@ -1,0 +1,49 @@
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{5pt}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|
+>{\raggedright\arraybackslash}p{0.40\textwidth}|
+>{\raggedright\arraybackslash}p{0.28\textwidth}|
+>{\raggedright\arraybackslash}p{\dimexpr0.32\textwidth-6\tabcolsep-4\arrayrulewidth\relax}|}
+\caption{Casos inválidos del analizador sintáctico}\label{tab:sintactico-invalidos}\\
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\ \hline
+\endfirsthead
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\ \hline
+\endhead
+\texttt{classAfterStart\allowbreak .s} & Rechazar un acceso a miembro sobre un literal entero. & Error en el punto de 10.out\_str, antes de la clase final. \\ \hline
+\texttt{constructorOutsideImpl\allowbreak .s} & Rechazar un constructor fuera de impl. & Error ante el punto en el nivel superior. \\ \hline
+\texttt{declarationInsideBlock\allowbreak .s} & Rechazar una declaración dentro de un bloque if. & Error ante Int en el bloque de sentencias. \\ \hline
+\texttt{herenciaMultiple\allowbreak .s} & Rechazar una lista de clases base. & Error: se esperaba una llave en lugar de la coma. \\ \hline
+\texttt{inccorectInheritanceDeclaration\allowbreak .s} & Rechazar extends como notación de herencia. & Error: se esperaba una llave o dos puntos. \\ \hline
+\texttt{incorrectArrayAccess\allowbreak .s} & Rechazar paréntesis usados como índice de un arreglo. & Error ante el paréntesis de a(0). \\ \hline
+\texttt{incorrectForCondition\allowbreak .s} & Rechazar dos puntos en lugar de in en un for. & Error: se esperaba in. \\ \hline
+\texttt{incorrectInitialization\allowbreak .s} & Rechazar la declaración Int[] datos. & Error: se esperaba un identificador tras Int. \\ \hline
+\texttt{incorrectWhileCondition\allowbreak .s} & Rechazar una condición while sin paréntesis. & Error: se esperaba el paréntesis de apertura. \\ \hline
+\texttt{invalidConstructor\allowbreak .s} & Rechazar un constructor escrito con el nombre de la clase. & Error ante MiClase como miembro de impl. \\ \hline
+\texttt{invalidMethod\allowbreak .s} & Rechazar un método fuera de impl. & Error específico de método fuera de impl para m1. \\ \hline
+\texttt{lowerCaseClass\allowbreak .s} & Rechazar un nombre de clase que comienza con minúscula. & Error: se esperaba un identificador de clase. \\ \hline
+\texttt{methodWithoutBody\allowbreak .s} & Rechazar un método terminado en punto y coma. & Error: se esperaba la llave de apertura del cuerpo. \\ \hline
+\texttt{methodWithoutFn\allowbreak .s} & Rechazar un método sin la palabra fn. & Error ante Int en la lista de miembros. \\ \hline
+\texttt{multipleComparisons\allowbreak .s} & Rechazar comparaciones relacionales encadenadas. & Error ante el segundo operador menor que. \\ \hline
+\texttt{multipleInheritance\allowbreak .s} & Rechazar dos clases base separadas por coma. & Error: se esperaba una llave en lugar de la coma. \\ \hline
+\texttt{newDePrimitivo\allowbreak .s} & Rechazar new Int() como creación de un objeto. & Error: se esperaba un corchete para crear un arreglo. \\ \hline
+\texttt{noStartMethod\allowbreak .s} & Detectar un programa sin bloque start. & Error al encontrar EOF entre las definiciones. \\ \hline
+\texttt{noTypeAssignation\allowbreak .s} & Rechazar una creación de arreglo sin tipo. & Error ante el corchete posterior a new. \\ \hline
+\texttt{noTypeParameter\allowbreak .s} & Rechazar un parámetro formal sin tipo. & Error ante a en la lista de parámetros. \\ \hline
+\texttt{pubMethod\allowbreak .s} & Rechazar pub como modificador de un método. & Error ante pub en la lista de miembros. \\ \hline
+\texttt{redefinirPrimitivo\allowbreak .s} & Rechazar un tipo primitivo como nombre de clase. & Error: Int no es un identificador de clase. \\ \hline
+\texttt{selfAsVariableName\allowbreak .s} & Rechazar self como nombre de un atributo. & Error: se esperaba un identificador de variable. \\ \hline
+\texttt{trailingTokensAfterStart\allowbreak .s} & Rechazar definiciones posteriores al bloque principal. & Error: se esperaba EOF y se encontró class. \\ \hline
+\texttt{unclosedClass\allowbreak .s} & Detectar una clase sin llave de cierre. & Error ante impl dentro de la lista de atributos. \\ \hline
+\texttt{unclosedIf\allowbreak .s} & Rechazar la inicialización dentro de una declaración local. & Error en Int a = 1; antes de llegar al if incompleto. \\ \hline
+\texttt{unclosedLines\allowbreak .s} & Detectar la falta de punto y coma tras una declaración. & Error al encontrar x en lugar del punto y coma. \\ \hline
+\texttt{UpperCaseVariable\allowbreak .s} & Rechazar una variable que comienza con mayúscula. & Error: MiVar se reconoce como nombre de clase. \\ \hline
+\texttt{variableDeclarationOnSentence\allowbreak .s} & Rechazar una declaración local dentro de un if. & Error ante Int en el bloque de sentencias. \\ \hline
+\texttt{wrongMethodCall\allowbreak .s} & Rechazar una llamada usada sin paréntesis de sentencia. & Error ante el paréntesis de io.out\_str(...). \\ \hline
+\end{longtable}
+\endgroup

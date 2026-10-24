@@ -1,0 +1,103 @@
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{5pt}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|
+>{\raggedright\arraybackslash}p{0.43\textwidth}|
+>{\raggedright\arraybackslash}p{\dimexpr0.57\textwidth-4\tabcolsep-3\arrayrulewidth\relax}|}
+\caption{Conjuntos de primeros}
+\label{tab:primeros}\\
+\hline
+\textbf{No terminal} & \textbf{Primeros} \\ \hline
+\endfirsthead
+\hline
+\textbf{No terminal} & \textbf{Primeros} \\ \hline
+\endhead
+\texttt{program} & \(\{\) \texttt{class}, \texttt{impl}, \texttt{start} \(\}\) \\ \hline
+\texttt{Start} & \(\{\) \texttt{start} \(\}\) \\ \hline
+\texttt{Lista-Definiciones} & \(\{\) \(\lambda\), \texttt{class}, \texttt{impl} \(\}\) \\ \hline
+\texttt{class} & \(\{\) \texttt{class} \(\}\) \\ \hline
+\texttt{classF} & \(\{\) \texttt{:}, \texttt{'\{'} \(\}\) \\ \hline
+\texttt{AtributoK} & \(\{\) \(\lambda\), \texttt{Str}, \texttt{Bool}, \texttt{Int}, \texttt{idclass}, \texttt{Array}, \texttt{pub} \(\}\) \\ \hline
+\texttt{Impl} & \(\{\) \texttt{impl} \(\}\) \\ \hline
+\texttt{Herencia} & \(\{\) \texttt{:} \(\}\) \\ \hline
+\texttt{MiembroK} & \(\{\) \texttt{.}, \texttt{st}, \texttt{fn}, \(\lambda\) \(\}\) \\ \hline
+\texttt{Miembro} & \(\{\) \texttt{.}, \texttt{st}, \texttt{fn} \(\}\) \\ \hline
+\texttt{Constructor} & \(\{\) \texttt{.} \(\}\) \\ \hline
+\texttt{Atributo} & \(\{\) \texttt{Str}, \texttt{Bool}, \texttt{Int}, \texttt{idclass}, \texttt{Array}, \texttt{pub} \(\}\) \\ \hline
+\texttt{Método} & \(\{\) \texttt{st}, \texttt{fn} \(\}\) \\ \hline
+\texttt{MétodoF} & \(\{\) \texttt{idMetAt}, \texttt{void}, \texttt{Str}, \texttt{Bool}, \texttt{Int}, \texttt{idclass}, \texttt{Array} \(\}\) \\ \hline
+\texttt{Visibilidad} & \(\{\) \texttt{pub} \(\}\) \\ \hline
+\texttt{Forma-Método} & \(\{\) \texttt{st} \(\}\) \\ \hline
+\texttt{Bloque-Método} & \(\{\) \texttt{'\{'} \(\}\) \\ \hline
+\texttt{Decl-Var-LocalesK} & \(\{\) \(\lambda\), \texttt{Str}, \texttt{Bool}, \texttt{Int}, \texttt{idclass}, \texttt{Array} \(\}\) \\ \hline
+\texttt{Decl-Var-Locales} & \(\{\) \texttt{Str}, \texttt{Bool}, \texttt{Int}, \texttt{idclass}, \texttt{Array} \(\}\) \\ \hline
+\texttt{Lista-Declaración-Variables} & \(\{\) \texttt{idMetAt} \(\}\) \\ \hline
+\texttt{Lista-Declaración-VariablesF} & \(\{\) \(\lambda\), \texttt{','} \(\}\) \\ \hline
+\texttt{Argumentos-Formales} & \(\{\) \texttt{(} \(\}\) \\ \hline
+\texttt{Argumentos-FormalesF} & \(\{\) \texttt{)}, \texttt{Str}, \texttt{Bool}, \texttt{Int}, \texttt{idclass}, \texttt{Array} \(\}\) \\ \hline
+\texttt{Lista-Argumentos-Formales} & \(\{\) \texttt{Str}, \texttt{Bool}, \texttt{Int}, \texttt{idclass}, \texttt{Array} \(\}\) \\ \hline
+\texttt{Lista-Argumentos-FormalesF} & \(\{\) \(\lambda\), \texttt{','} \(\}\) \\ \hline
+\texttt{Argumento-Formal} & \(\{\) \texttt{Str}, \texttt{Bool}, \texttt{Int}, \texttt{idclass}, \texttt{Array} \(\}\) \\ \hline
+\texttt{Tipo-Método} & \(\{\) \texttt{void}, \texttt{Str}, \texttt{Bool}, \texttt{Int}, \texttt{idclass}, \texttt{Array} \(\}\) \\ \hline
+\texttt{Tipo} & \(\{\) \texttt{Str}, \texttt{Bool}, \texttt{Int}, \texttt{idclass}, \texttt{Array} \(\}\) \\ \hline
+\texttt{Tipo-Primitivo} & \(\{\) \texttt{Str}, \texttt{Bool}, \texttt{Int} \(\}\) \\ \hline
+\texttt{Tipo-Referencia} & \(\{\) \texttt{idclass} \(\}\) \\ \hline
+\texttt{Tipo-Arreglo} & \(\{\) \texttt{Array} \(\}\) \\ \hline
+\texttt{SentenciaK} & \(\{\) \texttt{;}, \texttt{while}, \texttt{for}, \texttt{if}, \texttt{ret}, \texttt{(}, \texttt{'\{'}, \texttt{id}, \texttt{self}, \(\lambda\) \(\}\) \\ \hline
+\texttt{Sentencia} & \(\{\) \texttt{;}, \texttt{while}, \texttt{for}, \texttt{if}, \texttt{ret}, \texttt{(}, \texttt{'\{'}, \texttt{id}, \texttt{self} \(\}\) \\ \hline
+\texttt{SentenciaF1} & \(\{\) \texttt{else}, \(\lambda\) \(\}\) \\ \hline
+\texttt{SentenciaF2} & \(\{\) \texttt{;}, \texttt{+}, \texttt{-}, \texttt{!}, \texttt{++}, \texttt{-{}-}, \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral}, \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{Bloque} & \(\{\) \texttt{'\{'} \(\}\) \\ \hline
+\texttt{Asignación} & \(\{\) \texttt{id}, \texttt{self} \(\}\) \\ \hline
+\texttt{AccesoVar-Simple} & \(\{\) \texttt{id} \(\}\) \\ \hline
+\texttt{AccesoVar-SimpleF} & \(\{\) \(\lambda\), \texttt{.}, \texttt{[} \(\}\) \\ \hline
+\texttt{AccesoSelf-Simple} & \(\{\) \texttt{self} \(\}\) \\ \hline
+\texttt{Encadenado-SimpleK} & \(\{\) \(\lambda\), \texttt{.} \(\}\) \\ \hline
+\texttt{Encadenado-Simple} & \(\{\) \texttt{.} \(\}\) \\ \hline
+\texttt{Sentencia-Simple} & \(\{\) \texttt{(} \(\}\) \\ \hline
+\texttt{Expresión} & \(\{\) \texttt{+}, \texttt{-}, \texttt{!}, \texttt{++}, \texttt{-{}-}, \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral}, \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{ExpOr} & \(\{\) \texttt{+}, \texttt{-}, \texttt{!}, \texttt{++}, \texttt{-{}-}, \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral}, \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{ExpOrR} & \(\{\) \texttt{||}, \(\lambda\) \(\}\) \\ \hline
+\texttt{ExpAnd} & \(\{\) \texttt{+}, \texttt{-}, \texttt{!}, \texttt{++}, \texttt{-{}-}, \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral}, \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{ExpAndR} & \(\{\) \texttt{\&\&}, \(\lambda\) \(\}\) \\ \hline
+\texttt{ExpIgual} & \(\{\) \texttt{+}, \texttt{-}, \texttt{!}, \texttt{++}, \texttt{-{}-}, \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral}, \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{ExpIgualR} & \(\{\) \texttt{==}, \texttt{!=}, \(\lambda\) \(\}\) \\ \hline
+\texttt{ExpCompuesta} & \(\{\) \texttt{+}, \texttt{-}, \texttt{!}, \texttt{++}, \texttt{-{}-}, \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral}, \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{ExpCompuestaF} & \(\{\) \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \(\lambda\) \(\}\) \\ \hline
+\texttt{ExpAd} & \(\{\) \texttt{+}, \texttt{-}, \texttt{!}, \texttt{++}, \texttt{-{}-}, \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral}, \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{ExpAdR} & \(\{\) \texttt{+}, \texttt{-}, \(\lambda\) \(\}\) \\ \hline
+\texttt{ExpMul} & \(\{\) \texttt{+}, \texttt{-}, \texttt{!}, \texttt{++}, \texttt{-{}-}, \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral}, \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{ExpMulR} & \(\{\) \texttt{*}, \texttt{/}, \(\lambda\) \(\}\) \\ \hline
+\texttt{ExpUn} & \(\{\) \texttt{+}, \texttt{-}, \texttt{!}, \texttt{++}, \texttt{-{}-}, \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral}, \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{OpIgual} & \(\{\) \texttt{==}, \texttt{!=} \(\}\) \\ \hline
+\texttt{OpCompuesto} & \(\{\) \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=} \(\}\) \\ \hline
+\texttt{OpAd} & \(\{\) \texttt{+}, \texttt{-} \(\}\) \\ \hline
+\texttt{OpUnario} & \(\{\) \texttt{+}, \texttt{-}, \texttt{!}, \texttt{++}, \texttt{-{}-} \(\}\) \\ \hline
+\texttt{OpMul} & \(\{\) \texttt{*}, \texttt{/} \(\}\) \\ \hline
+\texttt{Operando} & \(\{\) \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral}, \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{Literal} & \(\{\) \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral} \(\}\) \\ \hline
+\texttt{Primario} & \(\{\) \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{VarOMetodo} & \(\{\) \(\lambda\), \texttt{[}, \texttt{.}, \texttt{(} \(\}\) \\ \hline
+\texttt{ExpresionParentizada} & \(\{\) \texttt{(} \(\}\) \\ \hline
+\texttt{ExpresionParentizadaF} & \(\{\) \(\lambda\), \texttt{.} \(\}\) \\ \hline
+\texttt{AccesoSelf} & \(\{\) \texttt{self} \(\}\) \\ \hline
+\texttt{AccesoSelfF} & \(\{\) \(\lambda\), \texttt{.} \(\}\) \\ \hline
+\texttt{AccesoVar} & \(\{\) \(\lambda\), \texttt{[}, \texttt{.} \(\}\) \\ \hline
+\texttt{AccesoVarF} & \(\{\) \(\lambda\), \texttt{.} \(\}\) \\ \hline
+\texttt{Llamada-Método} & \(\{\) \texttt{(} \(\}\) \\ \hline
+\texttt{Llamada-MétodoF} & \(\{\) \(\lambda\), \texttt{.} \(\}\) \\ \hline
+\texttt{Llamada-Método-Estático} & \(\{\) \texttt{idclass} \(\}\) \\ \hline
+\texttt{Llamada-Conclassor} & \(\{\) \texttt{new} \(\}\) \\ \hline
+\texttt{Llamada-ConclassorF1} & \(\{\) \texttt{idclass}, \texttt{Str}, \texttt{Bool}, \texttt{Int} \(\}\) \\ \hline
+\texttt{Llamada-ConclassorF2} & \(\{\) \(\lambda\), \texttt{.} \(\}\) \\ \hline
+\texttt{Argumentos-Actuales} & \(\{\) \texttt{(} \(\}\) \\ \hline
+\texttt{Argumentos-ActualesF} & \(\{\) \texttt{)}, \texttt{+}, \texttt{-}, \texttt{!}, \texttt{++}, \texttt{-{}-}, \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral}, \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{Lista-Expresiones} & \(\{\) \texttt{+}, \texttt{-}, \texttt{!}, \texttt{++}, \texttt{-{}-}, \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral}, \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{Lista-ExpresionesF} & \(\{\) \texttt{','}, \(\lambda\) \(\}\) \\ \hline
+\texttt{Encadenado} & \(\{\) \texttt{.} \(\}\) \\ \hline
+\texttt{EncadenadoF} & \(\{\) \texttt{(}, \(\lambda\), \texttt{[}, \texttt{.} \(\}\) \\ \hline
+\end{longtable}
+\endgroup

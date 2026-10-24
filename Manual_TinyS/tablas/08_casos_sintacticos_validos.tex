@@ -1,0 +1,48 @@
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{5pt}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|
+>{\raggedright\arraybackslash}p{0.40\textwidth}|
+>{\raggedright\arraybackslash}p{0.28\textwidth}|
+>{\raggedright\arraybackslash}p{\dimexpr0.32\textwidth-6\tabcolsep-4\arrayrulewidth\relax}|}
+\caption{Casos válidos del analizador sintáctico}\label{tab:sintactico-validos}\\
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\ \hline
+\endfirsthead
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\ \hline
+\endhead
+\texttt{array\allowbreak .s} & Reconocer arreglos, índices y un recorrido con for. & Aceptar creación, asignaciones y recorrido. \\ \hline
+\texttt{attributeAccess\allowbreak .s} & Reconocer asignaciones a atributos de un objeto. & Aceptar el acceso a.x. \\ \hline
+\texttt{chainedMethod\allowbreak .s} & Reconocer llamadas y atributos encadenados. & Aceptar a.crearB(7).val. \\ \hline
+\texttt{class\&start\allowbreak .s} & Reconocer una clase seguida del bloque principal. & Aceptar la sintaxis sin exigir impl. \\ \hline
+\texttt{classA\&B\allowbreak .s} & Reconocer varias clases, bloques impl y accesos encadenados. & Aceptar la estructura completa. \\ \hline
+\texttt{classA\allowbreak .s} & Reconocer un método que retorna otra clase. & Aceptar la sintaxis sin resolver el tipo B. \\ \hline
+\texttt{classesABC\allowbreak .s} & Reconocer varias clases y una declaración de herencia. & Aceptar las definiciones antes de start. \\ \hline
+\texttt{classPersona\&impl\allowbreak .s} & Reconocer atributos, un método y su llamada. & Aceptar el método sin tipo de retorno explícito. \\ \hline
+\texttt{classPersona\allowbreak .s} & Reconocer una clase con dos atributos Str. & Aceptar la clase y el bloque principal vacío. \\ \hline
+\texttt{ejemploManual1\allowbreak .s} & Reconocer el ejemplo de arreglos del manual. & Aceptar índices, for y llamadas a IO. \\ \hline
+\texttt{ejemploManual2\allowbreak .s} & Reconocer el ejemplo de Fibonacci del manual. & Aceptar métodos, while y condicionales anidados. \\ \hline
+\texttt{emptyStart\allowbreak .s} & Reconocer sentencias vacías dentro de start. & Aceptar los puntos y coma aislados. \\ \hline
+\texttt{herencia\allowbreak .s} & Reconocer la herencia indicada mediante dos puntos. & Aceptar la clase base y la derivada. \\ \hline
+\texttt{if\allowbreak .s} & Reconocer condicionales anidados sin else. & Aceptar las sentencias sin llaves. \\ \hline
+\texttt{ifElse\allowbreak .s} & Reconocer un condicional con alternativa. & Aceptar las ramas if y else. \\ \hline
+\texttt{ioOperations\allowbreak .s} & Reconocer una llamada estática a IO. & Aceptar la llamada como sentencia entre paréntesis. \\ \hline
+\texttt{methodLocalVariables\allowbreak .s} & Reconocer variables locales al inicio de un método. & Aceptar declaraciones, asignaciones y retorno. \\ \hline
+\texttt{methodWithParams\allowbreak .s} & Reconocer parámetros formales y argumentos actuales. & Aceptar las listas separadas por comas. \\ \hline
+\texttt{methodWithReturn\allowbreak .s} & Reconocer un método Int y su sentencia ret. & Aceptar el retorno de un literal entero. \\ \hline
+\texttt{motor\allowbreak .s} & Reconocer un atributo Array y un método void con for. & Aceptar el recorrido y el if con else. \\ \hline
+\texttt{multipleConstructors\allowbreak .s} & Reconocer dos constructores en un mismo impl. & Aceptar su sintaxis; la duplicación es semántica. \\ \hline
+\texttt{multipleImpl\allowbreak .s} & Reconocer varios bloques impl de una clase. & Aceptar los métodos distribuidos entre bloques. \\ \hline
+\texttt{nestedControlAndEmptySentences\allowbreak .s} & Combinar while, if, else y sentencias vacías. & Aceptar el anidamiento y el incremento. \\ \hline
+\texttt{operaciones\allowbreak .s} & Reconocer métodos de instancia y estáticos. & Aceptar st fn y las llamadas anidadas. \\ \hline
+\texttt{paramConstructor\allowbreak .s} & Reconocer un constructor con dos parámetros. & Aceptar las asignaciones mediante self. \\ \hline
+\texttt{retMethod\allowbreak .s} & Reconocer un método con parámetros y retorno. & Aceptar la suma en la sentencia ret. \\ \hline
+\texttt{start\allowbreak .s} & Reconocer el programa mínimo. & Alcanzar EOF después de start vacío. \\ \hline
+\texttt{unaryOperators\allowbreak .s} & Reconocer incremento y decremento prefijos. & Aceptar los operadores en asignaciones. \\ \hline
+\texttt{variables\allowbreak .s} & Reconocer declaración y asignaciones de una variable. & Aceptar asignaciones con operadores unarios. \\ \hline
+\end{longtable}
+\endgroup

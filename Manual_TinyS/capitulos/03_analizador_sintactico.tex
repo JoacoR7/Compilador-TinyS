@@ -1,0 +1,230 @@
+\chapter{Analizador sintáctico}
+\label{cap:analizador-sintactico}
+
+El analizador sintáctico verifica que la secuencia de tokens respete la
+estructura del lenguaje TinyS. La implementación se basa en un analizador
+sintáctico predictivo descendente recursivo, que utiliza los conjuntos
+de primeros y siguientes y un token de anticipación para seleccionar las 
+producciones y comprobar los símbolos esperados. En esta etapa no se realizan 
+controles de tipos ni se construye el árbol sintáctico abstracto.
+
+% BORRADOR INICIAL: completar todas las transformaciones de la gramática,
+% la gramática definitiva completa y los conjuntos FIRST y FOLLOW.
+% Los ejemplos siguientes muestran transformaciones concretas, pero no
+% constituyen todavía la documentación completa exigida para esta etapa.
+
+\lstdefinestyle{bnftinys}{
+  basicstyle=\ttfamily\small,
+  columns=fullflexible,
+  keepspaces=true,
+  breaklines=true,
+  breakatwhitespace=true,
+  breakindent=2em,
+  frame=single,
+  rulecolor=\color{gray},
+  showstringspaces=false,
+  aboveskip=0.8em,
+  belowskip=0.8em,
+  literate=
+    {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+    {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+    {ñ}{{\~n}}1 {Ñ}{{\~N}}1
+    {⟨}{{$\langle$}}1 {⟩}{{$\rangle$}}1 {λ}{{$\lambda$}}1
+}
+
+\section{Gramática BNF Extendida}
+\lstinputlisting[style=bnftinys]{gramaticas/01_ebnf_original.bnf}
+
+\section{Transformación a BNF}
+\lstinputlisting[style=bnftinys]{gramaticas/02_bnf.bnf}
+
+\section{Eliminación de ambigüedad y redundancia}
+\label{sec:eliminacion-ambiguedad}
+En esta sección se muestran las transformaciones aplicadas a la gramática para eliminar ambigüedad y redundancia,
+pero por la naturaleza de las sentencias if y else, no es posible eliminar completamente la ambigüedad.
+\lstinputlisting[style=bnftinys]{gramaticas/03_sin_ambiguedad_y_redundancia.bnf}
+
+\section{Eliminación de recursividad por izquierda}
+\lstinputlisting[style=bnftinys]{gramaticas/04_sin_recursividad_por_izquierda.bnf}
+
+\section{Factorización por izquierda}
+\lstinputlisting[style=bnftinys]{gramaticas/05_factorizacion_por_izquierda.bnf}
+
+
+\clearpage
+\section{Primeros}
+\input{tablas/06_primeros}
+
+\clearpage
+\section{Siguientes}
+\input{tablas/07_siguientes}
+
+\section{Análisis de la condición LL(1)}
+Como se mencionó en la sección~\ref{sec:eliminacion-ambiguedad},
+la gramática final no es LL(1) debido a la ambigüedad de las
+sentencias \texttt{if} y \texttt{else}.
+
+El analizador sintáctico predictivo descendente recursivo resuelve
+este conflicto mediante la siguiente regla: cuando el
+token es \texttt{else}, se lo consume y se lo
+asocia al \texttt{if} más cercano que todavía no tiene un
+\texttt{else}. Esta decisión permite analizar los condicionales
+anidados de forma determinista, aunque la gramática siga sin
+ser LL(1).
+
+\section{Diseño e implementación}
+\begin{description}[style=nextline]
+  \item[\lexcode{SyntacticAnalyzer}]
+  Conserva el lector léxico y el token actual. Cada no terminal se
+  corresponde con un método que reconoce su producción y consume tokens.
+  \item[\lexcode{Lexer} y \lexcode{Token}]
+  Proporcionan la secuencia de entrada y las posiciones necesarias para
+  informar dónde aparece un símbolo inesperado.
+  \item[\lexcode{Etapa2}]
+  Recibe el archivo fuente, construye los analizadores y ejecuta
+  \lexcode{program()}. Las instrucciones comunes de compilación y ejecución
+  se encuentran en la sección~\ref{sec:compilacion-ejecucion}.
+\end{description}
+
+El método \lexcode{matchTokenType()} compara el tipo del token actual con el
+esperado. Si coinciden, solicita el siguiente token; en caso contrario,
+lanza una excepción. Los métodos \lexcode{checkType()} y
+\lexcode{checkLexeme()} permiten seleccionar alternativas sin consumir
+anticipadamente la entrada. La comprobación final de EOF impide aceptar
+tokens adicionales después del bloque \texttt{start}.
+
+El lexema \texttt{start} se recibe como identificador de variable o método.
+El método \lexcode{start()} comprueba su texto para distinguirlo de
+otros identificadores en esa posición del programa.
+
+\section{Errores sintácticos}
+\label{sec:errores-sintacticos}
+\begingroup
+\setlength{\emergencystretch}{3em}
+El analizador interrumpe el reconocimiento al detectar el primer error.
+La ubicación informada corresponde al token actual recibido del analizador
+léxico: indica dónde se detectó la incompatibilidad con la gramática, que
+puede ser posterior al símbolo omitido. No se realiza recuperación de errores.
+
+\subsection{Excepciones utilizadas}
+Las clases pertenecen al paquete
+\path{uncuyo.compiladores.exceptions.syntactic}.
+\begin{description}[style=nextline]
+  \item[\lexcode{SyntacticException}]
+  Hereda de \lexcode{Exception}. Su constructor recibe la posición
+  (\lexcode{rowIndex}, \lexcode{columnIndex}) y la descripción
+  (\lexcode{description}) para construir el mensaje.
+  Es la excepción general utilizada cuando falta un token o
+  ninguna alternativa de una producción admite la entrada actual.
+
+  \item[\lexcode{MethodOutsideImplException}]
+  Hereda de \lexcode{SyntacticException} y recibe un \lexcode{Token}.
+  Se lanza desde \lexcode{start()} cuando el lexema actual no es
+  \texttt{start}. Su descripción es
+  \texttt{El metodo '<lexema>' debe estar contenido dentro de un impl}.
+  Por ejemplo, \lexcode{invalidMethod.s} informa este error para
+  \texttt{m1}, en la línea 5, columna 1. La comprobación se basa en
+  el lexema encontrado al entrar en \lexcode{start()}, por lo que esta
+  excepción no representa todos los errores de métodos o constructores
+  fuera de \texttt{impl}.
+\end{description}
+
+Las excepciones \lexcode{LexicalException} y
+\lexcode{LexerFileReadException} provienen de la lectura léxica y conservan
+sus propios diagnósticos. No se convierten en excepciones sintácticas.
+
+\subsection{Cómo se detecta el error}
+El método \lexcode{matchTokenType()} verifica un token concreto. Si el
+tipo actual no coincide con el esperado, lanza una
+\lexcode{SyntacticException} con el patrón
+\texttt{Se esperaba <esperado>, pero se encontro '<encontrado>'}.
+El valor esperado se obtiene mediante \lexcode{TokenDefinitions.getLexeme()}:
+si existe un lexema asociado al tipo, se muestra ese símbolo; en caso
+contrario, se muestra el nombre del tipo, como
+\lexcode{IDENTIFIER_CLASS}, \lexcode{IDENTIFIER_VAR_METHOD} o \lexcode{EOF}.
+
+Los métodos que seleccionan alternativas de una producción construyen
+descripciones con varios símbolos posibles. Por ejemplo,
+\lexcode{classF()} admite una llave de apertura o dos puntos;
+\lexcode{miembroK()} admite \texttt{st}, \texttt{fn}, un punto o una llave
+de cierre; y \lexcode{expUn()} comprueba los posibles inicios de una
+expresión. Cuando el token no pertenece a las alternativas admitidas,
+la excepción enumera los símbolos esperados y muestra el lexema encontrado.
+La redacción de esas listas es la que está escrita en cada método.
+
+Al finalizar \lexcode{program()}, se exige \lexcode{EOF}. Por eso,
+\lexcode{trailingTokensAfterStart.s} produce
+\texttt{Se esperaba EOF, pero se encontro 'class'} en la línea 2,
+columna 1. Si falta \texttt{start} y se alcanza el fin de archivo,
+\lexcode{listaDefiniciones()} informa
+\texttt{Se esperaba 'class', 'impl' o 'start', pero se encontro 'EOF'}.
+
+\subsection{Formato del mensaje}
+El método \lexcode{getMessage()} de \lexcode{SyntacticException} devuelve
+un encabezado y una fila con la ubicación y la descripción. Por ejemplo,
+el caso \lexcode{lowerCaseClass.s} genera:
+\begin{lstlisting}[style=bnftinys]
+ERROR SINTACTICO
+| NÚMERO DE LÍNEA (NÚMERO DE COLUMNA) | DESCRIPCIÓN: |
+| LÍNEA 1 (COLUMNA 7) | Se esperaba IDENTIFIER_CLASS, pero se encontro 'miClase' |
+\end{lstlisting}
+La descripción conserva la redacción de la implementación, incluidas
+las diferencias de puntuación y los nombres internos de tipos de token.
+
+En \lexcode{Etapa2}, \lexcode{printStackTrace()} muestra las excepciones
+sintácticas por la salida de error. Esta salida incluye el nombre
+completo de la clase de excepción, el mensaje anterior y la traza de
+llamadas de Java. Los errores léxicos que se capturan durante
+\lexcode{program()} se imprimen con el prefijo
+\texttt{ERROR: LEXICO}, seguido del mensaje léxico. Si el análisis
+termina correctamente, se informa:
+\begin{verbatim}
+CORRECTO: ANALISIS SINTACTICO
+\end{verbatim}
+La implementación utiliza \texttt{ERROR SINTACTICO} como encabezado.
+Para la entrega se exige \texttt{ERROR: SINTACTICO}.
+La presentación actual también incluye la traza de Java.
+
+\endgroup
+
+\clearpage
+\section{Escenarios y casos de prueba}
+\begingroup
+\setlength{\emergencystretch}{3em}
+Los archivos se encuentran en \lexcode{tc/etapa2}, dentro de la raíz del
+proyecto, y se distribuyen en dos directorios:
+\begin{itemize}[leftmargin=*]
+  \item Casos válidos: \lexcode{tc/etapa2/success}, con 29 archivos de prueba.
+  \item Casos inválidos: \lexcode{tc/etapa2/error}, con 30 archivos de prueba.
+\end{itemize}
+Los escenarios cubren la estructura del programa, clases e implementaciones,
+herencia, atributos, métodos, constructores, arreglos, expresiones y
+sentencias de control. Esta organización utiliza el directorio
+\lexcode{tc} solicitado por el enunciado y separa los casos por etapa.
+
+\subsection{Técnica y alcance de la verificación}
+La clase \lexcode{SyntacticTest} agrupa las pruebas de esta etapa.
+Los casos válidos usan \lexcode{assertDoesNotThrow} para comprobar que
+\lexcode{program()} alcance EOF.
+
+Los casos inválidos usan \lexcode{assertThrows} para exigir una
+\lexcode{SyntacticException} o una subclase, como
+\lexcode{MethodOutsideImplException}. No se comparan el texto del
+mensaje ni su ubicación.
+Desde la raíz del proyecto se ejecutan mediante:
+\begin{verbatim}
+mvn -Dtest=SyntacticTest test
+\end{verbatim}
+
+\subsection{Casos que deben aceptarse}
+En cada caso se espera alcanzar EOF sin excepciones.
+\input{tablas/08_casos_sintacticos_validos}
+
+\subsection{Casos que deben rechazarse}
+En cada caso se espera una \lexcode{SyntacticException} por el motivo
+indicado. En \lexcode{invalidMethod.s}, la excepción concreta es
+\lexcode{MethodOutsideImplException}.
+Se describe el primer error detectado en cada archivo, aunque su nombre
+sugiera otro problema posterior.
+\input{tablas/09_casos_sintacticos_invalidos}
+\endgroup

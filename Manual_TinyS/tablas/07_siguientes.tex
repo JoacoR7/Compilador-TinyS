@@ -1,0 +1,103 @@
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{5pt}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|
+>{\raggedright\arraybackslash}p{0.43\textwidth}|
+>{\raggedright\arraybackslash}p{\dimexpr0.57\textwidth-4\tabcolsep-3\arrayrulewidth\relax}|}
+\caption{Conjuntos de siguientes}
+\label{tab:siguientes}\\
+\hline
+\textbf{No terminal} & \textbf{Siguientes} \\ \hline
+\endfirsthead
+\hline
+\textbf{No terminal} & \textbf{Siguientes} \\ \hline
+\endhead
+\texttt{program} & \(\{\) \texttt{éxito} \(\}\) \\ \hline
+\texttt{Lista-Definiciones} & \(\{\) \texttt{start} \(\}\) \\ \hline
+\texttt{Start} & \(\{\) \texttt{éxito} \(\}\) \\ \hline
+\texttt{Bloque-Método} & \(\{\) \texttt{éxito}, \texttt{.}, \texttt{st}, \texttt{fn}, \texttt{'\}'} \(\}\) \\ \hline
+\texttt{class} & \(\{\) \texttt{class}, \texttt{impl}, \texttt{start} \(\}\) \\ \hline
+\texttt{Impl} & \(\{\) \texttt{class}, \texttt{impl}, \texttt{start} \(\}\) \\ \hline
+\texttt{classF} & \(\{\) \texttt{class}, \texttt{impl}, \texttt{start} \(\}\) \\ \hline
+\texttt{AtributoK} & \(\{\) \texttt{'\}'} \(\}\) \\ \hline
+\texttt{Herencia} & \(\{\) \texttt{'\{'} \(\}\) \\ \hline
+\texttt{Atributo} & \(\{\) \texttt{Str}, \texttt{Bool}, \texttt{Int}, \texttt{idclass}, \texttt{Array}, \texttt{pub}, \texttt{'\}'} \(\}\) \\ \hline
+\texttt{MiembroK} & \(\{\) \texttt{'\}'} \(\}\) \\ \hline
+\texttt{Tipo} & \(\{\) \texttt{'\{'}, \texttt{idMetAt} \(\}\) \\ \hline
+\texttt{Miembro} & \(\{\) \texttt{.}, \texttt{st}, \texttt{fn}, \texttt{'\}'} \(\}\) \\ \hline
+\texttt{Método} & \(\{\) \texttt{.}, \texttt{st}, \texttt{fn}, \texttt{'\}'} \(\}\) \\ \hline
+\texttt{Constructor} & \(\{\) \texttt{.}, \texttt{st}, \texttt{fn}, \texttt{'\}'} \(\}\) \\ \hline
+\texttt{Argumentos-Formales} & \(\{\) \texttt{'\{'} \(\}\) \\ \hline
+\texttt{Lista-Declaración-Variables} & \(\{\) \texttt{;} \(\}\) \\ \hline
+\texttt{Visibilidad} & \(\{\) \texttt{Str}, \texttt{Bool}, \texttt{Int}, \texttt{idclass}, \texttt{Array} \(\}\) \\ \hline
+\texttt{MétodoF} & \(\{\) \texttt{.}, \texttt{st}, \texttt{fn}, \texttt{'\}'} \(\}\) \\ \hline
+\texttt{Forma-Método} & \(\{\) \texttt{fn} \(\}\) \\ \hline
+\texttt{Tipo-Método} & \(\{\) \texttt{idMetAt} \(\}\) \\ \hline
+\texttt{Decl-Var-LocalesK} & \(\{\) \texttt{;}, \texttt{while}, \texttt{for}, \texttt{if}, \texttt{ret}, \texttt{(}, \texttt{'\{'}, \texttt{id}, \texttt{self}, \texttt{'\}'} \(\}\) \\ \hline
+\texttt{SentenciaK} & \(\{\) \texttt{'\}'} \(\}\) \\ \hline
+\texttt{Decl-Var-Locales} & \(\{\) \texttt{Str}, \texttt{Bool}, \texttt{Int}, \texttt{idclass}, \texttt{Array}, \texttt{;}, \texttt{while}, \texttt{for}, \texttt{if}, \texttt{ret}, \texttt{(}, \texttt{'\{'}, \texttt{id}, \texttt{self}, \texttt{'\}'} \(\}\) \\ \hline
+\texttt{Lista-Declaración-VariablesF} & \(\{\) \texttt{;} \(\}\) \\ \hline
+\texttt{Argumentos-FormalesF} & \(\{\) \texttt{'\{'} \(\}\) \\ \hline
+\texttt{Lista-Argumentos-Formales} & \(\{\) \texttt{)} \(\}\) \\ \hline
+\texttt{Argumento-Formal} & \(\{\) \texttt{','}, \texttt{)} \(\}\) \\ \hline
+\texttt{Lista-Argumentos-FormalesF} & \(\{\) \texttt{)} \(\}\) \\ \hline
+\texttt{Tipo-Primitivo} & \(\{\) \texttt{idMetAt}, \texttt{[}, \texttt{'\{'} \(\}\) \\ \hline
+\texttt{Tipo-Referencia} & \(\{\) \texttt{'\{'}, \texttt{idMetAt} \(\}\) \\ \hline
+\texttt{Tipo-Arreglo} & \(\{\) \texttt{'\{'}, \texttt{idMetAt} \(\}\) \\ \hline
+\texttt{Sentencia} & \(\{\) \texttt{;}, \texttt{while}, \texttt{for}, \texttt{if}, \texttt{ret}, \texttt{(}, \texttt{'\{'}, \texttt{id}, \texttt{self}, \texttt{'\}'}, \texttt{else} \(\}\) \\ \hline
+\texttt{Asignación} & \(\{\) \texttt{;} \(\}\) \\ \hline
+\texttt{Sentencia-Simple} & \(\{\) \texttt{;} \(\}\) \\ \hline
+\texttt{Expresión} & \(\{\) \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{Bloque} & \(\{\) \texttt{;}, \texttt{while}, \texttt{for}, \texttt{if}, \texttt{ret}, \texttt{(}, \texttt{'\{'}, \texttt{id}, \texttt{self}, \texttt{'\}'}, \texttt{else} \(\}\) \\ \hline
+\texttt{SentenciaF1} & \(\{\) \texttt{;}, \texttt{while}, \texttt{for}, \texttt{if}, \texttt{ret}, \texttt{(}, \texttt{'\{'}, \texttt{id}, \texttt{self}, \texttt{'\}'}, \texttt{else} \(\}\) \\ \hline
+\texttt{SentenciaF2} & \(\{\) \texttt{;}, \texttt{while}, \texttt{for}, \texttt{if}, \texttt{ret}, \texttt{(}, \texttt{'\{'}, \texttt{id}, \texttt{self}, \texttt{'\}'}, \texttt{else} \(\}\) \\ \hline
+\texttt{AccesoVar-Simple} & \(\{\) \texttt{=} \(\}\) \\ \hline
+\texttt{AccesoSelf-Simple} & \(\{\) \texttt{=} \(\}\) \\ \hline
+\texttt{AccesoVar-SimpleF} & \(\{\) \texttt{=} \(\}\) \\ \hline
+\texttt{Encadenado-SimpleK} & \(\{\) \texttt{=} \(\}\) \\ \hline
+\texttt{Encadenado-Simple} & \(\{\) \texttt{.}, \texttt{=} \(\}\) \\ \hline
+\texttt{ExpOr} & \(\{\) \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{ExpAnd} & \(\{\) \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{ExpOrR} & \(\{\) \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{ExpIgual} & \(\{\) \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{ExpAndR} & \(\{\) \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{ExpCompuesta} & \(\{\) \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{ExpIgualR} & \(\{\) \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{OpIgual} & \(\{\) \texttt{+}, \texttt{-}, \texttt{!}, \texttt{++}, \texttt{-{}-}, \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral}, \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{ExpAd} & \(\{\) \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{ExpCompuestaF} & \(\{\) \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{OpCompuesto} & \(\{\) \texttt{+}, \texttt{-}, \texttt{!}, \texttt{++}, \texttt{-{}-}, \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral}, \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{ExpMul} & \(\{\) \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{ExpAdR} & \(\{\) \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{OpAd} & \(\{\) \texttt{+}, \texttt{-}, \texttt{!}, \texttt{++}, \texttt{-{}-}, \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral}, \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{ExpUn} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{ExpMulR} & \(\{\) \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{OpMul} & \(\{\) \texttt{+}, \texttt{-}, \texttt{!}, \texttt{++}, \texttt{-{}-}, \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral}, \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{OpUnario} & \(\{\) \texttt{+}, \texttt{-}, \texttt{!}, \texttt{++}, \texttt{-{}-}, \texttt{nil}, \texttt{true}, \texttt{false}, \texttt{intLiteral}, \texttt{StrLiteral}, \texttt{(}, \texttt{self}, \texttt{idclass}, \texttt{new}, \texttt{id} \(\}\) \\ \hline
+\texttt{Operando} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{Literal} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{Primario} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{ExpresionParentizada} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{AccesoSelf} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{Llamada-Método-Estático} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{Llamada-Conclassor} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{VarOMetodo} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{AccesoVar} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{ExpresionParentizadaF} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{AccesoSelfF} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{AccesoVarF} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{Llamada-MétodoF} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{Llamada-Método} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{Encadenado} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{Argumentos-Actuales} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','}, \texttt{.} \(\}\) \\ \hline
+\texttt{Llamada-ConclassorF1} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{Llamada-ConclassorF2} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\texttt{Argumentos-ActualesF} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','}, \texttt{.} \(\}\) \\ \hline
+\texttt{Lista-Expresiones} & \(\{\) \texttt{)} \(\}\) \\ \hline
+\texttt{Lista-ExpresionesF} & \(\{\) \texttt{)} \(\}\) \\ \hline
+\texttt{EncadenadoF} & \(\{\) \texttt{*}, \texttt{/}, \texttt{+}, \texttt{-}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{==}, \texttt{!=}, \texttt{\&\&}, \texttt{||}, \texttt{)}, \texttt{;}, \texttt{]}, \texttt{','} \(\}\) \\ \hline
+\end{longtable}
+\endgroup

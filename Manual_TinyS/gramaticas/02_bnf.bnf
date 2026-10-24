@@ -1,0 +1,201 @@
+⟨program⟩ ::= ⟨Lista-Definiciones⟩ ⟨Start⟩
+
+⟨Start⟩ ::= start ⟨Bloque-Método⟩
+
+⟨Lista-Definiciones⟩ ::= ⟨class⟩ ⟨Lista-Definiciones⟩
+	| ⟨Impl⟩ ⟨Lista-Definiciones⟩
+	| λ
+
+⟨class⟩ ::= class idclass { ⟨AtributoK⟩ }
+	| class idclass ⟨Herencia⟩ { ⟨AtributoK⟩ }
+
+⟨AtributoK⟩ ::= ⟨Atributo⟩ ⟨AtributoK⟩
+	| λ
+
+⟨Impl ⟩ ::= impl idclass { ⟨MiembroK⟩ } 
+
+⟨Herencia⟩ ::= : ⟨Tipo⟩
+
+⟨MiembroK⟩ ::= ⟨Miembro⟩ ⟨MiembroK⟩
+	| λ
+
+⟨Miembro⟩ ::= ⟨Método⟩ 
+| ⟨Constructor⟩
+
+⟨Constructor ⟩ ::= . ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+
+⟨Atributo⟩ ::= ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
+	| ⟨Visibilidad⟩ ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
+
+⟨Método⟩ ::= fn idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+| ⟨Forma-Método⟩ fn idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+| fn ⟨Tipo-Método⟩ idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+| ⟨Forma-Método⟩ fn ⟨Tipo-Método⟩ idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+
+⟨Visibilidad ⟩ ::= pub
+
+⟨Forma-Método⟩ ::= st
+
+⟨Bloque-Método⟩ ::= { ⟨Decl-Var-LocalesK⟩ ⟨SentenciaK⟩ }
+
+⟨Decl-Var-LocalesK⟩ ::= ⟨Decl-Var-Locales⟩ ⟨Decl-Var-LocalesK⟩
+	| λ
+
+⟨Decl-Var-Locales⟩ ::= ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
+
+
+⟨Lista-Declaración-Variables⟩::= idMetAt
+| idMetAt , ⟨Lista-Declaración-Variables⟩
+
+⟨Argumentos-Formales⟩::= ( )
+	| ( ⟨Lista-Argumentos-Formales⟩ )
+
+⟨Lista-Argumentos-Formales⟩ ::= ⟨Argumento-Formal ⟩ , ⟨Lista-Argumentos-Formales⟩
+| ⟨Argumento-Formal ⟩
+
+⟨Argumento-Formal ⟩ ::= ⟨Tipo⟩ idMetAt
+
+⟨Tipo-Método⟩ ::= ⟨Tipo⟩ 
+| void
+
+⟨Tipo⟩ ::= ⟨Tipo-Primitivo⟩ 
+| ⟨Tipo-Referencia⟩
+| ⟨Tipo-Arreglo⟩
+
+⟨Tipo-Primitivo⟩ ::= Str 
+| Bool 
+|Int
+
+⟨Tipo-Referencia⟩ ::= idclass
+
+⟨Tipo-Arreglo⟩ ::= Array ⟨Tipo-Primitivo⟩
+
+⟨SentenciaK⟩ ::= ⟨Sentencia⟩ ⟨SentenciaK⟩
+	| λ
+
+⟨Sentencia⟩ ::= ;
+| ⟨Asignación⟩;
+| ⟨Sentencia-Simple⟩;
+| if (⟨Expresión⟩) ⟨Sentencia⟩
+| if (⟨Expresión⟩) ⟨Sentencia⟩ else ⟨Sentencia⟩
+| while ( ⟨Expresión⟩ ) ⟨Sentencia⟩
+| for ( ⟨Tipo-Primitivo⟩ idMetAt in idMetAt ) ⟨Sentencia⟩
+| ⟨Bloque⟩
+| ret ⟨Expresión⟩;
+| ret ;
+
+⟨Bloque⟩ ::= { ⟨SentenciaK⟩ }
+
+⟨Asignación⟩ ::= ⟨AccesoVar-Simple⟩ = ⟨Expresión⟩
+| ⟨AccesoSelf-Simple⟩ = ⟨Expresión⟩
+
+⟨AccesoVar-Simple⟩ ::= id ⟨Encadenado-SimpleK⟩
+| id [ ⟨Expresión⟩ ]
+
+⟨AccesoSelf-Simple⟩ ::= self ⟨Encadenado-SimpleK⟩
+
+⟨Encadenado-SimpleK⟩ ::= ⟨Encadenado-Simple⟩ ⟨Encadenado-SimpleK⟩
+	| λ
+
+⟨Encadenado-Simple⟩ ::= . id
+
+⟨Sentencia-Simple⟩ ::= (⟨Expresión⟩)
+
+⟨Expresión⟩ ::= ⟨ExpOr ⟩
+
+⟨ExpOr ⟩ ::= ⟨ExpOr ⟩ || ⟨ExpAnd ⟩ 
+| ⟨ExpAnd ⟩
+
+⟨ExpAnd ⟩ ::= ⟨ExpAnd ⟩ && ⟨ExpIgual ⟩ 
+| ⟨ExpIgual ⟩
+
+⟨ExpIgual ⟩ ::= ⟨ExpIgual ⟩ ⟨OpIgual ⟩ ⟨ExpCompuesta⟩ 
+| ⟨ExpCompuesta⟩
+
+⟨ExpCompuesta⟩ ::= ⟨ExpAd ⟩ ⟨OpCompuesto⟩ ⟨ExpAd ⟩ 
+| ⟨ExpAd ⟩
+
+⟨ExpAd ⟩ ::= ⟨ExpAd ⟩ ⟨OpAd ⟩ ⟨ExpMul ⟩ 
+| ⟨ExpMul ⟩
+
+⟨ExpMul ⟩ ::= ⟨ExpMul ⟩ ⟨OpMul ⟩ ⟨ExpUn⟩ 
+| ⟨ExpUn⟩
+
+⟨ExpUn⟩ ::= ⟨OpUnario⟩ ⟨ExpUn⟩ 
+| ⟨Operando⟩
+
+⟨OpIgual ⟩ ::= 	== 
+| !=
+
+⟨OpCompuesto⟩ ::= < 
+| > 
+| <= 
+| >=
+
+⟨OpAd ⟩ ::= 	+ 
+| -
+
+⟨OpUnario⟩ ::= 	+ 
+| - 
+| ! 
+| ++ 
+| -- 
+
+⟨OpMul ⟩ ::= * 
+| /
+
+⟨Operando⟩ ::= ⟨Literal ⟩ 
+| ⟨Primario⟩ 
+	| ⟨Primario⟩ ⟨Encadenado⟩
+
+
+⟨Literal ⟩ ::= nil 
+| true 
+| false 
+| intLiteral 
+| StrLiteral
+
+⟨Primario⟩ ::= ⟨ExpresionParentizada⟩
+| ⟨AccesoSelf ⟩
+| ⟨AccesoVar ⟩
+| ⟨Llamada-Método⟩
+| ⟨Llamada-Método-Estático⟩
+| ⟨Llamada-Conclassor⟩
+
+⟨ExpresionParentizada⟩ ::= ( ⟨Expresión⟩ )
+	| ( ⟨Expresión⟩ ) ⟨Encadenado⟩
+
+⟨AccesoSelf ⟩ ::= self
+	| self  ⟨Encadenado⟩
+
+⟨AccesoVar ⟩ ::= id
+| id ⟨Encadenado⟩
+| id [ ⟨Expresión⟩ ]
+| id [ ⟨Expresión⟩ ] ⟨Encadenado⟩
+
+⟨Llamada-Método⟩ ::= id ⟨Argumentos-Actuales⟩
+| id ⟨Argumentos-Actuales⟩ ⟨Encadenado⟩
+
+⟨Llamada-Método-Estático⟩ ::= idclass . ⟨Llamada-Método⟩
+| idclass . ⟨Llamada-Método⟩ ⟨Encadenado⟩
+
+⟨Llamada-Conclassor⟩ ::= new idclass ⟨Argumentos-Actuales⟩
+	| new idclass ⟨Argumentos-Actuales⟩ ⟨Encadenado⟩
+	| new ⟨Tipo-Primitivo⟩ [ ⟨Expresión⟩ ]
+
+⟨Argumentos-Actuales⟩ ::= ( )
+| ( ⟨Lista-Expresiones⟩ )
+
+⟨Lista-Expresiones⟩ ::= ⟨Expresión⟩ 
+| ⟨Expresión⟩ , ⟨Lista-Expresiones⟩
+
+⟨Encadenado⟩ ::= . ⟨Llamada-Método-Encadenado⟩
+| . ⟨Acceso-Variable-Encadenado⟩
+
+⟨Llamada-Método-Encadenado⟩ ::= id ⟨Argumentos-Actuales⟩
+	|  id ⟨Argumentos-Actuales⟩ ⟨Encadenado⟩
+
+⟨Acceso-Variable-Encadenado⟩ ::= id
+| id ⟨Encadenado⟩
+| id [ ⟨Expresión⟩ ]
+| id [ ⟨Expresión⟩ ] ⟨Encadenado⟩
