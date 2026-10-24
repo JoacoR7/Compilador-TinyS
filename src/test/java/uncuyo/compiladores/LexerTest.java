@@ -23,7 +23,7 @@ public class LexerTest {
 
     @Test
     public void errorCases() throws FileNotFoundException {
-        fileUtils = new FileUtils("testFiles/lexerFiles/error/");
+        fileUtils = new FileUtils("tc/error/");
         List<String> testFiles = fileUtils.traverseFiles();
         HashMap<String, String> testsPassed = new HashMap<>();
         HashMap<String, String> testsFailed = new HashMap<>();
@@ -60,7 +60,7 @@ public class LexerTest {
 
     @Test
     public void successCases() throws FileNotFoundException {
-        fileUtils = new FileUtils("testFiles/lexerFiles/success/");
+        fileUtils = new FileUtils("tc/success/");
         List<String> testsPassed = new ArrayList<>();
         HashMap<String, String> testsFailed = new HashMap<>();
         List<String> testFiles = fileUtils.traverseFiles();
