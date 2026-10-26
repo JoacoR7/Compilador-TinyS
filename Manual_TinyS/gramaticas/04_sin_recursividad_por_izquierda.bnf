@@ -133,7 +133,7 @@
 ⟨ExpUn⟩ ::= ⟨OpUnario⟩ ⟨ExpUn⟩
     | ⟨Operando⟩
 
-⟨OpIgual ⟩ ::= 	==
+⟨OpIgual ⟩ ::= ==
     | !=
 
 ⟨OpCompuesto⟩ ::= <
@@ -141,10 +141,10 @@
     | <=
     | >=
 
-⟨OpAd ⟩ ::= 	+
+⟨OpAd ⟩ ::= +
     | -
 
-⟨OpUnario⟩ ::= 	+
+⟨OpUnario⟩ ::= +
     | -
     | !
     | ++

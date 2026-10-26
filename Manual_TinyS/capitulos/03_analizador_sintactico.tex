@@ -36,6 +36,18 @@ controles de tipos ni se construye el árbol sintáctico abstracto.
 \lstinputlisting[style=bnftinys]{gramaticas/01_ebnf_original.bnf}
 
 \section{Transformación a BNF}
+En esta etapa, la estrella de Kleene se reemplaza por nuevas reglas con una K mayúscula al final del nombre del no terminal. Por ejemplo, la regla
+\begin{lstlisting}[style=bnftinys]
+<Bloque> ::= { <Sentencia>* }
+\end{lstlisting}
+se transforma en:
+\begin{lstlisting}[style=bnftinys]
+<Bloque> ::= { <SentenciaK> }
+<SentenciaK> ::= <Sentencia> <SentenciaK>
+	| λ
+\end{lstlisting}
+Y para el caso de la opcionalidad "\texttt{?}", se crean nuevas reglas para reflejar ese comportamiento, prácticamente se duplica la regla, con la única diferencia de que
+la que tenía la opcionalidad en una aparece y en otra no.
 \lstinputlisting[style=bnftinys]{gramaticas/02_bnf.bnf}
 
 \section{Eliminación de ambigüedad y redundancia}
@@ -45,13 +57,36 @@ pero por la naturaleza de las sentencias if y else, no es posible eliminar compl
 \lstinputlisting[style=bnftinys]{gramaticas/03_sin_ambiguedad_y_redundancia.bnf}
 
 \section{Eliminación de recursividad por izquierda}
+En esta etapa, para eliminar la recursividad por izquierda, se crean nuevas reglas con una R mayúscula al final del nombre del no terminal. Por ejemplo, la regla
+\begin{lstlisting}[style=bnftinys]
+  <ExpOr> ::= <ExpOr> || <ExpAnd>
+    | <ExpAnd>
+\end{lstlisting}
+se transforma en:
+\begin{lstlisting}[style=bnftinys]<ExpOr> ::= <ExpAnd> <ExpOrR>
+<ExpOr> ::= <ExpAnd> <ExpOrR>
+<ExpOrR> ::= || <ExpAnd> <ExpOrR>
+  | λ
+\end{lstlisting}
 \lstinputlisting[style=bnftinys]{gramaticas/04_sin_recursividad_por_izquierda.bnf}
 
 \section{Factorización por izquierda}
+En esta etapa, para realizar la factorización por izquierda, se crean nuevas reglas con una F mayúscula al final del nombre del no terminal. Por ejemplo, la regla
+\begin{lstlisting}[style=bnftinys]
+  <class> ::= class idclass { <AtributoK> }
+    | class idclass <Herencia> { <AtributoK> }
+\end{lstlisting}
+se transforma en:
+\begin{lstlisting}[style=bnftinys]
+  <class> ::= class idclass <classF>
+
+  <classF> ::= { <AtributoK> }
+    |<Herencia> { <AtributoK> }
+\end{lstlisting}
+Además, se constató que ⟨Visibilidad⟩ y ⟨Forma-Método⟩ son reglas de renombramiento, por lo que se reemplazaron por sus producciones. La gramática final es la siguiente:
 \lstinputlisting[style=bnftinys]{gramaticas/05_factorizacion_por_izquierda.bnf}
 
 
-\clearpage
 \section{Primeros}
 \input{tablas/06_primeros}
 

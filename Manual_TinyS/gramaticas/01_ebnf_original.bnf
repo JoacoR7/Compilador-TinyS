@@ -44,7 +44,8 @@
     | <Tipo-Arreglo>
 
 <Tipo-Primitivo> ::= Str
-    | Bool |Int
+    | Bool 
+    | Int
 
 <Tipo-Referencia> ::= idclass
 

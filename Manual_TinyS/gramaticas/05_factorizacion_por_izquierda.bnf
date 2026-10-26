@@ -27,17 +27,13 @@
 ⟨Constructor⟩ ::= . ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
 
 ⟨Atributo⟩ ::= ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
-    | ⟨Visibilidad⟩ ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
+    | pub ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
 
 ⟨Método⟩ ::= fn ⟨MétodoF⟩
-    | ⟨Forma-Método⟩ fn ⟨MétodoF⟩
+    | st fn ⟨MétodoF⟩
 
 ⟨MétodoF⟩ ::= idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
     | ⟨Tipo-Método⟩ idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
-
-⟨Visibilidad ⟩ ::= pub
-
-⟨Forma-Método⟩ ::= st
 
 ⟨Bloque-Método⟩ ::= { ⟨Decl-Var-LocalesK⟩ ⟨SentenciaK⟩ }
 
