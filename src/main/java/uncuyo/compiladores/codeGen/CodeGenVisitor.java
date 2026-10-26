@@ -588,6 +588,11 @@ public class CodeGenVisitor implements Visitor<Void> {
                 codeGenerator.emitComment("Obtengo la direccion del atributo " + attribute.getName());
 
                 codeGenerator.emitText("addiu $a0 $a0 " + attributeOffset);
+                if (simpleChainedNode.getSimpleChainedNode() != null) {
+                    AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(attribute.getType().getTypeName()));
+                    codeGenerator.emitText("lw $a0 0($a0)");
+                    simpleChainedNode.getSimpleChainedNode().accept(this);
+                }
             }
         }
 
@@ -702,6 +707,7 @@ public class CodeGenVisitor implements Visitor<Void> {
             codeGenerator.emitText("lw $a0 " + codeGenerator.getAttributeOffset(AST.getSymbolTable().getCurrentClass().getAttributes().get(currentAttribute.getToken().getLexeme())) + "($a0)");
             if (variableNode.getChainedNode() != null) {
                 codeGenerator.checkNullAccess("$a0", variableNode.getToken().getRowIndex(), variableNode.getToken().getColumnIndex());
+                AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(currentAttribute.getType().getTypeName()));
                 variableNode.getChainedNode().setIsChainedNode(true);
                 variableNode.getChainedNode().accept(this);
             }
