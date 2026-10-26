@@ -112,12 +112,16 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
+        # Cargo la direccion de box
         addiu $a0 $fp -4
+        # Cargo la referencia al objeto
+        lw $a0 0($a0)
         # Checkeo acceso nulo
-        li $a2 12
-        li $a3 15
+        li $a2 15
+        li $a3 9
         beqz $a0 runtime_null
-        lw $a0 4($a0)
+        # Obtengo la direccion del atributo value
+        addiu $a0 $a0 4
         # Checkeo acceso nulo
         li $a2 15
         li $a3 5

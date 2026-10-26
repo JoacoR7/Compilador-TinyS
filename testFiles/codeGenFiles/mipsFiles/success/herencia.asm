@@ -56,22 +56,14 @@
     #############################
 
     str_0:
-        .asciiz "\n"
+        .asciiz "ANTES:\n"
+    str_1:
+        .asciiz " "
+    str_2:
+        .asciiz "\nDESPUES:\n"
 
-    vtable_Persona:
-        .word Persona_setEdad
-        .word Persona_getEdad
-    vtable_Empleado:
-        .word Persona_setEdad
-        .word Persona_getEdad
-        .word Empleado_setSueldo
-        .word Empleado_getSueldo
-    vtable_Gerente:
-        .word Persona_setEdad
-        .word Persona_getEdad
-        .word Empleado_setSueldo
-        .word Empleado_getSueldo
-        .word Gerente_getBono
+    vtable_A:
+        .word A_getNumero
 .text
     .globl main
 
@@ -86,77 +78,63 @@
         # return       -> 4($fp)
         # $ra          -> 0($fp)
         # Var 1        -> -4($fp)
+        # Var 2        -> -8($fp)
 
         # Fijo $fp en la posicion donde se guardara el $ra
         move $fp, $sp
         # Guardo la direccion de retorno de la llamada
         sw $ra, 0($fp)
 
-        # Reservo 8 bytes para variables locales y el siguiente word libre
-        addiu $sp, $sp, -8
+        # Reservo 12 bytes para variables locales y el siguiente word libre
+        addiu $sp, $sp, -12
 
 
         # --- INICIALIZACION DE VARIABLES LOCALES ---
         # Inicializacion variables locales de start
-        # Inicializacion de g
+        # Inicializacion de a
         move $v0 $zero
         sw $v0 -4($fp)
+        # Inicializacion de b
+        move $v0 $zero
+        sw $v0 -8($fp)
 
         # $sp queda apuntando al primer word libre del frame
 
         # Body de start
-        # Asignacion a "g" en 52_5
+        # Asignacion a "a" en 20_5
         # Evalúo el lado derecho de la asignacion
 
         # ========================================
-        # Generacion de CIR de Gerente
+        # Generacion de CIR de A
         # ========================================
-        # Necesita 4 espacios para sus atributos y la vtable
-        li $a0 16
+        # Necesita 2 espacios para sus atributos y la vtable
+        li $a0 8
         li $v0 9
         syscall
         # Guardo la direccion del heap en el stack para inicializar las variables
         sw $v0 0($sp)
         addiu $sp $sp -4
 
-        # --- Inicializacion atributos de Gerente ---
-        # Inicializacion de atributo edad de tipo Int
+        # --- Inicializacion atributos de A ---
+        # Inicializacion de atributo numero de tipo Int
         li $a0 8
         li $v0 9
         syscall
         sw $zero 0($v0)
         sw $zero 4($v0)
-        # Guardo la direccion del atributo edad
+        # Guardo la direccion del atributo numero
         lw $t0 4($sp)
         sw $v0 4($t0)
-        # Inicializacion de atributo sueldo de tipo Int
-        li $a0 8
-        li $v0 9
-        syscall
-        sw $zero 0($v0)
-        sw $zero 4($v0)
-        # Guardo la direccion del atributo sueldo
-        lw $t0 4($sp)
-        sw $v0 8($t0)
-        # Inicializacion de atributo bono de tipo Int
-        li $a0 8
-        li $v0 9
-        syscall
-        sw $zero 0($v0)
-        sw $zero 4($v0)
-        # Guardo la direccion del atributo bono
-        lw $t0 4($sp)
-        sw $v0 12($t0)
-        # Guardo la direccion de la vtable de Gerente
-        la $a0 vtable_Gerente
+        # Guardo la direccion de la vtable de A
+        la $a0 vtable_A
         sw $a0 0($t0)
-        # Recupero la direccion de la instancia de clase de Gerente
+        # Recupero la direccion de la instancia de clase de A
         lw $t0 4($sp)
         addiu $sp $sp 4
         move $a0 $t0
 
         # ========================================
-        # PRECALL Constructor Gerente
+        # PRECALL Constructor A
         # ========================================
         # Layout del registro de activacion:
         # Self        -> 12($sp)
@@ -173,14 +151,15 @@
         # Inicializo return
         sw $zero, 4($sp)
 
-        la $t0 Gerente_constructor
+        la $t0 A_constructor
         jalr $t0
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
+        # Cargo la direccion de a
         addiu $a0 $fp -4
         # Checkeo acceso nulo
-        li $a2 52
+        li $a2 20
         li $a3 5
         beqz $a0 runtime_null
         # Recupero de la pila el resultado de la expresion
@@ -188,153 +167,40 @@
         addiu $sp $sp 4
         # Guardo la expresión en la direccion del lado izquierdo
         sw $t0 0($a0)
-        # Guardo en $a0 la direccion del CIR que invoca al metodo
-        lw $a0 -4($fp)
-        # Checkeo acceso nulo
-        li $a2 54
-        li $a3 6
-        beqz $a0 runtime_null
+        # Asignacion a "b" en 21_5
+        # Evalúo el lado derecho de la asignacion
 
         # ========================================
-        # PRECALL setEdad
+        # Generacion de CIR de A
         # ========================================
-        # Layout del registro de activacion:
-        # Self        -> 16($sp)
-        # $fp llamador -> 12($sp)
-        # return      -> 8($sp)
-        # Param 1     -> 4($sp)
-        # $ra          -> 0($sp) [lo guarda el callee]
-
-        # Reservo el registro de activacion del caller
-        addiu $sp, $sp, -16
-        # Guardo Self/contexto
-        sw $a0, 16($sp)
-        # Guardo $fp del llamador
-        sw $fp, 12($sp)
-        # Inicializo return
-        sw $zero, 8($sp)
-
-
-        # --- Evaluo parametros de setEdad ---
-        # Evaluo parametro n° 1
-        # Genero el literal 25
-        li $a0 25
-        # Guardo el literal en la pila
-        sw $a0 0($sp)
+        # Necesita 2 espacios para sus atributos y la vtable
+        li $a0 8
+        li $v0 9
+        syscall
+        # Guardo la direccion del heap en el stack para inicializar las variables
+        sw $v0 0($sp)
         addiu $sp $sp -4
-        # Genero un CIR para el literal
+
+        # --- Inicializacion atributos de A ---
+        # Inicializacion de atributo numero de tipo Int
         li $a0 8
         li $v0 9
         syscall
         sw $zero 0($v0)
         sw $zero 4($v0)
-        # Recupero el literal de la pila
+        # Guardo la direccion del atributo numero
+        lw $t0 4($sp)
+        sw $v0 4($t0)
+        # Guardo la direccion de la vtable de A
+        la $a0 vtable_A
+        sw $a0 0($t0)
+        # Recupero la direccion de la instancia de clase de A
         lw $t0 4($sp)
         addiu $sp $sp 4
-        # Guardo el literal en el CIR
-        sw $t0 4($v0)
-        move $a0 $v0
-        # Guardo parametro n° 1
-        sw $a0 4($sp)
-        # Como el metodo setEdad es un metodo de instancia, obtengo el self
-        lw $a0 16($sp)
-        # Busco la vtable de la instancia
-        lw $a0 0($a0)
-        # Busco el metodo setEdad en la vtable
-        lw $a0 0($a0)
-        jalr $a0
-        # Guardo en $a0 la direccion del CIR que invoca al metodo
-        lw $a0 -4($fp)
-        # Checkeo acceso nulo
-        li $a2 55
-        li $a3 6
-        beqz $a0 runtime_null
+        move $a0 $t0
 
         # ========================================
-        # PRECALL setSueldo
-        # ========================================
-        # Layout del registro de activacion:
-        # Self        -> 16($sp)
-        # $fp llamador -> 12($sp)
-        # return      -> 8($sp)
-        # Param 1     -> 4($sp)
-        # $ra          -> 0($sp) [lo guarda el callee]
-
-        # Reservo el registro de activacion del caller
-        addiu $sp, $sp, -16
-        # Guardo Self/contexto
-        sw $a0, 16($sp)
-        # Guardo $fp del llamador
-        sw $fp, 12($sp)
-        # Inicializo return
-        sw $zero, 8($sp)
-
-
-        # --- Evaluo parametros de setSueldo ---
-        # Evaluo parametro n° 1
-        # Genero el literal 1000
-        li $a0 1000
-        # Guardo el literal en la pila
-        sw $a0 0($sp)
-        addiu $sp $sp -4
-        # Genero un CIR para el literal
-        li $a0 8
-        li $v0 9
-        syscall
-        sw $zero 0($v0)
-        sw $zero 4($v0)
-        # Recupero el literal de la pila
-        lw $t0 4($sp)
-        addiu $sp $sp 4
-        # Guardo el literal en el CIR
-        sw $t0 4($v0)
-        move $a0 $v0
-        # Guardo parametro n° 1
-        sw $a0 4($sp)
-        # Como el metodo setSueldo es un metodo de instancia, obtengo el self
-        lw $a0 16($sp)
-        # Busco la vtable de la instancia
-        lw $a0 0($a0)
-        # Busco el metodo setSueldo en la vtable
-        lw $a0 8($a0)
-        jalr $a0
-
-        # --- Comienzo llamada 57_6 ---
-        # Llamada estática sobre IO
-        # Guardo la vtable de IO
-        la $a0, vtable_IO
-
-        # ========================================
-        # PRECALL out_int
-        # ========================================
-        # Layout del registro de activacion:
-        # Self        -> 16($sp)
-        # $fp llamador -> 12($sp)
-        # return      -> 8($sp)
-        # Param 1     -> 4($sp)
-        # $ra          -> 0($sp) [lo guarda el callee]
-
-        # Reservo el registro de activacion del caller
-        addiu $sp, $sp, -16
-        # Guardo Self/contexto
-        sw $a0, 16($sp)
-        # Guardo $fp del llamador
-        sw $fp, 12($sp)
-        # Inicializo return
-        sw $zero, 8($sp)
-
-
-        # --- Evaluo parametros de out_int ---
-        # Evaluo parametro n° 1
-        # Guardo en $a0 la direccion del CIR que invoca al metodo
-        lw $a0 -4($fp)
-        # Checkeo acceso nulo
-        li $a2 57
-        li $a3 17
-        beqz $a0 runtime_null
-
-        # ========================================
-        # PRECALL getEdad
+        # PRECALL Constructor A
         # ========================================
         # Layout del registro de activacion:
         # Self        -> 12($sp)
@@ -351,22 +217,24 @@
         # Inicializo return
         sw $zero, 4($sp)
 
-        # Como el metodo getEdad es un metodo de instancia, obtengo el self
-        lw $a0 12($sp)
-        # Busco la vtable de la instancia
-        lw $a0 0($a0)
-        # Busco el metodo getEdad en la vtable
-        lw $a0 4($a0)
-        jalr $a0
-        # Guardo parametro n° 1
-        sw $a0 4($sp)
-        
-        # Como el metodo out_int es estatico, guardo la vtable en self
-        lw $a0 16($sp)
-        lw $a0 4($a0)
-        jalr $a0
+        la $t0 A_constructor
+        jalr $t0
+        # Guardo en la pila el resultado de la expresion
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        # Cargo la direccion de b
+        addiu $a0 $fp -8
+        # Checkeo acceso nulo
+        li $a2 21
+        li $a3 5
+        beqz $a0 runtime_null
+        # Recupero de la pila el resultado de la expresion
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo la expresión en la direccion del lado izquierdo
+        sw $t0 0($a0)
 
-        # --- Comienzo llamada 58_6 ---
+        # --- Comienzo llamada 23_6 ---
         # Llamada estática sobre IO
         # Guardo la vtable de IO
         la $a0, vtable_IO
@@ -393,7 +261,7 @@
 
         # --- Evaluo parametros de out_str ---
         # Evaluo parametro n° 1
-        # Genero el literal "\n"
+        # Genero el literal "ANTES:\n"
         la $a0 str_0
         # Guardo el literal en la pila
         sw $a0 0($sp)
@@ -420,7 +288,7 @@
         lw $a0 0($a0)
         jalr $a0
 
-        # --- Comienzo llamada 60_6 ---
+        # --- Comienzo llamada 24_6 ---
         # Llamada estática sobre IO
         # Guardo la vtable de IO
         la $a0, vtable_IO
@@ -447,38 +315,9 @@
 
         # --- Evaluo parametros de out_int ---
         # Evaluo parametro n° 1
-        # Guardo en $a0 la direccion del CIR que invoca al metodo
         lw $a0 -4($fp)
-        # Checkeo acceso nulo
-        li $a2 60
-        li $a3 17
-        beqz $a0 runtime_null
-
-        # ========================================
-        # PRECALL getSueldo
-        # ========================================
-        # Layout del registro de activacion:
-        # Self        -> 12($sp)
-        # $fp llamador -> 8($sp)
-        # return      -> 4($sp)
-        # $ra          -> 0($sp) [lo guarda el callee]
-
-        # Reservo el registro de activacion del caller
-        addiu $sp, $sp, -12
-        # Guardo Self/contexto
-        sw $a0, 12($sp)
-        # Guardo $fp del llamador
-        sw $fp, 8($sp)
-        # Inicializo return
-        sw $zero, 4($sp)
-
-        # Como el metodo getSueldo es un metodo de instancia, obtengo el self
-        lw $a0 12($sp)
-        # Busco la vtable de la instancia
-        lw $a0 0($a0)
-        # Busco el metodo getSueldo en la vtable
-        lw $a0 12($a0)
-        jalr $a0
+        # Accedo al atributo numero del self
+        lw $a0 4($a0)
         # Guardo parametro n° 1
         sw $a0 4($sp)
         
@@ -487,7 +326,7 @@
         lw $a0 4($a0)
         jalr $a0
 
-        # --- Comienzo llamada 61_6 ---
+        # --- Comienzo llamada 25_6 ---
         # Llamada estática sobre IO
         # Guardo la vtable de IO
         la $a0, vtable_IO
@@ -514,8 +353,8 @@
 
         # --- Evaluo parametros de out_str ---
         # Evaluo parametro n° 1
-        # Genero el literal "\n"
-        la $a0 str_0
+        # Genero el literal " "
+        la $a0 str_1
         # Guardo el literal en la pila
         sw $a0 0($sp)
         addiu $sp $sp -4
@@ -541,7 +380,7 @@
         lw $a0 0($a0)
         jalr $a0
 
-        # --- Comienzo llamada 63_6 ---
+        # --- Comienzo llamada 26_6 ---
         # Llamada estática sobre IO
         # Guardo la vtable de IO
         la $a0, vtable_IO
@@ -568,38 +407,234 @@
 
         # --- Evaluo parametros de out_int ---
         # Evaluo parametro n° 1
-        # Guardo en $a0 la direccion del CIR que invoca al metodo
-        lw $a0 -4($fp)
+        lw $a0 -8($fp)
+        # Accedo al atributo numero del self
+        lw $a0 4($a0)
+        # Guardo parametro n° 1
+        sw $a0 4($sp)
+        
+        # Como el metodo out_int es estatico, guardo la vtable en self
+        lw $a0 16($sp)
+        lw $a0 4($a0)
+        jalr $a0
+        # Asignacion a "b" en 28_5
+        # Evalúo el lado derecho de la asignacion
+        # Genero el literal 99
+        li $a0 99
+        # Guardo el literal en la pila
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        # Genero un CIR para el literal
+        li $a0 8
+        li $v0 9
+        syscall
+        sw $zero 0($v0)
+        sw $zero 4($v0)
+        # Recupero el literal de la pila
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo el literal en el CIR
+        sw $t0 4($v0)
+        move $a0 $v0
+        # Guardo en la pila el resultado de la expresion
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        # Cargo la direccion de b
+        addiu $a0 $fp -8
+        # Cargo la referencia al objeto
+        lw $a0 0($a0)
         # Checkeo acceso nulo
-        li $a2 63
-        li $a3 17
+        li $a2 28
+        li $a3 7
         beqz $a0 runtime_null
+        # Obtengo la direccion del atributo numero
+        addiu $a0 $a0 4
+        # Checkeo acceso nulo
+        li $a2 28
+        li $a3 5
+        beqz $a0 runtime_null
+        # Recupero de la pila el resultado de la expresion
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo la expresión en la direccion del lado izquierdo
+        sw $t0 0($a0)
+
+        # --- Comienzo llamada 30_6 ---
+        # Llamada estática sobre IO
+        # Guardo la vtable de IO
+        la $a0, vtable_IO
 
         # ========================================
-        # PRECALL getBono
+        # PRECALL out_str
         # ========================================
         # Layout del registro de activacion:
-        # Self        -> 12($sp)
-        # $fp llamador -> 8($sp)
-        # return      -> 4($sp)
+        # Self        -> 16($sp)
+        # $fp llamador -> 12($sp)
+        # return      -> 8($sp)
+        # Param 1     -> 4($sp)
         # $ra          -> 0($sp) [lo guarda el callee]
 
         # Reservo el registro de activacion del caller
-        addiu $sp, $sp, -12
+        addiu $sp, $sp, -16
         # Guardo Self/contexto
-        sw $a0, 12($sp)
+        sw $a0, 16($sp)
         # Guardo $fp del llamador
-        sw $fp, 8($sp)
+        sw $fp, 12($sp)
         # Inicializo return
-        sw $zero, 4($sp)
+        sw $zero, 8($sp)
 
-        # Como el metodo getBono es un metodo de instancia, obtengo el self
-        lw $a0 12($sp)
-        # Busco la vtable de la instancia
+
+        # --- Evaluo parametros de out_str ---
+        # Evaluo parametro n° 1
+        # Genero el literal "\nDESPUES:\n"
+        la $a0 str_2
+        # Guardo el literal en la pila
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        # Genero un CIR para el literal
+        li $a0 8
+        li $v0 9
+        syscall
+        la $t0 vtable_str
+        sw $t0 0($v0)
+        la $t0 empty_str
+        sw $t0 4($v0)
+        # Recupero el literal de la pila
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo el literal en el CIR
+        sw $t0 4($v0)
+        move $a0 $v0
+        # Guardo parametro n° 1
+        sw $a0 4($sp)
+        
+        # Como el metodo out_str es estatico, guardo la vtable en self
+        lw $a0 16($sp)
         lw $a0 0($a0)
-        # Busco el metodo getBono en la vtable
-        lw $a0 16($a0)
         jalr $a0
+
+        # --- Comienzo llamada 31_6 ---
+        # Llamada estática sobre IO
+        # Guardo la vtable de IO
+        la $a0, vtable_IO
+
+        # ========================================
+        # PRECALL out_int
+        # ========================================
+        # Layout del registro de activacion:
+        # Self        -> 16($sp)
+        # $fp llamador -> 12($sp)
+        # return      -> 8($sp)
+        # Param 1     -> 4($sp)
+        # $ra          -> 0($sp) [lo guarda el callee]
+
+        # Reservo el registro de activacion del caller
+        addiu $sp, $sp, -16
+        # Guardo Self/contexto
+        sw $a0, 16($sp)
+        # Guardo $fp del llamador
+        sw $fp, 12($sp)
+        # Inicializo return
+        sw $zero, 8($sp)
+
+
+        # --- Evaluo parametros de out_int ---
+        # Evaluo parametro n° 1
+        lw $a0 -4($fp)
+        # Accedo al atributo numero del self
+        lw $a0 4($a0)
+        # Guardo parametro n° 1
+        sw $a0 4($sp)
+        
+        # Como el metodo out_int es estatico, guardo la vtable en self
+        lw $a0 16($sp)
+        lw $a0 4($a0)
+        jalr $a0
+
+        # --- Comienzo llamada 32_6 ---
+        # Llamada estática sobre IO
+        # Guardo la vtable de IO
+        la $a0, vtable_IO
+
+        # ========================================
+        # PRECALL out_str
+        # ========================================
+        # Layout del registro de activacion:
+        # Self        -> 16($sp)
+        # $fp llamador -> 12($sp)
+        # return      -> 8($sp)
+        # Param 1     -> 4($sp)
+        # $ra          -> 0($sp) [lo guarda el callee]
+
+        # Reservo el registro de activacion del caller
+        addiu $sp, $sp, -16
+        # Guardo Self/contexto
+        sw $a0, 16($sp)
+        # Guardo $fp del llamador
+        sw $fp, 12($sp)
+        # Inicializo return
+        sw $zero, 8($sp)
+
+
+        # --- Evaluo parametros de out_str ---
+        # Evaluo parametro n° 1
+        # Genero el literal " "
+        la $a0 str_1
+        # Guardo el literal en la pila
+        sw $a0 0($sp)
+        addiu $sp $sp -4
+        # Genero un CIR para el literal
+        li $a0 8
+        li $v0 9
+        syscall
+        la $t0 vtable_str
+        sw $t0 0($v0)
+        la $t0 empty_str
+        sw $t0 4($v0)
+        # Recupero el literal de la pila
+        lw $t0 4($sp)
+        addiu $sp $sp 4
+        # Guardo el literal en el CIR
+        sw $t0 4($v0)
+        move $a0 $v0
+        # Guardo parametro n° 1
+        sw $a0 4($sp)
+        
+        # Como el metodo out_str es estatico, guardo la vtable en self
+        lw $a0 16($sp)
+        lw $a0 0($a0)
+        jalr $a0
+
+        # --- Comienzo llamada 33_6 ---
+        # Llamada estática sobre IO
+        # Guardo la vtable de IO
+        la $a0, vtable_IO
+
+        # ========================================
+        # PRECALL out_int
+        # ========================================
+        # Layout del registro de activacion:
+        # Self        -> 16($sp)
+        # $fp llamador -> 12($sp)
+        # return      -> 8($sp)
+        # Param 1     -> 4($sp)
+        # $ra          -> 0($sp) [lo guarda el callee]
+
+        # Reservo el registro de activacion del caller
+        addiu $sp, $sp, -16
+        # Guardo Self/contexto
+        sw $a0, 16($sp)
+        # Guardo $fp del llamador
+        sw $fp, 12($sp)
+        # Inicializo return
+        sw $zero, 8($sp)
+
+
+        # --- Evaluo parametros de out_int ---
+        # Evaluo parametro n° 1
+        lw $a0 -8($fp)
+        # Accedo al atributo numero del self
+        lw $a0 4($a0)
         # Guardo parametro n° 1
         sw $a0 4($sp)
         
@@ -1720,156 +1755,10 @@
 
 
 
-    Persona_constructor:
+    A_constructor:
 
         # ========================================
-        # PROLOGUE Constructor Persona
-        # ========================================
-        # Registro de activacion del metodo:
-        # self         -> 12($fp)
-        # $fp llamador -> 8($fp)
-        # return       -> 4($fp)
-        # $ra          -> 0($fp)
-
-        # Fijo $fp en la posicion donde se guardara el $ra
-        move $fp, $sp
-        # Guardo la direccion de retorno de la llamada
-        sw $ra, 0($fp)
-
-        # Reservo 4 bytes para variables locales y el siguiente word libre
-        addiu $sp, $sp, -4
-
-        # $sp queda apuntando al primer word libre del frame
-
-        # Body de constructor
-
-        # --- Epilogue de . ---
-
-    epilogue_Persona_constructor:
-        # Recupero el $ra anterior
-        lw $ra 0($fp)
-        # Como es un constructor, guardo en return el self (CIR)
-        lw $t0 12($fp)
-        sw $t0 4($fp)
-        # Recupero el valor del return
-        lw $a0 4($fp)
-        # Recupero el $fp del llamador
-        lw $fp 8($fp)
-        # Recupero el espacio usado
-        addiu $sp $sp 16
-        jr $ra
-
-    Persona_setEdad:
-
-        # ========================================
-        # PROLOGUE setEdad
-        # ========================================
-        # Registro de activacion del metodo:
-        # self         -> 16($fp)
-        # $fp llamador -> 12($fp)
-        # return       -> 8($fp)
-        # Par 1        -> 4($fp)
-        # $ra          -> 0($fp)
-
-        # Fijo $fp en la posicion donde se guardara el $ra
-        move $fp, $sp
-        # Guardo la direccion de retorno de la llamada
-        sw $ra, 0($fp)
-
-        # Reservo 4 bytes para variables locales y el siguiente word libre
-        addiu $sp, $sp, -4
-
-        # $sp queda apuntando al primer word libre del frame
-
-        # Body de setEdad
-        # Asignacion a "edad" en 10_9
-        # Evalúo el lado derecho de la asignacion
-        # Busco el parámetro en el RA
-        lw $a0 4($fp)
-        # Checkeo acceso nulo
-        li $a2 10
-        li $a3 16
-        beqz $a0 runtime_null
-        # Guardo en la pila el resultado de la expresion
-        sw $a0 0($sp)
-        addiu $sp $sp -4
-        # Obtengo el self (instancia actual)
-        lw $a0 16($fp)
-        # Obtengo la direccion del atributo del self
-        addiu $a0 $a0 4
-        # Checkeo acceso nulo
-        li $a2 10
-        li $a3 9
-        beqz $a0 runtime_null
-        # Recupero de la pila el resultado de la expresion
-        lw $t0 4($sp)
-        addiu $sp $sp 4
-        # Guardo la expresión en la direccion del lado izquierdo
-        sw $t0 0($a0)
-
-        # --- Epilogue de setEdad ---
-
-    epilogue_Persona_setEdad:
-        # Recupero el $ra anterior
-        lw $ra 0($fp)
-        # Recupero el $fp del llamador
-        lw $fp 12($fp)
-        # Recupero el espacio usado
-        addiu $sp $sp 20
-        jr $ra
-
-    Persona_getEdad:
-
-        # ========================================
-        # PROLOGUE getEdad
-        # ========================================
-        # Registro de activacion del metodo:
-        # self         -> 12($fp)
-        # $fp llamador -> 8($fp)
-        # return       -> 4($fp)
-        # $ra          -> 0($fp)
-
-        # Fijo $fp en la posicion donde se guardara el $ra
-        move $fp, $sp
-        # Guardo la direccion de retorno de la llamada
-        sw $ra, 0($fp)
-
-        # Reservo 4 bytes para variables locales y el siguiente word libre
-        addiu $sp, $sp, -4
-
-        # $sp queda apuntando al primer word libre del frame
-
-        # Body de getEdad
-        # Cargo el self ya que busco un atributo
-        lw $a0 12($fp)
-        # Checkeo acceso nulo
-        li $a2 14
-        li $a3 13
-        beqz $a0 runtime_null
-        # Cargo el atributo edad
-        lw $a0 4($a0)
-        # Guardo el return
-        sw $a0 4($fp)
-        la $t0 epilogue_Persona_getEdad
-        jr $t0
-
-        # --- Epilogue de getEdad ---
-
-    epilogue_Persona_getEdad:
-        # Recupero el $ra anterior
-        lw $ra 0($fp)
-        # Recupero el valor del return
-        lw $a0 4($fp)
-        # Recupero el $fp del llamador
-        lw $fp 8($fp)
-        # Recupero el espacio usado
-        addiu $sp $sp 16
-        jr $ra
-
-    Empleado_constructor:
-
-        # ========================================
-        # PROLOGUE Constructor Empleado
+        # PROLOGUE Constructor A
         # ========================================
         # Registro de activacion del metodo:
         # self         -> 12($fp)
@@ -1888,156 +1777,10 @@
         # $sp queda apuntando al primer word libre del frame
 
         # Body de constructor
-
-        # --- Epilogue de . ---
-
-    epilogue_Empleado_constructor:
-        # Recupero el $ra anterior
-        lw $ra 0($fp)
-        # Como es un constructor, guardo en return el self (CIR)
-        lw $t0 12($fp)
-        sw $t0 4($fp)
-        # Recupero el valor del return
-        lw $a0 4($fp)
-        # Recupero el $fp del llamador
-        lw $fp 8($fp)
-        # Recupero el espacio usado
-        addiu $sp $sp 16
-        jr $ra
-
-    Empleado_setSueldo:
-
-        # ========================================
-        # PROLOGUE setSueldo
-        # ========================================
-        # Registro de activacion del metodo:
-        # self         -> 16($fp)
-        # $fp llamador -> 12($fp)
-        # return       -> 8($fp)
-        # Par 1        -> 4($fp)
-        # $ra          -> 0($fp)
-
-        # Fijo $fp en la posicion donde se guardara el $ra
-        move $fp, $sp
-        # Guardo la direccion de retorno de la llamada
-        sw $ra, 0($fp)
-
-        # Reservo 4 bytes para variables locales y el siguiente word libre
-        addiu $sp, $sp, -4
-
-        # $sp queda apuntando al primer word libre del frame
-
-        # Body de setSueldo
-        # Asignacion a "sueldo" en 27_9
+        # Asignacion a "numero" en 7_9
         # Evalúo el lado derecho de la asignacion
-        # Busco el parámetro en el RA
-        lw $a0 4($fp)
-        # Checkeo acceso nulo
-        li $a2 27
-        li $a3 18
-        beqz $a0 runtime_null
-        # Guardo en la pila el resultado de la expresion
-        sw $a0 0($sp)
-        addiu $sp $sp -4
-        # Obtengo el self (instancia actual)
-        lw $a0 16($fp)
-        # Obtengo la direccion del atributo del self
-        addiu $a0 $a0 8
-        # Checkeo acceso nulo
-        li $a2 27
-        li $a3 9
-        beqz $a0 runtime_null
-        # Recupero de la pila el resultado de la expresion
-        lw $t0 4($sp)
-        addiu $sp $sp 4
-        # Guardo la expresión en la direccion del lado izquierdo
-        sw $t0 0($a0)
-
-        # --- Epilogue de setSueldo ---
-
-    epilogue_Empleado_setSueldo:
-        # Recupero el $ra anterior
-        lw $ra 0($fp)
-        # Recupero el $fp del llamador
-        lw $fp 12($fp)
-        # Recupero el espacio usado
-        addiu $sp $sp 20
-        jr $ra
-
-    Empleado_getSueldo:
-
-        # ========================================
-        # PROLOGUE getSueldo
-        # ========================================
-        # Registro de activacion del metodo:
-        # self         -> 12($fp)
-        # $fp llamador -> 8($fp)
-        # return       -> 4($fp)
-        # $ra          -> 0($fp)
-
-        # Fijo $fp en la posicion donde se guardara el $ra
-        move $fp, $sp
-        # Guardo la direccion de retorno de la llamada
-        sw $ra, 0($fp)
-
-        # Reservo 4 bytes para variables locales y el siguiente word libre
-        addiu $sp, $sp, -4
-
-        # $sp queda apuntando al primer word libre del frame
-
-        # Body de getSueldo
-        # Cargo el self ya que busco un atributo
-        lw $a0 12($fp)
-        # Checkeo acceso nulo
-        li $a2 31
-        li $a3 13
-        beqz $a0 runtime_null
-        # Cargo el atributo sueldo
-        lw $a0 8($a0)
-        # Guardo el return
-        sw $a0 4($fp)
-        la $t0 epilogue_Empleado_getSueldo
-        jr $t0
-
-        # --- Epilogue de getSueldo ---
-
-    epilogue_Empleado_getSueldo:
-        # Recupero el $ra anterior
-        lw $ra 0($fp)
-        # Recupero el valor del return
-        lw $a0 4($fp)
-        # Recupero el $fp del llamador
-        lw $fp 8($fp)
-        # Recupero el espacio usado
-        addiu $sp $sp 16
-        jr $ra
-
-    Gerente_constructor:
-
-        # ========================================
-        # PROLOGUE Constructor Gerente
-        # ========================================
-        # Registro de activacion del metodo:
-        # self         -> 12($fp)
-        # $fp llamador -> 8($fp)
-        # return       -> 4($fp)
-        # $ra          -> 0($fp)
-
-        # Fijo $fp en la posicion donde se guardara el $ra
-        move $fp, $sp
-        # Guardo la direccion de retorno de la llamada
-        sw $ra, 0($fp)
-
-        # Reservo 4 bytes para variables locales y el siguiente word libre
-        addiu $sp, $sp, -4
-
-        # $sp queda apuntando al primer word libre del frame
-
-        # Body de constructor
-        # Asignacion a "bono" en 41_9
-        # Evalúo el lado derecho de la asignacion
-        # Genero el literal 500
-        li $a0 500
+        # Genero el literal 10
+        li $a0 10
         # Guardo el literal en la pila
         sw $a0 0($sp)
         addiu $sp $sp -4
@@ -2056,12 +1799,11 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
-        # Obtengo el self (instancia actual)
+        # Obtengo el self
         lw $a0 12($fp)
-        # Obtengo la direccion del atributo del self
-        addiu $a0 $a0 12
+        addiu $a0 $a0 4
         # Checkeo acceso nulo
-        li $a2 41
+        li $a2 7
         li $a3 9
         beqz $a0 runtime_null
         # Recupero de la pila el resultado de la expresion
@@ -2072,7 +1814,7 @@
 
         # --- Epilogue de . ---
 
-    epilogue_Gerente_constructor:
+    epilogue_A_constructor:
         # Recupero el $ra anterior
         lw $ra 0($fp)
         # Como es un constructor, guardo en return el self (CIR)
@@ -2086,10 +1828,10 @@
         addiu $sp $sp 16
         jr $ra
 
-    Gerente_getBono:
+    A_getNumero:
 
         # ========================================
-        # PROLOGUE getBono
+        # PROLOGUE getNumero
         # ========================================
         # Registro de activacion del metodo:
         # self         -> 12($fp)
@@ -2107,23 +1849,23 @@
 
         # $sp queda apuntando al primer word libre del frame
 
-        # Body de getBono
+        # Body de getNumero
         # Cargo el self ya que busco un atributo
         lw $a0 12($fp)
         # Checkeo acceso nulo
-        li $a2 45
+        li $a2 11
         li $a3 13
         beqz $a0 runtime_null
-        # Cargo el atributo bono
-        lw $a0 12($a0)
+        # Cargo el atributo numero
+        lw $a0 4($a0)
         # Guardo el return
         sw $a0 4($fp)
-        la $t0 epilogue_Gerente_getBono
+        la $t0 epilogue_A_getNumero
         jr $t0
 
-        # --- Epilogue de getBono ---
+        # --- Epilogue de getNumero ---
 
-    epilogue_Gerente_getBono:
+    epilogue_A_getNumero:
         # Recupero el $ra anterior
         lw $ra 0($fp)
         # Recupero el valor del return

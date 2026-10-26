@@ -482,6 +482,7 @@ public class CodeGenVisitor implements Visitor<Void> {
         codeGenerator.emitText("lw $a0 " + codeGenerator.getSelfOffset(AST.getSymbolTable().getCurrentMethod()) + "($fp)");
         selfNode.getChainedNode().setIsChainedNode(true);
         selfNode.getChainedNode().accept(this);
+
         return null;
     }
 
@@ -544,27 +545,52 @@ public class CodeGenVisitor implements Visitor<Void> {
     public Void visit(SimpleVariableNode simpleVariableNode) {
         Token currentToken = simpleVariableNode.getToken();
         Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(currentToken.getLexeme());
+        Attribute currentAttribute = null;
+        String className;
         if (currentVariable != null) {
-            // Cargo la dirección del objeto en el stack frame
+            // Obtengo la direccion del slot de la variable
+            codeGenerator.emitComment("Cargo la direccion de " + currentVariable.getName());
+
             codeGenerator.emitText("addiu $a0 $fp " + codeGenerator.getVariableOffset(currentVariable));
+            className = currentVariable.getType().getLexeme();
         } else {
-            Attribute currentAttribute = AST.getSymbolTable().getCurrentClass().getAttributes().get(currentToken.getLexeme());
-            codeGenerator.emitComment("Obtengo el self (instancia actual)");
+
+            currentAttribute = AST.getSymbolTable().getCurrentClass().getAttributes().get(currentToken.getLexeme());
+            // Obtengo self
+            codeGenerator.emitComment("Obtengo el self");
+
             codeGenerator.emitText("lw $a0 " + codeGenerator.getSelfOffset(AST.getSymbolTable().getCurrentMethod()) + "($fp)");
-            codeGenerator.emitComment("Obtengo la direccion del atributo del self");
+
+            // Obtengo la direccion del slot del atributo
             codeGenerator.emitText("addiu $a0 $a0 " + codeGenerator.getAttributeOffset(currentAttribute));
+
+            className = currentAttribute.getType().getLexeme();
         }
 
         if (simpleVariableNode.getSimpleChainedNode() != null) {
-            codeGenerator.checkNullAccess("$a0", currentVariable.getToken().getRowIndex(), currentVariable.getToken().getColumnIndex());
+
             SimpleChainedNode simpleChainedNode = simpleVariableNode.getSimpleChainedNode();
-            Attribute attribute = AST.getSymbolTable().getClasses().get(currentVariable.getType().getLexeme()).getAttributes().get(simpleChainedNode.getToken().getLexeme());
+
+            Attribute attribute = AST.getSymbolTable().getClasses().get(className).getAttributes().get(simpleChainedNode.getToken().getLexeme());
+
             if (attribute != null) {
+
+                // $a0 contiene la direccion del slot actual.
+                // Cargo la referencia al objeto almacenada ahi.
+                codeGenerator.emitComment("Cargo la referencia al objeto");
+                codeGenerator.emitText("lw $a0 0($a0)");
+
+                codeGenerator.checkNullAccess("$a0", simpleChainedNode.getToken().getRowIndex(),simpleChainedNode.getToken().getColumnIndex());
+
+                // Calculo la direccion del slot del atributo
                 int attributeOffset = codeGenerator.getAttributeOffset(attribute);
-                codeGenerator.emitText("lw $a0 " + attributeOffset + "($a0)");
+
+                codeGenerator.emitComment("Obtengo la direccion del atributo " + attribute.getName());
+
+                codeGenerator.emitText("addiu $a0 $a0 " + attributeOffset);
             }
         }
-        // TODO: Generar el codigo MIPS para un acceso simple a una variable.
+
         return null;
     }
 
@@ -654,6 +680,20 @@ public class CodeGenVisitor implements Visitor<Void> {
                 AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(variableNode.getClassName()));
             }
 
+
+            // Checkeo si se accederá a un atributo público
+            AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(variableNode.getClassName()));
+            if (variableNode.getChainedNode() != null) {
+                if (variableNode.getMethodName().equals("start")) {
+                    Class variableClass = AST.getSymbolTable().getClasses().get(variableNode.getClassName());
+                    if (variableClass != null) {
+                        Attribute publicAttribute = variableClass.getAttributes().get(variableNode.getChainedNode().getToken().getLexeme());
+                        if (publicAttribute != null) {
+                            codeGenerator.emitText("lw $a0 " + codeGenerator.getVariableOffset(currentVariable) + "($fp)");
+                        }
+                    }
+                }
+            }
             variableNode.getChainedNode().accept(this);
         } else {
             Class currentClass = AST.getSymbolTable().getCurrentClass();

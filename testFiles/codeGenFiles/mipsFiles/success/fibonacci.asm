@@ -180,6 +180,7 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
+        # Cargo la direccion de fib
         addiu $a0 $fp -4
         # Checkeo acceso nulo
         li $a2 74
@@ -224,6 +225,7 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
+        # Cargo la direccion de n
         addiu $a0 $fp -8
         # Checkeo acceso nulo
         li $a2 75
@@ -1483,9 +1485,8 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
-        # Obtengo el self (instancia actual)
+        # Obtengo el self
         lw $a0 16($fp)
-        # Obtengo la direccion del atributo del self
         addiu $a0 $a0 8
         # Checkeo acceso nulo
         li $a2 12
@@ -1518,9 +1519,8 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
-        # Obtengo el self (instancia actual)
+        # Obtengo el self
         lw $a0 16($fp)
-        # Obtengo la direccion del atributo del self
         addiu $a0 $a0 12
         # Checkeo acceso nulo
         li $a2 13
@@ -1553,9 +1553,8 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
-        # Obtengo el self (instancia actual)
+        # Obtengo el self
         lw $a0 16($fp)
-        # Obtengo la direccion del atributo del self
         addiu $a0 $a0 4
         # Checkeo acceso nulo
         li $a2 14
@@ -1930,9 +1929,8 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
-        # Obtengo el self (instancia actual)
+        # Obtengo el self
         lw $a0 16($fp)
-        # Obtengo la direccion del atributo del self
         addiu $a0 $a0 4
         # Checkeo acceso nulo
         li $a2 24
@@ -2047,6 +2045,7 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
+        # Cargo la direccion de anterior
         addiu $a0 $fp -4
         # Checkeo acceso nulo
         li $a2 38
@@ -2107,9 +2106,8 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
-        # Obtengo el self (instancia actual)
+        # Obtengo el self
         lw $a0 16($fp)
-        # Obtengo la direccion del atributo del self
         addiu $a0 $a0 4
         # Checkeo acceso nulo
         li $a2 39
@@ -2131,9 +2129,8 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
-        # Obtengo el self (instancia actual)
+        # Obtengo el self
         lw $a0 16($fp)
-        # Obtengo la direccion del atributo del self
         addiu $a0 $a0 12
         # Checkeo acceso nulo
         li $a2 40
@@ -2277,9 +2274,8 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
-        # Obtengo el self (instancia actual)
+        # Obtengo el self
         lw $a0 12($fp)
-        # Obtengo la direccion del atributo del self
         addiu $a0 $a0 8
         # Checkeo acceso nulo
         li $a2 53
@@ -2312,9 +2308,8 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
-        # Obtengo el self (instancia actual)
+        # Obtengo el self
         lw $a0 12($fp)
-        # Obtengo la direccion del atributo del self
         addiu $a0 $a0 12
         # Checkeo acceso nulo
         li $a2 54
@@ -2347,9 +2342,8 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
-        # Obtengo el self (instancia actual)
+        # Obtengo el self
         lw $a0 12($fp)
-        # Obtengo la direccion del atributo del self
         addiu $a0 $a0 4
         # Checkeo acceso nulo
         li $a2 55

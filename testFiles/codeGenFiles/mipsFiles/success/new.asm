@@ -213,6 +213,7 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
+        # Cargo la direccion de persona1
         addiu $a0 $fp -4
         # Checkeo acceso nulo
         li $a2 42
@@ -1428,9 +1429,8 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
-        # Obtengo el self (instancia actual)
+        # Obtengo el self
         lw $a0 20($fp)
-        # Obtengo la direccion del atributo del self
         addiu $a0 $a0 8
         # Checkeo acceso nulo
         li $a2 8
@@ -1516,9 +1516,8 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
-        # Obtengo el self (instancia actual)
+        # Obtengo el self
         lw $a0 16($fp)
-        # Obtengo la direccion del atributo del self
         addiu $a0 $a0 8
         # Checkeo acceso nulo
         li $a2 13

@@ -131,6 +131,7 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
+        # Cargo la direccion de numerator
         addiu $a0 $fp -4
         # Checkeo acceso nulo
         li $a2 6
@@ -163,6 +164,7 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
+        # Cargo la direccion de denominator
         addiu $a0 $fp -8
         # Checkeo acceso nulo
         li $a2 7
@@ -221,6 +223,7 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
+        # Cargo la direccion de result
         addiu $a0 $fp -12
         # Checkeo acceso nulo
         li $a2 8

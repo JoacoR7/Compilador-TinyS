@@ -163,6 +163,7 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
+        # Cargo la direccion de a
         addiu $a0 $fp -4
         # Checkeo acceso nulo
         li $a2 3
@@ -173,6 +174,47 @@
         addiu $sp $sp 4
         # Guardo la expresión en la direccion del lado izquierdo
         sw $t0 0($a0)
+
+        # --- Comienzo llamada 4_6 ---
+        # Llamada estática sobre IO
+        # Guardo la vtable de IO
+        la $a0, vtable_IO
+
+        # ========================================
+        # PRECALL out_int
+        # ========================================
+        # Layout del registro de activacion:
+        # Self        -> 16($sp)
+        # $fp llamador -> 12($sp)
+        # return      -> 8($sp)
+        # Param 1     -> 4($sp)
+        # $ra          -> 0($sp) [lo guarda el callee]
+
+        # Reservo el registro de activacion del caller
+        addiu $sp, $sp, -16
+        # Guardo Self/contexto
+        sw $a0, 16($sp)
+        # Guardo $fp del llamador
+        sw $fp, 12($sp)
+        # Inicializo return
+        sw $zero, 8($sp)
+
+
+        # --- Evaluo parametros de out_int ---
+        # Evaluo parametro n° 1
+        # Busco la variable en el RA
+        lw $a0 -4($fp)
+        # Checkeo acceso nulo
+        li $a2 2
+        li $a3 9
+        beqz $a0 runtime_null
+        # Guardo parametro n° 1
+        sw $a0 4($sp)
+        
+        # Como el metodo out_int es estatico, guardo la vtable en self
+        lw $a0 16($sp)
+        lw $a0 4($a0)
+        jalr $a0
         li $v0 10
         syscall
 

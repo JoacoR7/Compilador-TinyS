@@ -177,6 +177,7 @@
         # Guardo en la pila el resultado de la expresion
         sw $a0 0($sp)
         addiu $sp $sp -4
+        # Cargo la direccion de speaker
         addiu $a0 $fp -4
         # Checkeo acceso nulo
         li $a2 20
