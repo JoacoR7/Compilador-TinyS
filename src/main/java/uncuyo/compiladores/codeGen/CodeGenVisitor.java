@@ -545,7 +545,8 @@ public class CodeGenVisitor implements Visitor<Void> {
     public Void visit(SimpleVariableNode simpleVariableNode) {
         Token currentToken = simpleVariableNode.getToken();
         Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(currentToken.getLexeme());
-        Attribute currentAttribute = null;
+        Attribute currentAttribute = AST.getSymbolTable().getCurrentClass().getAttributes().get(currentToken.getLexeme());
+        Parameter currentParameter = AST.getSymbolTable().getCurrentMethod().getParameters().get(currentToken.getLexeme());
         String className;
         if (currentVariable != null) {
             // Obtengo la direccion del slot de la variable
@@ -553,9 +554,8 @@ public class CodeGenVisitor implements Visitor<Void> {
 
             codeGenerator.emitText("addiu $a0 $fp " + codeGenerator.getVariableOffset(currentVariable));
             className = currentVariable.getType().getLexeme();
-        } else {
+        } else if (currentAttribute != null) {
 
-            currentAttribute = AST.getSymbolTable().getCurrentClass().getAttributes().get(currentToken.getLexeme());
             // Obtengo self
             codeGenerator.emitComment("Obtengo el self");
 
@@ -565,6 +565,10 @@ public class CodeGenVisitor implements Visitor<Void> {
             codeGenerator.emitText("addiu $a0 $a0 " + codeGenerator.getAttributeOffset(currentAttribute));
 
             className = currentAttribute.getType().getLexeme();
+        } else {
+            codeGenerator.emitComment("Obtengo el parametro");
+            codeGenerator.emitText("addiu $a0 $fp " + codeGenerator.getParameterOffset(currentParameter));
+            className = currentParameter.getType().getLexeme();
         }
 
         if (simpleVariableNode.getSimpleChainedNode() != null) {
