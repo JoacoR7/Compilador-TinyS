@@ -543,7 +543,9 @@ public class TypeVisitor implements Visitor<Type> {
                 Class currentClass = AST.getSymbolTable().getClasses().get(variableNode.getClassName());
 
                 if (currentClass != null){
-                    Method currentMethod = currentClass.getMethods().get(variableNode.getMethodName());
+                    Method currentMethod = variableNode.getMethodName().equals(".")
+                            ? currentClass.getConstructor()
+                            : currentClass.getMethods().get(variableNode.getMethodName());
                     Attribute attribute = currentClass.getAttributes().get(variableNode.getToken().getLexeme());
 
                     if (currentMethod != null){
@@ -739,7 +741,10 @@ public class TypeVisitor implements Visitor<Type> {
         if(!expressionType.getTypeName().equals("Bool")) {
             throw new TypeMismatchException(ifElseNode.getToken().getRowIndex(), ifElseNode.getToken().getColumnIndex(), "Bool", expressionType.getTypeName());
         }
-        ifElseNode.getSentenceNodeIf().accept(this);
+        if (ifElseNode.getSentenceNodeIf() != null) {
+            ifElseNode.getSentenceNodeIf().accept(this);
+        }
+
         if (ifElseNode.getSentenceNodeElse() != null) {
             ifElseNode.getSentenceNodeElse().accept(this);
         }
@@ -752,7 +757,10 @@ public class TypeVisitor implements Visitor<Type> {
             ifElseNode.setHasReturn(false);
         } else {
             // Caso B: Tiene nodo if y else
-            ifElseNode.setHasReturn(ifElseNode.getSentenceNodeIf().isHasReturn() && ifElseNode.getSentenceNodeElse().isHasReturn());
+            ifElseNode.setHasReturn((ifElseNode.getSentenceNodeIf() != null ?
+                    ifElseNode.getSentenceNodeIf().isHasReturn() :
+                    false)
+                    && ifElseNode.getSentenceNodeElse().isHasReturn());
         }
         return null;
     }

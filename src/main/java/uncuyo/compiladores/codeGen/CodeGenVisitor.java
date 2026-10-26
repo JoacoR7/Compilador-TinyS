@@ -861,7 +861,9 @@ public class CodeGenVisitor implements Visitor<Void> {
         codeGenerator.emitText("beqz $a0 " + (ifElseNode.getSentenceNodeElse() != null ? "else_" : "endif_") + rowColumnLabel);
         codeGenerator.emitComment("Cuerpo de if_" + rowColumnLabel);
         codeGenerator.emitSubLabel("if_" + rowColumnLabel);
-        ifElseNode.getSentenceNodeIf().accept(this);
+        if (ifElseNode.getSentenceNodeIf() != null) {
+            ifElseNode.getSentenceNodeIf().accept(this);
+        }
         if (ifElseNode.getSentenceNodeElse() != null) {
             codeGenerator.emitText("j endif_" + rowColumnLabel);
         }
