@@ -780,7 +780,13 @@ public class CodeGenVisitor implements Visitor<Void> {
 
         codeGenerator.emitComment("Cargo el array");
         Variable currentArrayVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(forNode.getVarNode2().getToken().getLexeme());
-        codeGenerator.emitText("lw $a0 " + codeGenerator.getVariableOffset(currentArrayVariable) + "($fp)");
+        if (currentArrayVariable != null) {
+            codeGenerator.emitText("lw $a0 " + codeGenerator.getVariableOffset(currentArrayVariable) + "($fp)");
+        } else {
+            Parameter currentArrayParameter = AST.getSymbolTable().getCurrentMethod().getParameters().get(forNode.getVarNode2().getToken().getLexeme());
+            codeGenerator.emitText("lw $a0 " + codeGenerator.getParameterOffset(currentArrayParameter) + "($fp)");
+        }
+
         codeGenerator.emitComment("Lo guardo en la pila");
         codeGenerator.push("$a0");
 
