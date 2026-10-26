@@ -18,16 +18,20 @@ import uncuyo.compiladores.semantic.abstractSintaxTree.expression.*;
 import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.*;
 import uncuyo.compiladores.semantic.symbolTable.*;
 import uncuyo.compiladores.semantic.symbolTable.Class;
+import uncuyo.compiladores.syntactic.SyntacticAnalyzer;
 
 import java.util.LinkedList;
 
 
 public class SemanticAnalyzer {
 
+    private enum Phase { DECLARATIONS, SENTENCES, CODE_GENERATION }
+
     private final Lexer lexer;
     private Token currentToken;
     private final SymbolTable symbolTable = new SymbolTable();
-    private final AST ast = new AST();
+    private AST ast;
+    private boolean declarationsOnly;
 
     public SemanticAnalyzer(Lexer lexer, Token token) {
         this.lexer = lexer;
@@ -80,6 +84,25 @@ public class SemanticAnalyzer {
 
     /* ⟨program⟩ ::= ⟨Lista-Definiciones⟩ ⟨Start⟩ */
     public void program() throws LexicalException, SyntacticException {
+        analyzeProgram(Phase.CODE_GENERATION);
+    }
+
+    /**
+     * Construye y consolida la tabla de símbolos, sin crear el AST ni ejecutar
+     * el chequeo de sentencias o la generación de código.
+     */
+    public void analyzeDeclarations() throws LexicalException, SyntacticException {
+        analyzeProgram(Phase.DECLARATIONS);
+    }
+
+    /** Construye y comprueba el AST sin ejecutar la generación de código. */
+    public void analyzeSentences() throws LexicalException, SyntacticException {
+        analyzeProgram(Phase.SENTENCES);
+    }
+
+    private void analyzeProgram(Phase phase) throws LexicalException, SyntacticException {
+        declarationsOnly = phase == Phase.DECLARATIONS;
+        ast = declarationsOnly ? null : new AST();
         listaDefiniciones();
         symbolTable.setCurrentClass(null);
         symbolTable.setCurrentMethod(null);
@@ -87,9 +110,13 @@ public class SemanticAnalyzer {
         symbolTable.setStart(symbolTable.getCurrentMethod());
         matchTokenType(TokenType.EOF);
         symbolTable.consolidate();
-        AST.setSymbolTable(symbolTable);
-        ast.consolidate();
-        ast.generate();
+        if (!declarationsOnly) {
+            AST.setSymbolTable(symbolTable);
+            ast.consolidate();
+            if (phase == Phase.CODE_GENERATION) {
+                ast.generate();
+            }
+        }
     }
 
     /*
@@ -390,14 +417,19 @@ public class SemanticAnalyzer {
     public void bloqueMetodo(boolean isStart) throws LexicalException, SyntacticException {
         matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
         declVarLocalesK();
-        LinkedList<SentenceNode> sentenceNodes = new LinkedList<>();
-        sentenciaK(sentenceNodes);
-        BlockNode blockNode = new BlockNode(sentenceNodes, symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null,
-                symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start", true);
-        if (isStart){
-            ast.setStartBlockNode(blockNode);
+        if (declarationsOnly) {
+            SyntacticAnalyzer syntacticAnalyzer = new SyntacticAnalyzer(lexer, currentToken);
+            currentToken = syntacticAnalyzer.parseStatements();
         } else {
-            ast.getBlockNodes().add(blockNode);
+            LinkedList<SentenceNode> sentenceNodes = new LinkedList<>();
+            sentenciaK(sentenceNodes);
+            BlockNode blockNode = new BlockNode(sentenceNodes, symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null,
+                    symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start", true);
+            if (isStart){
+                ast.setStartBlockNode(blockNode);
+            } else {
+                ast.getBlockNodes().add(blockNode);
+            }
         }
         matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
     }
@@ -833,7 +865,15 @@ public class SemanticAnalyzer {
     public SimpleAccessNode accesoVarSimpleF(Token token) throws LexicalException, SyntacticException {
         SimpleAccessNode simpleAccessNode = null;
         if(checkType(TokenType.SPECIAL_SYMBOL_P)) {
-            simpleAccessNode = new SimpleVariableNode(token, this.getSymbolTable().getCurrentMethod().getVariables().get(token.getLexeme()).getType(), null);
+            Method currentMethod = this.symbolTable.getCurrentMethod();
+            Variable currentVariable = currentMethod.getVariables().get(token.getLexeme());
+            Parameter currentParameter = currentMethod.getParameters().get(token.getLexeme());
+            if (currentVariable != null) {
+                simpleAccessNode = new SimpleVariableNode(token, currentVariable.getType(), null);
+            } else {
+                simpleAccessNode = new SimpleVariableNode(token, currentParameter.getType(), null);
+            }
+
             SimpleVariableNode simpleVariableNode = (SimpleVariableNode) simpleAccessNode;
             simpleVariableNode.setSimpleChainedNode(encadenadoSimpleK());
         } else if (checkType(TokenType.SPECIAL_SYMBOL_LB)) {

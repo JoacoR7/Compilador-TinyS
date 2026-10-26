@@ -545,7 +545,10 @@ public class CodeGenVisitor implements Visitor<Void> {
     public Void visit(SimpleVariableNode simpleVariableNode) {
         Token currentToken = simpleVariableNode.getToken();
         Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(currentToken.getLexeme());
-        Attribute currentAttribute = AST.getSymbolTable().getCurrentClass().getAttributes().get(currentToken.getLexeme());
+        Attribute currentAttribute = null;
+        if (AST.getSymbolTable().getCurrentClass() != null) {
+            currentAttribute = AST.getSymbolTable().getCurrentClass().getAttributes().get(currentToken.getLexeme());
+        }
         Parameter currentParameter = AST.getSymbolTable().getCurrentMethod().getParameters().get(currentToken.getLexeme());
         String className;
         if (currentVariable != null) {
