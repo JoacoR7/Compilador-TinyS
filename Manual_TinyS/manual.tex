@@ -14,6 +14,10 @@
 \usepackage{longtable}
 \usepackage{array}
 \usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable,skins}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
 \newcommand{\lexcode}[1]{\texttt{\detokenize{#1}}}
 \geometry{margin=2.5cm}
 \hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue}
@@ -41,4 +45,5 @@
 \include{capitulos/01_introduccion}
 \include{capitulos/02_analizador_lexico}
 \include{capitulos/03_analizador_sintactico}
+\include{capitulos/04_analizador_semantico_declaraciones}
 \end{document}

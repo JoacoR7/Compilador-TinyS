@@ -1,0 +1,232 @@
+⟨program⟩ ::= ⟨Lista-Definiciones⟩ ⟨Start⟩
+
+⟨Start⟩ ::= start ⟨Bloque-Método⟩
+
+⟨Lista-Definiciones⟩ ::= ⟨class⟩ ⟨Lista-Definiciones⟩
+    | ⟨Impl⟩ ⟨Lista-Definiciones⟩
+    | λ
+
+⟨class⟩ ::= class idclass ⟨classF⟩ {idclass.padre = classF.tipo, TS.guardar(HTClass , idclass.lex)}
+
+⟨classF⟩ ::= {classF.tipo = Object} { ⟨AtributoK⟩ }
+    | ⟨Herencia⟩ {classF.tipo = Herencia.tipo} { ⟨AtributoK⟩ }
+
+⟨AtributoK⟩ ::= ⟨Atributo⟩ ⟨AtributoK⟩
+    | λ
+
+⟨Impl ⟩ ::= impl idclass {TS.guardar(HTClass , idclass.lex)} { ⟨MiembroK⟩ }
+
+⟨Herencia⟩ ::= : ⟨Tipo⟩ {Herencia.tipo = Tipo.tipo}
+
+⟨MiembroK⟩ ::= ⟨Miembro⟩ ⟨MiembroK⟩
+    | λ
+
+⟨Miembro⟩ ::= ⟨Método⟩ {TS.guardar(currentClass , HTMétodos, metodo)}
+    | ⟨Constructor⟩ {TS.guardar(currentClass , constructor)}
+
+⟨Constructor⟩ ::= . ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+
+⟨Atributo⟩ ::= ⟨Tipo⟩ {ListaDeclaracionVariables.tipo = Tipo.tipo, ListaDeclaracionVariables.privado = true } ⟨Lista-Declaración-Variables⟩ ;
+    | pub ⟨Tipo⟩ {ListaDeclaracionVariables.tipo = Tipo.tipo, ListaDeclaracionVariables.privado = false}  ⟨Lista-Declaración-Variables⟩ ;
+
+⟨Método⟩ ::= fn {MétodoF.estático = false} ⟨MétodoF⟩
+    | st {MétodoF.estático = true} fn ⟨MétodoF⟩
+
+⟨MétodoF⟩ ::= {MétodoF.tipo = void} idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+    | ⟨Tipo-Método⟩ {MétodoF.tipo = Tipo-Método.tipo} idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+
+⟨Bloque-Método⟩ ::= { ⟨Decl-Var-LocalesK⟩ ⟨SentenciaK⟩ }
+
+⟨Decl-Var-LocalesK⟩ ::= ⟨Decl-Var-Locales⟩ ⟨Decl-Var-LocalesK⟩
+    | λ
+
+⟨Decl-Var-Locales⟩ ::= ⟨Tipo⟩ {ListaDeclaracionVariable.tipo = Tipo.tipo} ⟨Lista-Declaración-Variables⟩ ;
+
+⟨Lista-Declaración-Variables⟩ ::= idMetAt {if(TS.yaExiste(ClaseActual, idMetAt.lex)) then Error else TS.guardar(ClaseActual, idMetAt.lex, ListaDeclaracionVariables.tipo) } {ListaDeclaracionVariablesF.tipo = ListaDeclaracionVariables.tipo, ListaDeclaracionVariablesF.privado = ListaDeclaracionVariables.privado} ⟨Lista-Declaración-VariablesF⟩
+
+⟨Lista-Declaración-VariablesF⟩ ::= , {ListaDeclaracionVariables.tipo = ListaDeclaracionVariablesF.tipo, ListaDeclaracionVariables.privado = ListaDeclaracionVariablesF.privado } ⟨Lista-Declaración-Variables⟩
+    | λ
+
+⟨Argumentos-Formales⟩::= ( ⟨Argumentos-FormalesF⟩
+
+⟨Argumentos-FormalesF⟩ ::= )
+    | ⟨Lista-Argumentos-Formales⟩ )
+
+⟨Lista-Argumentos-Formales⟩ ::= ⟨Argumento-Formal⟩ ⟨Lista-Argumentos-FormalesF⟩
+
+⟨Lista-Argumentos-FormalesF⟩ ::=  , ⟨Lista-Argumentos-Formales⟩
+    | λ
+
+⟨Argumento-Formal ⟩ ::= ⟨Tipo⟩ idMetAt {TS.asignarArgumento(metodoActual, idmetAt.lex, metodoActual.THParametros.size, Tipo.tipo)}
+
+⟨Tipo-Método⟩ ::= ⟨Tipo⟩ {Tipo-Método.tipo = Tipo.tipo}
+    | void {Tipo-Método.tipo = void}
+
+⟨Tipo⟩ ::= ⟨Tipo-Primitivo⟩ {Tipo.tipo = TipoPrimitivo.tipo}
+    | ⟨Tipo-Referencia⟩ {Tipo.tipo = TipoReferencia.tipo}
+    | ⟨Tipo-Arreglo⟩ {Tipo.tipo = TipoArreglo.tipo}
+
+⟨Tipo-Primitivo⟩ ::= Str {TipoPrimitivo.tipo = STR_CLASS}
+    | Bool {TipoPrimitivo.tipo = BOOL_CLASS}
+    | Int {TipoPrimitivo.tipo = INT_CLASS}
+
+⟨Tipo-Referencia⟩ ::= idclass {TipoReferencia.tipo = idclass}
+
+⟨Tipo-Arreglo⟩ ::= Array ⟨Tipo-Primitivo⟩ {TipoArreglo.tipo = TipoPrimitivo.tipo}
+
+⟨SentenciaK⟩ ::= ⟨Sentencia⟩ ⟨SentenciaK⟩
+    | λ
+
+⟨Sentencia⟩ ::= ;
+    | ⟨Asignación⟩;
+    | ⟨Sentencia-Simple⟩;
+    | while ( ⟨Expresión⟩ ) ⟨Sentencia⟩
+    | for ( ⟨Tipo-Primitivo⟩ idMetAt in idMetAt ) ⟨Sentencia⟩
+    | ⟨Bloque⟩
+    | if (⟨Expresión⟩) ⟨Sentencia⟩ ⟨SentenciaF1⟩
+    | ret ⟨SentenciaF2⟩
+
+⟨SentenciaF1⟩ ::= else ⟨Sentencia⟩
+    | λ
+
+⟨SentenciaF2⟩ ::= ;
+    | ⟨Expresión⟩;
+
+⟨Bloque⟩ ::= { ⟨SentenciaK⟩ }
+
+⟨Asignación⟩ ::= ⟨AccesoVar-Simple⟩ = ⟨Expresión⟩
+    | ⟨AccesoSelf-Simple⟩ = ⟨Expresión⟩
+
+⟨AccesoVar-Simple⟩ ::= id ⟨AccesoVar-SimpleF⟩
+
+⟨AccesoVar-SimpleF⟩ ::= ⟨Encadenado-SimpleK⟩
+    | [ ⟨Expresión⟩ ]
+
+⟨AccesoSelf-Simple⟩ ::= self ⟨Encadenado-SimpleK⟩
+
+⟨Encadenado-SimpleK⟩ ::= ⟨Encadenado-Simple⟩ ⟨Encadenado-SimpleK⟩
+    | λ
+
+⟨Encadenado-Simple⟩ ::= . id
+
+⟨Sentencia-Simple⟩ ::= (⟨Expresión⟩)
+
+⟨Expresión⟩ ::= ⟨ExpOr⟩
+
+⟨ExpOr⟩ ::= ⟨ExpAnd⟩ ⟨ExpOrR⟩
+
+⟨ExpOrR⟩ ::= || ⟨ExpAnd⟩ ⟨ExpOrR⟩
+    | λ
+
+⟨ExpAnd⟩ ::= ⟨ExpIgual⟩ ⟨ExpAndR⟩
+
+⟨ExpAndR⟩ ::= && ⟨ExpIgual ⟩ ⟨ExpAndR⟩
+    | λ
+
+⟨ExpIgual ⟩ ::= ⟨ExpCompuesta⟩ ⟨ExpIgualR⟩
+
+⟨ExpIgualR⟩ ::= ⟨OpIgual⟩ ⟨ExpCompuesta⟩ ⟨ExpIgualR⟩
+    | λ
+
+⟨ExpCompuesta⟩ ::= ⟨ExpAd⟩ ⟨ExpCompuestaF⟩
+
+⟨ExpCompuestaF⟩ ::= ⟨OpCompuesto⟩ ⟨ExpAd⟩
+    | λ
+
+⟨ExpAd ⟩ ::= ⟨ExpMul⟩ ⟨ExpAdR⟩
+
+⟨ExpAdR⟩ ::= ⟨OpAd⟩ ⟨ExpMul⟩ ⟨ExpAdR⟩
+    | λ
+
+⟨ExpMul⟩ ::= ⟨ExpUn⟩ ⟨ExpMulR⟩
+
+⟨ExpMulR⟩ ::= ⟨OpMul⟩ ⟨ExpUn⟩ ⟨ExpMulR⟩
+    | λ
+
+⟨ExpUn⟩ ::= ⟨OpUnario⟩ ⟨ExpUn⟩
+    | ⟨Operando⟩
+
+⟨OpIgual ⟩ ::= ==
+    | !=
+
+⟨OpCompuesto⟩ ::= <
+    | >
+    | <=
+    | >=
+
+⟨OpAd ⟩ ::= +
+    | -
+
+⟨OpUnario⟩ ::= 	+
+    | -
+    | !
+    | ++
+    | --
+
+⟨OpMul ⟩ ::= *
+    | /
+
+⟨Operando⟩ ::= ⟨Literal⟩
+    | ⟨Primario⟩
+
+⟨Literal⟩ ::= nil
+    | true
+    | false
+    | intLiteral
+    | StrLiteral
+
+⟨Primario⟩ ::= ⟨ExpresionParentizada⟩
+    | ⟨AccesoSelf⟩
+    | ⟨Llamada-Método-Estático⟩
+    | ⟨Llamada-Conclassor⟩
+    | id ⟨VarOMetodo⟩
+
+⟨VarOMetodo⟩ ::= ⟨AccesoVar⟩
+    | ⟨Llamada-Método⟩
+
+⟨ExpresionParentizada⟩ ::= ( ⟨Expresión⟩ ) ⟨ExpresionParentizadaF⟩
+
+⟨ExpresionParentizadaF⟩ ::=  λ
+    | ⟨Encadenado⟩
+
+⟨AccesoSelf⟩ ::= self ⟨AccesoSelfF⟩
+
+⟨AccesoSelfF⟩::= λ
+    | ⟨Encadenado⟩
+
+⟨AccesoVar⟩ ::= λ
+    | ⟨Encadenado⟩
+    | [ ⟨Expresión⟩ ] ⟨AccesoVarF⟩
+
+⟨AccesoVarF⟩ ::= λ
+    | ⟨Encadenado⟩
+
+⟨Llamada-Método⟩ ::= ⟨Argumentos-Actuales⟩ ⟨Llamada-MétodoF⟩
+
+⟨Llamada-MétodoF⟩ ::= λ
+    | ⟨Encadenado⟩
+
+⟨Llamada-Método-Estático⟩ ::= idclass . id ⟨Llamada-Método⟩
+
+⟨Llamada-Conclassor⟩ ::= new ⟨Llamada-ConclassorF1⟩
+
+⟨Llamada-ConclassorF1⟩ ::= idclass ⟨Argumentos-Actuales⟩ ⟨Llamada-ConclassorF2⟩
+    | ⟨Tipo-Primitivo⟩ [ ⟨Expresión⟩ ] ⟨Llamada-ConclassorF2⟩
+
+⟨Llamada-ConclassorF2⟩ ::= λ
+    | ⟨Encadenado⟩
+
+⟨Argumentos-Actuales⟩ ::= ( ⟨Argumentos-ActualesF⟩
+
+⟨Argumentos-ActualesF⟩ ::= )
+    | ⟨Lista-Expresiones⟩ )
+
+⟨Lista-Expresiones⟩ ::= ⟨Expresión⟩ ⟨Lista-ExpresionesF⟩
+
+⟨Lista-ExpresionesF⟩ ::= λ
+    | , ⟨Lista-Expresiones⟩
+
+⟨Encadenado⟩ ::= . id ⟨EncadenadoF⟩
+
+⟨EncadenadoF⟩ ::= ⟨Llamada-Método⟩
+    | ⟨AccesoVar⟩

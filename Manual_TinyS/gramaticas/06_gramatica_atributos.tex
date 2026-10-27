@@ -1,0 +1,656 @@
+% Gramática importada del documento indicado por el autor.
+% Fuente: https://docs.google.com/document/d/1G9TEe52PSVRb4VjHMQ3b2_R0w4sH5iMwJogpb6Et2YM/edit
+% Se conservan el texto y los intervalos con fondo verde; se adapta la sangría.
+\begingroup
+\definecolor{edtVerde}{RGB}{0,255,0}
+\newcommand{\edthl}[1]{{\setlength{\fboxsep}{0pt}\colorbox{edtVerde}{\strut #1}}}
+\newcommand{\edtline}[1]{\hangindent=2em\hangafter=1\noindent#1\par}
+\begin{tcolorbox}[enhanced jigsaw,breakable,sharp corners,colback=white,colframe=gray,
+  boxrule=0.4pt,boxsep=0pt,left=3pt,right=3pt,top=4pt,bottom=4pt,
+  before skip=0.8em,after skip=0.8em]
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}program\ensuremath{\rangle} ::= \ensuremath{\langle}Lista-Definiciones\ensuremath{\rangle} \ensuremath{\langle}Start\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Start\ensuremath{\rangle} ::= start \ensuremath{\langle}Bloque-Método\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Lista-Definiciones\ensuremath{\rangle} ::= \ensuremath{\langle}class\ensuremath{\rangle} \ensuremath{\langle}Lista-Definiciones\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Impl\ensuremath{\rangle} \ensuremath{\langle}Lista-Definiciones\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}class\ensuremath{\rangle} ::= class idclass \ensuremath{\langle}classF\ensuremath{\rangle} \edthl{\{idclass.padre\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{classF.tipo,\ }\allowbreak{}\edthl{TS.guardar(HTClass\ }\allowbreak{}\edthl{,\ }\allowbreak{}\edthl{idclass.lex)\}}\allowbreak{}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}classF\ensuremath{\rangle} ::= \edthl{\{classF.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{Object\}}\allowbreak{} \{ \ensuremath{\langle}AtributoK\ensuremath{\rangle} \}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Herencia\ensuremath{\rangle} \edthl{\{classF.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{Herencia.tipo\}}\allowbreak{} \{ \ensuremath{\langle}AtributoK\ensuremath{\rangle} \}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}AtributoK\ensuremath{\rangle} ::= \ensuremath{\langle}Atributo\ensuremath{\rangle} \ensuremath{\langle}AtributoK\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Impl \ensuremath{\rangle} ::= impl idclass \edthl{\{TS.guardar(HTClass\ }\allowbreak{}\edthl{,\ }\allowbreak{}\edthl{idclass.lex)\}}\allowbreak{} \{ \ensuremath{\langle}MiembroK\ensuremath{\rangle} \}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Herencia\ensuremath{\rangle} ::= : \ensuremath{\langle}Tipo\ensuremath{\rangle} \edthl{\{Herencia.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{Tipo.tipo\}}\allowbreak{}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}MiembroK\ensuremath{\rangle} ::= \ensuremath{\langle}Miembro\ensuremath{\rangle} \ensuremath{\langle}MiembroK\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Miembro\ensuremath{\rangle} ::= \ensuremath{\langle}Método\ensuremath{\rangle} \edthl{\{TS.guardar(currentClass\ }\allowbreak{}\edthl{,\ }\allowbreak{}\edthl{HTMétodos,\ }\allowbreak{}\edthl{metodo)\}}\allowbreak{}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Constructor\ensuremath{\rangle} \edthl{\{TS.guardar(currentClass\ }\allowbreak{}\edthl{,\ }\allowbreak{}\edthl{constructor)\}}\allowbreak{}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Constructor\ensuremath{\rangle} ::= . \ensuremath{\langle}Argumentos-Formales\ensuremath{\rangle} \ensuremath{\langle}Bloque-Método\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Atributo\ensuremath{\rangle} ::= \ensuremath{\langle}Tipo\ensuremath{\rangle} \edthl{\{ListaDeclaracionVariables.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{Tipo.tipo,\ }\allowbreak{}\edthl{ListaDeclaracionVariables.privado\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{true\ }\allowbreak{}\edthl{\}\ }\allowbreak{}\ensuremath{\langle}Lista-Declaración-Variables\ensuremath{\rangle} ;}
+\edtline{\hspace*{2em}\textbar{} pub \ensuremath{\langle}Tipo\ensuremath{\rangle} \edthl{\{ListaDeclaracionVariables.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{Tipo.tipo,\ }\allowbreak{}\edthl{ListaDeclaracionVariables.privado\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{false\}\ \ }\allowbreak{}\ensuremath{\langle}Lista-Declaración-Variables\ensuremath{\rangle} ;}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Método\ensuremath{\rangle} ::= fn \edthl{\{MétodoF.estático\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{false\}}\allowbreak{} \ensuremath{\langle}MétodoF\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} st \edthl{\{MétodoF.estático\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{true\}}\allowbreak{} fn \ensuremath{\langle}MétodoF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}MétodoF\ensuremath{\rangle} ::= \edthl{\{MétodoF.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{void\}}\allowbreak{} idMetAt \ensuremath{\langle}Argumentos-Formales\ensuremath{\rangle} \ensuremath{\langle}Bloque-Método\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Tipo-Método\ensuremath{\rangle} \edthl{\{MétodoF.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{Tipo-Método.tipo\}}\allowbreak{} idMetAt \ensuremath{\langle}Argumentos-Formales\ensuremath{\rangle} \ensuremath{\langle}Bloque-Método\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Bloque-Método\ensuremath{\rangle} ::= \{ \ensuremath{\langle}Decl-Var-LocalesK\ensuremath{\rangle} \ensuremath{\langle}SentenciaK\ensuremath{\rangle} \}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Decl-Var-LocalesK\ensuremath{\rangle} ::= \ensuremath{\langle}Decl-Var-Locales\ensuremath{\rangle} \ensuremath{\langle}Decl-Var-LocalesK\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Decl-Var-Locales\ensuremath{\rangle} ::= \ensuremath{\langle}Tipo\ensuremath{\rangle} \edthl{\{ListaDeclaracionVariable.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{Tipo.tipo\}}\allowbreak{} \ensuremath{\langle}Lista-Declaración-Variables\ensuremath{\rangle} ;}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Lista-Declaración-Variables\ensuremath{\rangle} ::= idMetAt \edthl{\{if(TS.yaExiste(ClaseActual,\ }\allowbreak{}\edthl{idMetAt.lex))\ }\allowbreak{}\edthl{then\ }\allowbreak{}\edthl{Error\ }\allowbreak{}\edthl{else\ }\allowbreak{}\edthl{TS.guardar(ClaseActual,\ }\allowbreak{}\edthl{idMetAt.lex,\ }\allowbreak{}\edthl{ListaDeclaracionVariables.tipo)\ }\allowbreak{}\edthl{\}\ }\allowbreak{}\edthl{\{ListaDeclaracionVariablesF.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{ListaDeclaracionVariables.tipo,\ }\allowbreak{}\edthl{ListaDeclaracionVariablesF.privado\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{ListaDeclaracionVariables.privado\}}\allowbreak{} \ensuremath{\langle}Lista-Declaración-VariablesF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Lista-Declaración-VariablesF\ensuremath{\rangle} ::= , \edthl{\{ListaDeclaracionVariables.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{ListaDeclaracionVariablesF.tipo,\ }\allowbreak{}\edthl{ListaDeclaracionVariables.privado\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{ListaDeclaracionVariablesF.privado\ }\allowbreak{}\edthl{\}}\allowbreak{} \ensuremath{\langle}Lista-Declaración-Variables\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Argumentos-Formales\ensuremath{\rangle}::= ( \ensuremath{\langle}Argumentos-FormalesF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Argumentos-FormalesF\ensuremath{\rangle} ::= )}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Lista-Argumentos-Formales\ensuremath{\rangle} )}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Lista-Argumentos-Formales\ensuremath{\rangle} ::= \ensuremath{\langle}Argumento-Formal\ensuremath{\rangle} \ensuremath{\langle}Lista-Argumentos-FormalesF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Lista-Argumentos-FormalesF\ensuremath{\rangle} ::=  , \ensuremath{\langle}Lista-Argumentos-Formales\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Argumento-Formal \ensuremath{\rangle} ::= \ensuremath{\langle}Tipo\ensuremath{\rangle} idMetAt \edthl{\{TS.asignarArgumento(metodoActual,\ }\allowbreak{}\edthl{idmetAt.lex,\ }\allowbreak{}\edthl{metodoActual.THParametros.size,\ }\allowbreak{}\edthl{Tipo.tipo)\}}\allowbreak{}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Tipo-Método\ensuremath{\rangle} ::= \ensuremath{\langle}Tipo\ensuremath{\rangle} \edthl{\{Tipo-Método.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{Tipo.tipo\}}\allowbreak{}}
+\edtline{\hspace*{2em}\textbar{} void \edthl{\{Tipo-Método.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{void\}}\allowbreak{}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Tipo\ensuremath{\rangle} ::= \ensuremath{\langle}Tipo-Primitivo\ensuremath{\rangle} \edthl{\{Tipo.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{TipoPrimitivo.tipo\}}\allowbreak{}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Tipo-Referencia\ensuremath{\rangle} \edthl{\{Tipo.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{TipoReferencia.tipo\}}\allowbreak{}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Tipo-Arreglo\ensuremath{\rangle} \edthl{\{Tipo.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{TipoArreglo.tipo\}}\allowbreak{}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Tipo-Primitivo\ensuremath{\rangle} ::= Str \edthl{\{TipoPrimitivo.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{STR\_CLASS\}}\allowbreak{}}
+\edtline{\hspace*{2em}\textbar{} Bool \edthl{\{TipoPrimitivo.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{BOOL\_CLASS\}}\allowbreak{}}
+\edtline{\hspace*{2em}\textbar{} Int \edthl{\{TipoPrimitivo.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{INT\_CLASS\}}\allowbreak{}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Tipo-Referencia\ensuremath{\rangle} ::= idclass \edthl{\{TipoReferencia.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{idclass\}}\allowbreak{}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Tipo-Arreglo\ensuremath{\rangle} ::= Array \ensuremath{\langle}Tipo-Primitivo\ensuremath{\rangle} \edthl{\{TipoArreglo.tipo\ }\allowbreak{}\edthl{=\ }\allowbreak{}\edthl{TipoPrimitivo.tipo\}}\allowbreak{}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}SentenciaK\ensuremath{\rangle} ::= \ensuremath{\langle}Sentencia\ensuremath{\rangle} \ensuremath{\langle}SentenciaK\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Sentencia\ensuremath{\rangle} ::= ;}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Asignación\ensuremath{\rangle};}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Sentencia-Simple\ensuremath{\rangle};}
+\edtline{\hspace*{2em}\textbar{} while ( \ensuremath{\langle}Expresión\ensuremath{\rangle} ) \ensuremath{\langle}Sentencia\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} for ( \ensuremath{\langle}Tipo-Primitivo\ensuremath{\rangle} idMetAt in idMetAt ) \ensuremath{\langle}Sentencia\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Bloque\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} if (\ensuremath{\langle}Expresión\ensuremath{\rangle}) \ensuremath{\langle}Sentencia\ensuremath{\rangle} \ensuremath{\langle}SentenciaF1\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} ret \ensuremath{\langle}SentenciaF2\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}SentenciaF1\ensuremath{\rangle} ::= else \ensuremath{\langle}Sentencia\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}SentenciaF2\ensuremath{\rangle} ::= ;}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Expresión\ensuremath{\rangle};}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Bloque\ensuremath{\rangle} ::= \{ \ensuremath{\langle}SentenciaK\ensuremath{\rangle} \}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Asignación\ensuremath{\rangle} ::= \ensuremath{\langle}AccesoVar-Simple\ensuremath{\rangle} = \ensuremath{\langle}Expresión\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}AccesoSelf-Simple\ensuremath{\rangle} = \ensuremath{\langle}Expresión\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}AccesoVar-Simple\ensuremath{\rangle} ::= id \ensuremath{\langle}AccesoVar-SimpleF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}AccesoVar-SimpleF\ensuremath{\rangle} ::= \ensuremath{\langle}Encadenado-SimpleK\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} [ \ensuremath{\langle}Expresión\ensuremath{\rangle} ]}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}AccesoSelf-Simple\ensuremath{\rangle} ::= self \ensuremath{\langle}Encadenado-SimpleK\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Encadenado-SimpleK\ensuremath{\rangle} ::= \ensuremath{\langle}Encadenado-Simple\ensuremath{\rangle} \ensuremath{\langle}Encadenado-SimpleK\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Encadenado-Simple\ensuremath{\rangle} ::= . id}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Sentencia-Simple\ensuremath{\rangle} ::= (\ensuremath{\langle}Expresión\ensuremath{\rangle})}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Expresión\ensuremath{\rangle} ::= \ensuremath{\langle}ExpOr\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}ExpOr\ensuremath{\rangle} ::= \ensuremath{\langle}ExpAnd\ensuremath{\rangle} \ensuremath{\langle}ExpOrR\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}ExpOrR\ensuremath{\rangle} ::= \textbar{}\textbar{} \ensuremath{\langle}ExpAnd\ensuremath{\rangle} \ensuremath{\langle}ExpOrR\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}ExpAnd\ensuremath{\rangle} ::= \ensuremath{\langle}ExpIgual\ensuremath{\rangle} \ensuremath{\langle}ExpAndR\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}ExpAndR\ensuremath{\rangle} ::= \&\& \ensuremath{\langle}ExpIgual \ensuremath{\rangle} \ensuremath{\langle}ExpAndR\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}ExpIgual \ensuremath{\rangle} ::= \ensuremath{\langle}ExpCompuesta\ensuremath{\rangle} \ensuremath{\langle}ExpIgualR\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}ExpIgualR\ensuremath{\rangle} ::= \ensuremath{\langle}OpIgual\ensuremath{\rangle} \ensuremath{\langle}ExpCompuesta\ensuremath{\rangle} \ensuremath{\langle}ExpIgualR\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}ExpCompuesta\ensuremath{\rangle} ::= \ensuremath{\langle}ExpAd\ensuremath{\rangle} \ensuremath{\langle}ExpCompuestaF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}ExpCompuestaF\ensuremath{\rangle} ::= \ensuremath{\langle}OpCompuesto\ensuremath{\rangle} \ensuremath{\langle}ExpAd\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}ExpAd \ensuremath{\rangle} ::= \ensuremath{\langle}ExpMul\ensuremath{\rangle} \ensuremath{\langle}ExpAdR\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}ExpAdR\ensuremath{\rangle} ::= \ensuremath{\langle}OpAd\ensuremath{\rangle} \ensuremath{\langle}ExpMul\ensuremath{\rangle} \ensuremath{\langle}ExpAdR\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}ExpMul\ensuremath{\rangle} ::= \ensuremath{\langle}ExpUn\ensuremath{\rangle} \ensuremath{\langle}ExpMulR\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}ExpMulR\ensuremath{\rangle} ::= \ensuremath{\langle}OpMul\ensuremath{\rangle} \ensuremath{\langle}ExpUn\ensuremath{\rangle} \ensuremath{\langle}ExpMulR\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}ExpUn\ensuremath{\rangle} ::= \ensuremath{\langle}OpUnario\ensuremath{\rangle} \ensuremath{\langle}ExpUn\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Operando\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}OpIgual \ensuremath{\rangle} ::= ==}
+\edtline{\hspace*{2em}\textbar{} !=}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}OpCompuesto\ensuremath{\rangle} ::= <}
+\edtline{\hspace*{2em}\textbar{} >}
+\edtline{\hspace*{2em}\textbar{} <=}
+\edtline{\hspace*{2em}\textbar{} >=}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}OpAd \ensuremath{\rangle} ::= +}
+\edtline{\hspace*{2em}\textbar{} -}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}OpUnario\ensuremath{\rangle} ::= 	+}
+\edtline{\hspace*{2em}\textbar{} -}
+\edtline{\hspace*{2em}\textbar{} !}
+\edtline{\hspace*{2em}\textbar{} ++}
+\edtline{\hspace*{2em}\textbar{} -{}-}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}OpMul \ensuremath{\rangle} ::= *}
+\edtline{\hspace*{2em}\textbar{} /}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Operando\ensuremath{\rangle} ::= \ensuremath{\langle}Literal\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Primario\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Literal\ensuremath{\rangle} ::= nil}
+\edtline{\hspace*{2em}\textbar{} true}
+\edtline{\hspace*{2em}\textbar{} false}
+\edtline{\hspace*{2em}\textbar{} intLiteral}
+\edtline{\hspace*{2em}\textbar{} StrLiteral}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Primario\ensuremath{\rangle} ::= \ensuremath{\langle}ExpresionParentizada\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}AccesoSelf\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Llamada-Método-Estático\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Llamada-Conclassor\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} id \ensuremath{\langle}VarOMetodo\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}VarOMetodo\ensuremath{\rangle} ::= \ensuremath{\langle}AccesoVar\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Llamada-Método\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}ExpresionParentizada\ensuremath{\rangle} ::= ( \ensuremath{\langle}Expresión\ensuremath{\rangle} ) \ensuremath{\langle}ExpresionParentizadaF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}ExpresionParentizadaF\ensuremath{\rangle} ::=  \ensuremath{\lambda}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Encadenado\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}AccesoSelf\ensuremath{\rangle} ::= self \ensuremath{\langle}AccesoSelfF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}AccesoSelfF\ensuremath{\rangle}::= \ensuremath{\lambda}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Encadenado\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}AccesoVar\ensuremath{\rangle} ::= \ensuremath{\lambda}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Encadenado\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} [ \ensuremath{\langle}Expresión\ensuremath{\rangle} ] \ensuremath{\langle}AccesoVarF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}AccesoVarF\ensuremath{\rangle} ::= \ensuremath{\lambda}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Encadenado\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Llamada-Método\ensuremath{\rangle} ::= \ensuremath{\langle}Argumentos-Actuales\ensuremath{\rangle} \ensuremath{\langle}Llamada-MétodoF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Llamada-MétodoF\ensuremath{\rangle} ::= \ensuremath{\lambda}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Encadenado\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Llamada-Método-Estático\ensuremath{\rangle} ::= idclass . id \ensuremath{\langle}Llamada-Método\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Llamada-Conclassor\ensuremath{\rangle} ::= new \ensuremath{\langle}Llamada-ConclassorF1\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Llamada-ConclassorF1\ensuremath{\rangle} ::= idclass \ensuremath{\langle}Argumentos-Actuales\ensuremath{\rangle} \ensuremath{\langle}Llamada-ConclassorF2\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Tipo-Primitivo\ensuremath{\rangle} [ \ensuremath{\langle}Expresión\ensuremath{\rangle} ] \ensuremath{\langle}Llamada-ConclassorF2\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Llamada-ConclassorF2\ensuremath{\rangle} ::= \ensuremath{\lambda}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Encadenado\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Argumentos-Actuales\ensuremath{\rangle} ::= ( \ensuremath{\langle}Argumentos-ActualesF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Argumentos-ActualesF\ensuremath{\rangle} ::= )}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}Lista-Expresiones\ensuremath{\rangle} )}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Lista-Expresiones\ensuremath{\rangle} ::= \ensuremath{\langle}Expresión\ensuremath{\rangle} \ensuremath{\langle}Lista-ExpresionesF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Lista-ExpresionesF\ensuremath{\rangle} ::= \ensuremath{\lambda}}
+\edtline{\hspace*{2em}\textbar{} , \ensuremath{\langle}Lista-Expresiones\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}Encadenado\ensuremath{\rangle} ::= . id \ensuremath{\langle}EncadenadoF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.65em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\edtline{\ensuremath{\langle}EncadenadoF\ensuremath{\rangle} ::= \ensuremath{\langle}Llamada-Método\ensuremath{\rangle}}
+\edtline{\hspace*{2em}\textbar{} \ensuremath{\langle}AccesoVar\ensuremath{\rangle}}
+\end{minipage}\par
+\end{tcolorbox}
+\endgroup
+\par\medskip
