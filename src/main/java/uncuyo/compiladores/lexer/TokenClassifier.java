@@ -305,6 +305,7 @@ public class TokenClassifier {
                     case 'n':
                     case 't':
                     case 'r':
+                    case 'v':
                     case '"':
                     case '\'':
                     case '\\':

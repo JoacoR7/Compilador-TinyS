@@ -56,23 +56,40 @@
     #############################
 
     str_0:
-        .asciiz "Valor de a: "
+        .ascii "Valor de a: "
+        .byte 0
     str_1:
-        .asciiz "\nValor de b: "
+        .byte 10
+        .ascii "Valor de b: "
+        .byte 0
     str_2:
-        .asciiz "\n\nPruebas de operador <:"
+        .byte 10
+        .byte 10
+        .ascii "Pruebas de operador <:"
+        .byte 0
     str_3:
-        .asciiz "\na < b: "
+        .byte 10
+        .ascii "a < b: "
+        .byte 0
     str_4:
-        .asciiz "\nb < a: "
+        .byte 10
+        .ascii "b < a: "
+        .byte 0
     str_5:
-        .asciiz "\na < 10: "
+        .byte 10
+        .ascii "a < 10: "
+        .byte 0
     str_6:
-        .asciiz "\n10 < a: "
+        .byte 10
+        .ascii "10 < a: "
+        .byte 0
     str_7:
-        .asciiz "\n2 < 3 * a: "
+        .byte 10
+        .ascii "2 < 3 * a: "
+        .byte 0
     str_8:
-        .asciiz "\n"
+        .byte 10
+        .byte 0
 
 .text
     .globl main

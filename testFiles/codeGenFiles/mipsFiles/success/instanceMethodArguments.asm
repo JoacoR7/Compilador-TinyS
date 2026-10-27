@@ -56,13 +56,17 @@
     #############################
 
     str_0:
-        .asciiz " "
+        .ascii " "
+        .byte 0
     str_1:
-        .asciiz "tinyS"
+        .ascii "tinyS"
+        .byte 0
     str_2:
-        .asciiz "hola"
+        .ascii "hola"
+        .byte 0
     str_3:
-        .asciiz "\n"
+        .byte 10
+        .byte 0
 
     vtable_Speaker:
         .word Speaker_greet

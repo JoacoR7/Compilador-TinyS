@@ -56,15 +56,20 @@
     #############################
 
     str_0:
-        .asciiz "Tomas"
+        .ascii "Tomas"
+        .byte 0
     str_1:
-        .asciiz "Victor"
+        .ascii "Victor"
+        .byte 0
     str_2:
-        .asciiz "Paulina"
+        .ascii "Paulina"
+        .byte 0
     str_3:
-        .asciiz "Joaquin"
+        .ascii "Joaquin"
+        .byte 0
     str_4:
-        .asciiz "Cecilia"
+        .ascii "Cecilia"
+        .byte 0
 
 .text
     .globl main

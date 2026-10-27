@@ -56,9 +56,14 @@
     #############################
 
     str_0:
-        .asciiz "Comparo a con 4:\n"
+        .ascii "Comparo a con 4:"
+        .byte 10
+        .byte 0
     str_1:
-        .asciiz "\nComparo a con 3:\n"
+        .byte 10
+        .ascii "Comparo a con 3:"
+        .byte 10
+        .byte 0
 
 .text
     .globl main

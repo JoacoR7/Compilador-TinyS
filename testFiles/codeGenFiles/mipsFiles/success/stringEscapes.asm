@@ -56,11 +56,23 @@
     #############################
 
     str_0:
-        .asciiz "linea 1\nlinea 2\tfin"
+        .ascii "linea 1"
+        .byte 10
+        .ascii "linea 2"
+        .byte 9
+        .ascii "fin"
+        .byte 0
     str_1:
-        .asciiz "\n"
+        .byte 10
+        .byte 0
     str_2:
-        .asciiz "comillas: \"tinyS\"; barra: \\"
+        .ascii "comillas: "
+        .byte 34
+        .ascii "tinyS"
+        .byte 34
+        .ascii "; barra: "
+        .byte 92
+        .byte 0
 
 .text
     .globl main

@@ -56,7 +56,8 @@
     #############################
 
     str_0:
-        .asciiz "\n"
+        .byte 10
+        .byte 0
 
     vtable_MathTools:
         .word MathTools_add

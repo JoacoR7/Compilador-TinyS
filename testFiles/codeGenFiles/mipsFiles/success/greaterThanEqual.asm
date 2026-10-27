@@ -56,13 +56,19 @@
     #############################
 
     str_0:
-        .asciiz "a >= b: "
+        .ascii "a >= b: "
+        .byte 0
     str_1:
-        .asciiz "\na >= 10: "
+        .byte 10
+        .ascii "a >= 10: "
+        .byte 0
     str_2:
-        .asciiz "\nb >= a: "
+        .byte 10
+        .ascii "b >= a: "
+        .byte 0
     str_3:
-        .asciiz "\n"
+        .byte 10
+        .byte 0
 
 .text
     .globl main

@@ -56,7 +56,8 @@
     #############################
 
     str_0:
-        .asciiz "hola mundo"
+        .ascii "hola mundo"
+        .byte 0
 
 .text
     .globl main

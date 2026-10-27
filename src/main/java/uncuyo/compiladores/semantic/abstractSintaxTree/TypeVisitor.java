@@ -489,6 +489,13 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(VariableNode variableNode){
+        if (variableNode.isChainedNode()
+                && variableNode.getChainedNode() == null
+                && variableNode.getType() != null) {
+
+            return variableNode.getType();
+        }
+
         Type type = null;
         if(variableNode.getClassName() == null) {
             Variable variable = AST.getSymbolTable().getStart().getVariables().get(variableNode.getToken().getLexeme());
@@ -509,8 +516,13 @@ public class TypeVisitor implements Visitor<Type> {
                 throw new LocalVariableNotFoundException(variableNode.getToken().getRowIndex(), variableNode.getToken().getColumnIndex(),
                         variableNode.getToken().getLexeme(), AST.getSymbolTable().getCurrentMethod().getName());
             }
-            variableNode.setClassName((variable).getType().getLexeme());
-            symbolTable.setCurrentClass(symbolTable.getClasses().get(variableNode.getClassName()));
+            type = variable.getType();
+
+            variableNode.setClassName(type.getLexeme());
+
+            symbolTable.setCurrentClass(
+                    symbolTable.getClasses().get(variableNode.getClassName())
+            );
         }
         if (variableNode.getChainedNode() == null) {
             if (!AST.getSymbolTable().getClasses().containsKey(variableNode.getClassName())) {
@@ -535,7 +547,13 @@ public class TypeVisitor implements Visitor<Type> {
                 if (!variableNode.getClassName().equals("Array")) {
                     type = new Type(tokenDefinitions.getPrimitiveTypes().get(variableNode.getClassName()), variableNode.getClassName());
                 } else {
-                    type = symbolTable.getCurrentMethod().getVariables().get(variableNode.getToken().getLexeme()).getType();
+                    if (symbolTable.getCurrentMethod().getVariables().get(variableNode.getToken().getLexeme()) != null) {
+                        type = symbolTable.getCurrentMethod().getVariables().get(variableNode.getToken().getLexeme()).getType();
+                    } else if (symbolTable.getCurrentMethod().getParameters().get(variableNode.getToken().getLexeme()) != null) {
+                        type = symbolTable.getCurrentMethod().getParameters().get(variableNode.getToken().getLexeme()).getType();
+                    } else {
+                        type = symbolTable.getCurrentClass().getAttributes().get(variableNode.getToken().getLexeme()).getType();
+                    }
                 }
 
             } else {
@@ -608,15 +626,14 @@ public class TypeVisitor implements Visitor<Type> {
                     }
                     String className;
                     if (attribute != null) {
-                        if (attribute.getClassName() != null) {
-                            if (!predefinedClasses.contains(attribute.getType().getTypeName())) {
-                                className = attribute.getType().getTypeName();
-                            } else {
-                                className = attribute.getClassName();
-                            }
-                        } else {
-                            className = attribute.getType().getTypeName();
-                        }
+
+                        Type attributeType = attribute.getType();
+
+                        // Conservo el tipo completo del atributo
+                        ((VariableNode) chainedNode).setType(attributeType);
+
+                        // Obtengo el nombre base del tipo
+                        className = attributeType.getLexeme();
 
                     } else if (method != null) {
                         className = method.getType().getTypeName();

@@ -56,19 +56,29 @@
     #############################
 
     str_0:
-        .asciiz "Hello"
+        .ascii "Hello"
+        .byte 0
     str_1:
-        .asciiz "world"
+        .ascii "world"
+        .byte 0
     str_2:
-        .asciiz "Joaquin"
+        .ascii "Joaquin"
+        .byte 0
     str_3:
-        .asciiz " "
+        .ascii " "
+        .byte 0
     str_4:
-        .asciiz ", mi nombre es "
+        .ascii ", mi nombre es "
+        .byte 0
     str_5:
-        .asciiz ", y tengo "
+        .ascii ", y tengo "
+        .byte 0
     str_6:
-        .asciiz " años"
+        .ascii " a"
+        .byte 195
+        .byte 177
+        .ascii "os"
+        .byte 0
 
     vtable_Persona:
         .word Persona_getNombre

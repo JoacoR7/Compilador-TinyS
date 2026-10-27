@@ -56,163 +56,285 @@
     #############################
 
     str_0:
-        .asciiz "========================================\n"
+        .ascii "========================================"
+        .byte 10
+        .byte 0
     str_1:
-        .asciiz " TEST DE OPERACIONES BINARIAS\n"
+        .ascii " TEST DE OPERACIONES BINARIAS"
+        .byte 10
+        .byte 0
     str_2:
-        .asciiz "Valores:\n"
+        .ascii "Valores:"
+        .byte 10
+        .byte 0
     str_3:
-        .asciiz "a = "
+        .ascii "a = "
+        .byte 0
     str_4:
-        .asciiz "\n"
+        .byte 10
+        .byte 0
     str_5:
-        .asciiz "b = "
+        .ascii "b = "
+        .byte 0
     str_6:
-        .asciiz "c = "
+        .ascii "c = "
+        .byte 0
     str_7:
-        .asciiz "\n\n"
+        .byte 10
+        .byte 10
+        .byte 0
     str_8:
-        .asciiz "--- SUMA ---\n"
+        .ascii "--- SUMA ---"
+        .byte 10
+        .byte 0
     str_9:
-        .asciiz "a(20) + b(6) = "
+        .ascii "a(20) + b(6) = "
+        .byte 0
     str_10:
-        .asciiz "   esperado: 26\n"
+        .ascii "   esperado: 26"
+        .byte 10
+        .byte 0
     str_11:
-        .asciiz "b(6) + c(3) = "
+        .ascii "b(6) + c(3) = "
+        .byte 0
     str_12:
-        .asciiz "   esperado: 9\n\n"
+        .ascii "   esperado: 9"
+        .byte 10
+        .byte 10
+        .byte 0
     str_13:
-        .asciiz "--- RESTA ---\n"
+        .ascii "--- RESTA ---"
+        .byte 10
+        .byte 0
     str_14:
-        .asciiz "a(20) - b(6) = "
+        .ascii "a(20) - b(6) = "
+        .byte 0
     str_15:
-        .asciiz "   esperado: 14\n"
+        .ascii "   esperado: 14"
+        .byte 10
+        .byte 0
     str_16:
-        .asciiz "b(6) - a(20) = "
+        .ascii "b(6) - a(20) = "
+        .byte 0
     str_17:
-        .asciiz "   esperado: -14\n\n"
+        .ascii "   esperado: -14"
+        .byte 10
+        .byte 10
+        .byte 0
     str_18:
-        .asciiz "--- MULTIPLICACION ---\n"
+        .ascii "--- MULTIPLICACION ---"
+        .byte 10
+        .byte 0
     str_19:
-        .asciiz "a(20) * b(6) = "
+        .ascii "a(20) * b(6) = "
+        .byte 0
     str_20:
-        .asciiz "   esperado: 120\n"
+        .ascii "   esperado: 120"
+        .byte 10
+        .byte 0
     str_21:
-        .asciiz "b(6) * c(3) = "
+        .ascii "b(6) * c(3) = "
+        .byte 0
     str_22:
-        .asciiz "   esperado: 18\n\n"
+        .ascii "   esperado: 18"
+        .byte 10
+        .byte 10
+        .byte 0
     str_23:
-        .asciiz "--- DIVISION ---\n"
+        .ascii "--- DIVISION ---"
+        .byte 10
+        .byte 0
     str_24:
-        .asciiz "a(20) / b(6) = "
+        .ascii "a(20) / b(6) = "
+        .byte 0
     str_25:
-        .asciiz "   esperado: 3\n"
+        .ascii "   esperado: 3"
+        .byte 10
+        .byte 0
     str_26:
-        .asciiz "a(20) / c(3) = "
+        .ascii "a(20) / c(3) = "
+        .byte 0
     str_27:
-        .asciiz "   esperado: 6\n"
+        .ascii "   esperado: 6"
+        .byte 10
+        .byte 0
     str_28:
-        .asciiz "b(6) / c(3) = "
+        .ascii "b(6) / c(3) = "
+        .byte 0
     str_29:
-        .asciiz "   esperado: 2\n\n"
+        .ascii "   esperado: 2"
+        .byte 10
+        .byte 10
+        .byte 0
     str_30:
-        .asciiz "--- IGUALDAD == ---\n"
+        .ascii "--- IGUALDAD == ---"
+        .byte 10
+        .byte 0
     str_31:
-        .asciiz "a(20) == a(20) = "
+        .ascii "a(20) == a(20) = "
+        .byte 0
     str_32:
-        .asciiz "   esperado: true\n"
+        .ascii "   esperado: true"
+        .byte 10
+        .byte 0
     str_33:
-        .asciiz "a(20) == b(6) = "
+        .ascii "a(20) == b(6) = "
+        .byte 0
     str_34:
-        .asciiz "   esperado: false\n\n"
+        .ascii "   esperado: false"
+        .byte 10
+        .byte 10
+        .byte 0
     str_35:
-        .asciiz "--- DISTINTO != ---\n"
+        .ascii "--- DISTINTO != ---"
+        .byte 10
+        .byte 0
     str_36:
-        .asciiz "a(20) != b(6) = "
+        .ascii "a(20) != b(6) = "
+        .byte 0
     str_37:
-        .asciiz "a(20) != a(20) = "
+        .ascii "a(20) != a(20) = "
+        .byte 0
     str_38:
-        .asciiz "--- MENOR < ---\n"
+        .ascii "--- MENOR < ---"
+        .byte 10
+        .byte 0
     str_39:
-        .asciiz "a(20) < b(6) = "
+        .ascii "a(20) < b(6) = "
+        .byte 0
     str_40:
-        .asciiz "   esperado: false\n"
+        .ascii "   esperado: false"
+        .byte 10
+        .byte 0
     str_41:
-        .asciiz "b(6) < a(20) = "
+        .ascii "b(6) < a(20) = "
+        .byte 0
     str_42:
-        .asciiz "   esperado: true\n\n"
+        .ascii "   esperado: true"
+        .byte 10
+        .byte 10
+        .byte 0
     str_43:
-        .asciiz "--- MENOR O IGUAL <= ---\n"
+        .ascii "--- MENOR O IGUAL <= ---"
+        .byte 10
+        .byte 0
     str_44:
-        .asciiz "a(20) <= b(6) = "
+        .ascii "a(20) <= b(6) = "
+        .byte 0
     str_45:
-        .asciiz "a(20) <= a(20) = "
+        .ascii "a(20) <= a(20) = "
+        .byte 0
     str_46:
-        .asciiz "b(6) <= a(20) = "
+        .ascii "b(6) <= a(20) = "
+        .byte 0
     str_47:
-        .asciiz "--- MAYOR > ---\n"
+        .ascii "--- MAYOR > ---"
+        .byte 10
+        .byte 0
     str_48:
-        .asciiz "a(20) > b(6) = "
+        .ascii "a(20) > b(6) = "
+        .byte 0
     str_49:
-        .asciiz "b(6) > a(20) = "
+        .ascii "b(6) > a(20) = "
+        .byte 0
     str_50:
-        .asciiz "--- MAYOR O IGUAL >= ---\n"
+        .ascii "--- MAYOR O IGUAL >= ---"
+        .byte 10
+        .byte 0
     str_51:
-        .asciiz "a(20) >= b(6) = "
+        .ascii "a(20) >= b(6) = "
+        .byte 0
     str_52:
-        .asciiz "a(20) >= a(20) = "
+        .ascii "a(20) >= a(20) = "
+        .byte 0
     str_53:
-        .asciiz "b(6) >= a(20) = "
+        .ascii "b(6) >= a(20) = "
+        .byte 0
     str_54:
-        .asciiz "--- AND && ---\n"
+        .ascii "--- AND && ---"
+        .byte 10
+        .byte 0
     str_55:
-        .asciiz "true && true = "
+        .ascii "true && true = "
+        .byte 0
     str_56:
-        .asciiz "true && false = "
+        .ascii "true && false = "
+        .byte 0
     str_57:
-        .asciiz "false && true = "
+        .ascii "false && true = "
+        .byte 0
     str_58:
-        .asciiz "false && false = "
+        .ascii "false && false = "
+        .byte 0
     str_59:
-        .asciiz "--- OR || ---\n"
+        .ascii "--- OR || ---"
+        .byte 10
+        .byte 0
     str_60:
-        .asciiz "true || true = "
+        .ascii "true || true = "
+        .byte 0
     str_61:
-        .asciiz "true || false = "
+        .ascii "true || false = "
+        .byte 0
     str_62:
-        .asciiz "false || true = "
+        .ascii "false || true = "
+        .byte 0
     str_63:
-        .asciiz "false || false = "
+        .ascii "false || false = "
+        .byte 0
     str_64:
-        .asciiz "--- EXPRESIONES ANIDADAS ---\n"
+        .ascii "--- EXPRESIONES ANIDADAS ---"
+        .byte 10
+        .byte 0
     str_65:
-        .asciiz "a(20) + b(6) * c(3) = "
+        .ascii "a(20) + b(6) * c(3) = "
+        .byte 0
     str_66:
-        .asciiz "   esperado: 38\n"
+        .ascii "   esperado: 38"
+        .byte 10
+        .byte 0
     str_67:
-        .asciiz "(a(20) + b(6)) * c(3) = "
+        .ascii "(a(20) + b(6)) * c(3) = "
+        .byte 0
     str_68:
-        .asciiz "   esperado: 78\n"
+        .ascii "   esperado: 78"
+        .byte 10
+        .byte 0
     str_69:
-        .asciiz "a(20) - b(6) - c(3) = "
+        .ascii "a(20) - b(6) - c(3) = "
+        .byte 0
     str_70:
-        .asciiz "   esperado: 11\n"
+        .ascii "   esperado: 11"
+        .byte 10
+        .byte 0
     str_71:
-        .asciiz "a(20) / b(6) + c(3) = "
+        .ascii "a(20) / b(6) + c(3) = "
+        .byte 0
     str_72:
-        .asciiz "   esperado: 6\n\n"
+        .ascii "   esperado: 6"
+        .byte 10
+        .byte 10
+        .byte 0
     str_73:
-        .asciiz "--- COMPARACIONES Y LOGICA ANIDADAS ---\n"
+        .ascii "--- COMPARACIONES Y LOGICA ANIDADAS ---"
+        .byte 10
+        .byte 0
     str_74:
-        .asciiz "(a(20) > b(6)) && (b(6) > c(3)) = "
+        .ascii "(a(20) > b(6)) && (b(6) > c(3)) = "
+        .byte 0
     str_75:
-        .asciiz "(a(20) < b(6)) || (b(6) > c(3)) = "
+        .ascii "(a(20) < b(6)) || (b(6) > c(3)) = "
+        .byte 0
     str_76:
-        .asciiz "(a(20) == b(6)) || (b(6) == b(6)) = "
+        .ascii "(a(20) == b(6)) || (b(6) == b(6)) = "
+        .byte 0
     str_77:
-        .asciiz "(a(20) != b(6)) && (b(6) != c(3)) = "
+        .ascii "(a(20) != b(6)) && (b(6) != c(3)) = "
+        .byte 0
     str_78:
-        .asciiz " FIN TEST OPERACIONES BINARIAS\n"
+        .ascii " FIN TEST OPERACIONES BINARIAS"
+        .byte 10
+        .byte 0
 
 .text
     .globl main

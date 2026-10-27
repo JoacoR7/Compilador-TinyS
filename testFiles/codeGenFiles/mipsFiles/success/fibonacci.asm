@@ -56,11 +56,14 @@
     #############################
 
     str_0:
-        .asciiz "f_"
+        .ascii "f_"
+        .byte 0
     str_1:
-        .asciiz "="
+        .ascii "="
+        .byte 0
     str_2:
-        .asciiz "\n"
+        .byte 10
+        .byte 0
 
     vtable_Fibonacci:
         .word Fibonacci_sucesion_fib

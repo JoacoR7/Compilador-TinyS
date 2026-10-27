@@ -56,9 +56,11 @@
     #############################
 
     str_0:
-        .asciiz "Ingrese un numero "
+        .ascii "Ingrese un numero "
+        .byte 0
     str_1:
-        .asciiz "El numero que ingreso es: "
+        .ascii "El numero que ingreso es: "
+        .byte 0
 
 .text
     .globl main

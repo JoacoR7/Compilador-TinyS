@@ -189,6 +189,91 @@ public class CodeGenerator {
         this.current = inMain ? main : text;
     }
 
+    private void emitAsciiFragment(StringBuilder fragment) {
+        if (fragment.length() == 0) {
+            return;
+        }
+
+        strings.append("        .ascii \"")
+                .append(fragment)
+                .append("\"\n");
+
+        fragment.setLength(0);
+    }
+
+    private void emitByte(int value) {
+        strings.append("        .byte ")
+                .append(value)
+                .append("\n");
+    }
+
+    private void emitStringContent(String lexeme) {
+
+        StringBuilder fragment = new StringBuilder();
+
+        // Ignoro las comillas exteriores del lexema.
+        for (int i = 1; i < lexeme.length() - 1; i++) {
+
+            char c = lexeme.charAt(i);
+
+            if (c == '\\') {
+
+                if (i + 1 >= lexeme.length() - 1) {
+                    throw new IllegalArgumentException(
+                            "Escape incompleto: " + lexeme
+                    );
+                }
+
+                emitAsciiFragment(fragment);
+
+                char escape = lexeme.charAt(++i);
+
+                int ascii = switch (escape) {
+                    case 'n' -> 10;
+                    case 't' -> 9;
+                    case 'v' -> 11;
+                    case 'r' -> 13;
+                    case '"' -> 34;
+                    case '\'' -> 39;
+                    case '\\' -> 92;
+
+                    // Solo si extendés TinyS para aceptar \v:
+                    // case 'v' -> 11;
+
+                    default -> throw new IllegalArgumentException(
+                            "Escape no reconocido: \\" + escape
+                    );
+                };
+
+                emitByte(ascii);
+
+            } else if (c >= 32 && c <= 126
+                    && c != '"' && c != '\\') {
+
+                // Caracter ASCII normal: acumulo para .ascii
+                fragment.append(c);
+
+            } else {
+
+                // Otros caracteres: codifico sus bytes.
+                emitAsciiFragment(fragment);
+
+                byte[] bytes = String.valueOf(c)
+                        .getBytes(StandardCharsets.UTF_8);
+
+                for (byte b : bytes) {
+                    emitByte(Byte.toUnsignedInt(b));
+                }
+            }
+        }
+
+        // Último fragmento de texto.
+        emitAsciiFragment(fragment);
+
+        // Único terminador nulo del string.
+        emitByte(0);
+    }
+
     /**
      * Genera/agrega un literal String en .data.
      *
@@ -212,7 +297,7 @@ public class CodeGenerator {
             stringLabels.put(lexeme, label);
 
             emitSringDataLabel(label);
-            emitAsciiz(lexeme);
+            emitStringContent(lexeme);
         }
 
         return label;

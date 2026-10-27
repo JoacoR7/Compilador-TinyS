@@ -56,11 +56,15 @@
     #############################
 
     str_0:
-        .asciiz "False"
+        .ascii "False"
+        .byte 0
     str_1:
-        .asciiz "\n"
+        .byte 10
+        .byte 0
     str_2:
-        .asciiz "FIN\n"
+        .ascii "FIN"
+        .byte 10
+        .byte 0
 
 .text
     .globl main

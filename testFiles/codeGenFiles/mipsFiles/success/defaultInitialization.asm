@@ -56,9 +56,12 @@
     #############################
 
     str_0:
-        .asciiz "\n"
+        .byte 10
+        .byte 0
     str_1:
-        .asciiz "fin\n"
+        .ascii "fin"
+        .byte 10
+        .byte 0
 
     vtable_Defaults:
         .word Defaults_getNumber

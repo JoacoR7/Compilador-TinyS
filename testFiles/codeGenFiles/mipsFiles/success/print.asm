@@ -56,7 +56,21 @@
     #############################
 
     str_0:
-        .asciiz "ADIÓS áéíóú"
+        .ascii "ADI"
+        .byte 195
+        .byte 147
+        .ascii "S "
+        .byte 195
+        .byte 161
+        .byte 195
+        .byte 169
+        .byte 195
+        .byte 173
+        .byte 195
+        .byte 179
+        .byte 195
+        .byte 186
+        .byte 0
 
 .text
     .globl main

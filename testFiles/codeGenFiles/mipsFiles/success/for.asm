@@ -56,97 +56,158 @@
     #############################
 
     str_0:
-        .asciiz "Hola"
+        .ascii "Hola"
+        .byte 0
     str_1:
-        .asciiz "Mundo"
+        .ascii "Mundo"
+        .byte 0
     str_2:
-        .asciiz "TinyS"
+        .ascii "TinyS"
+        .byte 0
     str_3:
-        .asciiz "Compiladores"
+        .ascii "Compiladores"
+        .byte 0
     str_4:
-        .asciiz "================================\n"
+        .ascii "================================"
+        .byte 10
+        .byte 0
     str_5:
-        .asciiz "        ARRAY INT\n"
+        .ascii "        ARRAY INT"
+        .byte 10
+        .byte 0
     str_6:
-        .asciiz "\n"
+        .byte 10
+        .byte 0
     str_7:
-        .asciiz ">>> FOR EXTERIOR: i = "
+        .ascii ">>> FOR EXTERIOR: i = "
+        .byte 0
     str_8:
-        .asciiz "    i = "
+        .ascii "    i = "
+        .byte 0
     str_9:
-        .asciiz " | j = "
+        .ascii " | j = "
+        .byte 0
     str_10:
-        .asciiz " | i * j = "
+        .ascii " | i * j = "
+        .byte 0
     str_11:
-        .asciiz "<<< FIN INTERIOR, i sigue valiendo: "
+        .ascii "<<< FIN INTERIOR, i sigue valiendo: "
+        .byte 0
     str_12:
-        .asciiz "        SEGUNDO FOR INT\n"
+        .ascii "        SEGUNDO FOR INT"
+        .byte 10
+        .byte 0
     str_13:
-        .asciiz "i = "
+        .ascii "i = "
+        .byte 0
     str_14:
-        .asciiz "        ARRAY STR\n"
+        .ascii "        ARRAY STR"
+        .byte 10
+        .byte 0
     str_15:
-        .asciiz "Cadena: "
+        .ascii "Cadena: "
+        .byte 0
     str_16:
-        .asciiz " | Longitud: "
+        .ascii " | Longitud: "
+        .byte 0
     str_17:
-        .asciiz "        FOR ANIDADOS STR\n"
+        .ascii "        FOR ANIDADOS STR"
+        .byte 10
+        .byte 0
     str_18:
-        .asciiz ">>> EXTERIOR: "
+        .ascii ">>> EXTERIOR: "
+        .byte 0
     str_19:
-        .asciiz "    s = "
+        .ascii "    s = "
+        .byte 0
     str_20:
-        .asciiz " | t = "
+        .ascii " | t = "
+        .byte 0
     str_21:
-        .asciiz " | concat = "
+        .ascii " | concat = "
+        .byte 0
     str_22:
-        .asciiz "<<< FIN INTERIOR, s = "
+        .ascii "<<< FIN INTERIOR, s = "
+        .byte 0
     str_23:
-        .asciiz "        SEGUNDO FOR STR\n"
+        .ascii "        SEGUNDO FOR STR"
+        .byte 10
+        .byte 0
     str_24:
-        .asciiz "s = "
+        .ascii "s = "
+        .byte 0
     str_25:
-        .asciiz "        ARRAY BOOL\n"
+        .ascii "        ARRAY BOOL"
+        .byte 10
+        .byte 0
     str_26:
-        .asciiz "Valor booleano: "
+        .ascii "Valor booleano: "
+        .byte 0
     str_27:
-        .asciiz "        FOR ANIDADOS BOOL\n"
+        .ascii "        FOR ANIDADOS BOOL"
+        .byte 10
+        .byte 0
     str_28:
-        .asciiz ">>> EXTERIOR x = "
+        .ascii ">>> EXTERIOR x = "
+        .byte 0
     str_29:
-        .asciiz "    x = "
+        .ascii "    x = "
+        .byte 0
     str_30:
-        .asciiz " | y = "
+        .ascii " | y = "
+        .byte 0
     str_31:
-        .asciiz " | x && y = "
+        .ascii " | x && y = "
+        .byte 0
     str_32:
-        .asciiz " | x || y = "
+        .ascii " | x || y = "
+        .byte 0
     str_33:
-        .asciiz "<<< FIN INTERIOR, x = "
+        .ascii "<<< FIN INTERIOR, x = "
+        .byte 0
     str_34:
-        .asciiz "        SEGUNDO FOR BOOL\n"
+        .ascii "        SEGUNDO FOR BOOL"
+        .byte 10
+        .byte 0
     str_35:
-        .asciiz "valor = "
+        .ascii "valor = "
+        .byte 0
     str_36:
-        .asciiz "        FOR MIXTOS\n"
+        .ascii "        FOR MIXTOS"
+        .byte 10
+        .byte 0
     str_37:
-        .asciiz "INT EXTERIOR = "
+        .ascii "INT EXTERIOR = "
+        .byte 0
     str_38:
-        .asciiz "  STR INTERMEDIO = "
+        .ascii "  STR INTERMEDIO = "
+        .byte 0
     str_39:
-        .asciiz " | s = "
+        .ascii " | s = "
+        .byte 0
     str_40:
-        .asciiz " | x = "
+        .ascii " | x = "
+        .byte 0
     str_41:
-        .asciiz "        VERIFICACION FINAL\n"
+        .ascii "        VERIFICACION FINAL"
+        .byte 10
+        .byte 0
     str_42:
-        .asciiz "INT:\n"
+        .ascii "INT:"
+        .byte 10
+        .byte 0
     str_43:
-        .asciiz "STR:\n"
+        .ascii "STR:"
+        .byte 10
+        .byte 0
     str_44:
-        .asciiz "BOOL:\n"
+        .ascii "BOOL:"
+        .byte 10
+        .byte 0
     str_45:
-        .asciiz "        FIN DEL TEST\n"
+        .ascii "        FIN DEL TEST"
+        .byte 10
+        .byte 0
 
 .text
     .globl main

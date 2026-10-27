@@ -56,17 +56,26 @@
     #############################
 
     str_0:
-        .asciiz "Hola "
+        .ascii "Hola "
+        .byte 0
     str_1:
-        .asciiz ", soy "
+        .ascii ", soy "
+        .byte 0
     str_2:
-        .asciiz " y tengo "
+        .ascii " y tengo "
+        .byte 0
     str_3:
-        .asciiz " años"
+        .ascii " a"
+        .byte 195
+        .byte 177
+        .ascii "os"
+        .byte 0
     str_4:
-        .asciiz "Lucas"
+        .ascii "Lucas"
+        .byte 0
     str_5:
-        .asciiz "Tomas"
+        .ascii "Tomas"
+        .byte 0
 
     vtable_Persona:
         .word Persona_setEdad

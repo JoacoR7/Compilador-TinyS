@@ -56,11 +56,14 @@
     #############################
 
     str_0:
-        .asciiz "Hola"
+        .ascii "Hola"
+        .byte 0
     str_1:
-        .asciiz "Mundo"
+        .ascii "Mundo"
+        .byte 0
     str_2:
-        .asciiz "\n"
+        .byte 10
+        .byte 0
 
 .text
     .globl main
