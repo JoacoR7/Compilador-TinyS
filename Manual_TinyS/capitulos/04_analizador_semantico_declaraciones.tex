@@ -195,4 +195,44 @@ o retornos, ni los accesos de las expresiones.
 \input{tablas/11_casos_declaraciones_invalidos}
 \endgroup
 
+\clearpage
+\section{Ejemplo de salida en caso de éxito}
+\label{sec:ejemplo-json-declaraciones}
+Cuando el chequeo de declaraciones termina correctamente, el ejecutador
+\lexcode{Etapa3} muestra el mensaje
+\texttt{CORRECTO: SEMANTICO - DECLARACIONES} y genera un archivo
+\texttt{.ts.json} con la tabla de símbolos consolidada. El archivo se
+guarda junto al fuente y conserva su nombre base.
+
+Por ejemplo, se utiliza el siguiente archivo válido:
+\begin{quote}
+\path{tc/etapa3/success/accesoAtributoPublicoHerenciaLectura.s}
+\end{quote}
+Su contenido es:
+\lstinputlisting[style=bnftinys,tabsize=2]{../tc/etapa3/success/accesoAtributoPublicoHerenciaLectura.s}
+
+Después de compilar la etapa, se ejecuta desde la raíz del proyecto:
+\begin{lstlisting}[style=bnftinys]
+java -jar target/etapa3.jar tc/etapa3/success/accesoAtributoPublicoHerenciaLectura.s
+\end{lstlisting}
+La salida por pantalla debe ser:
+\begin{verbatim}
+CORRECTO: SEMANTICO - DECLARACIONES
+\end{verbatim}
+El archivo resultante es:
+\begin{quote}
+\path{tc/etapa3/success/accesoAtributoPublicoHerenciaLectura.ts.json}
+\end{quote}
+En él se registran las clases \texttt{Base} y \texttt{Derivada}, sus
+constructores y el atributo público \texttt{valor}, heredado por
+\texttt{Derivada}. También se registra el método \texttt{leer}, su
+variable local \texttt{copia} y la variable \texttt{derivada} del bloque
+\texttt{start}. Se incluyen además las clases predefinidas
+\texttt{Object}, \texttt{IO}, \texttt{Int}, \texttt{Str},
+\texttt{Bool} y \texttt{Array}.
+
+\clearpage
+A continuación se muestra el JSON completo obtenido en esa ejecución.
+\lstinputlisting[style=bnftinys,basicstyle=\ttfamily\fontsize{10}{11.5}\selectfont,tabsize=2]{ejemplos/accesoAtributoPublicoHerenciaLectura.json}
+
 
