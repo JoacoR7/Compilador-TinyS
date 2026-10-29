@@ -1,10 +1,15 @@
 package uncuyo.compiladores.semantic.symbolTable;
 
-import uncuyo.compiladores.lexer.TokenType;
-
-import java.util.ArrayList;
 import java.util.List;
 
+import uncuyo.compiladores.lexer.TokenType;
+
+/**
+ * Tipo semántico representado por una categoría de token y un lexema.
+ * Los tipos de referencia conservan el nombre de la clase; construir esta
+ * entrada no comprueba que la clase esté declarada. Los arreglos se modelan
+ * mediante {@link ArrayType}, que agrega el tipo de sus elementos.
+ */
 public class Type {
 
     private TokenType tokenType;
@@ -13,6 +18,12 @@ public class Type {
     public Type() {
     }
 
+    /**
+     * Construye la representación de un tipo reconocido.
+     *
+     * @param tokenType categoría léxica del tipo
+     * @param lexeme nombre utilizado en la tabla de símbolos
+     */
     public Type(TokenType tokenType, String lexeme) {
         this.tokenType = tokenType;
         this.lexeme = lexeme;

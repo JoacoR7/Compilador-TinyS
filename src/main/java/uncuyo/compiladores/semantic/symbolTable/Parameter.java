@@ -2,6 +2,10 @@ package uncuyo.compiladores.semantic.symbolTable;
 
 import uncuyo.compiladores.semantic.JsonSerializable;
 
+/**
+ * Parámetro formal con nombre, tipo y posición desde cero.
+ * La posición conserva el orden de la firma para comparar redefiniciones.
+ */
 public class Parameter implements JsonSerializable {
 
     private Type type;
@@ -11,6 +15,13 @@ public class Parameter implements JsonSerializable {
     public Parameter() {
     }
 
+    /**
+     * Crea la entrada de un parámetro formal.
+     *
+     * @param type tipo declarado
+     * @param lexeme nombre del parámetro
+     * @param position posición en la firma, comenzando en cero
+     */
     public Parameter(Type type, String lexeme, int position) {
         this.type = type;
         this.lexeme = lexeme;
@@ -41,6 +52,13 @@ public class Parameter implements JsonSerializable {
         this.position = position;
     }
 
+    /**
+     * Exporta nombre, tipo y posición del parámetro formal.
+     * Para los arreglos también incluye el tipo de elemento.
+     *
+     * @param indent indentación para los campos del objeto
+     * @return representación JSON del parámetro
+     */
     @Override
     public String toJson(String indent) {
         StringBuilder sb = new StringBuilder();

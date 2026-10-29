@@ -9,6 +9,15 @@ import uncuyo.compiladores.semantic.JsonSerializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Tabla de símbolos y contexto de reconocimiento de un programa TinyS.
+ *
+ * <p>Las clases se indexan por nombre y conservan el orden de inserción.
+ * Cada entrada reúne las partes {@code class} e {@code impl}; el método
+ * {@code start} se almacena por separado. Las referencias de contexto
+ * indican dónde deben registrarse las declaraciones que reconoce el analizador.
+ *
+ */
 public class SymbolTable implements JsonSerializable {
 
     private LinkedHashMap<String, Class> classes;
@@ -17,6 +26,9 @@ public class SymbolTable implements JsonSerializable {
     private Block currentBlock;
     private Method start;
 
+    /**
+     * Crea una tabla vacía, sin clases predefinidas ni contexto activo.
+     */
     public SymbolTable() {
         this.classes = new LinkedHashMap<>();
         this.currentClass = null;
@@ -66,10 +78,26 @@ public class SymbolTable implements JsonSerializable {
         this.currentBlock = currentBlock;
     }
 
+    /**
+     * Busca la entidad original de una clase, sin copiarla.
+     *
+     * @param idclass nombre de la clase
+     * @return entidad mutable almacenada, o {@code null} si no existe
+     */
     public Class searchOriginalClass(String idclass) {
         return classes.getOrDefault(idclass, null);
     }
 
+    /**
+     * Prepara una copia para reconocer otra parte de una clase.
+     *
+     * <p>La copia conserva el token, el padre y las marcas de presencia de
+     * {@code class} e {@code impl}, pero comienza sin atributos, métodos ni
+     * constructor. Sus miembros se integran luego en la entrada original.</p>
+     *
+     * @param idclass nombre de la clase
+     * @return copia temporal, o {@code null} si todavía no está registrada
+     */
     public Class searchAndCopyClass(String idclass) {
         Class original = classes.getOrDefault(idclass, null);
         if (original != null) {
@@ -78,19 +106,45 @@ public class SymbolTable implements JsonSerializable {
         return original;
     }
 
+    /**
+     * Valida el tipo de padre y guarda una clase por su nombre.
+     * Si la clave ya existe, esta operación reemplaza su entrada; la integración
+     * de partes existentes debe realizarse mediante los métodos de combinación.
+     *
+     * @param newClass clase que se incorporará a la tabla
+     * @throws PrimitiveInheritanceException si intenta heredar de un tipo prohibido
+     */
     public void saveClass(Class newClass) {
         newClass.validateParent();
         classes.put(newClass.getToken().getLexeme(), newClass);
     }
 
+    /**
+     * Integra los atributos y el padre de la clase actual en su declaración original.
+     *
+     * @param existingClass entidad original correspondiente a la clase actual
+     * @throws uncuyo.compiladores.exceptions.semantic.SemanticException si la integración detecta un conflicto
+     */
     public void mergeClassDeclarations(Class existingClass) {
         existingClass.mergeDeclarations(this.currentClass);
     }
 
+    /**
+     * Integra los métodos y el constructor de la implementación actual.
+     *
+     * @param existingClass entidad original correspondiente a la clase actual
+     * @throws uncuyo.compiladores.exceptions.semantic.SemanticException si se repiten miembros
+     */
     public void mergeClassImplements(Class existingClass) {
         existingClass.mergeImplements(this.currentClass);
     }
 
+    /**
+     * Comprueba que el nombre del padre esté registrado en la tabla.
+     *
+     * @param currentClass clase cuya relación de herencia se comprobará
+     * @throws ParentClassNotFoundException si el padre no existe
+     */
     public void checkParentExistence(Class currentClass) {
         String parentName = currentClass.getParent();
         if(!classes.containsKey(parentName)) {
@@ -98,6 +152,21 @@ public class SymbolTable implements JsonSerializable {
         }
     }
 
+    /**
+     * Comprueba y consolida los miembros de las clases del usuario.
+     *
+     * <p>En orden de inserción, exige implementación, constructor y declaración;
+     * luego verifica el padre y la circularidad e incorpora los miembros heredados.
+     * Las clases predefinidas quedan excluidas.</p>
+     *
+     * @throws ImplNotFoundException si falta una parte {@code impl}
+     * @throws ConstructorNotFoundException si falta un constructor
+     * @throws ClassNotFoundException si una implementación no tiene parte {@code class}
+     * @throws ParentClassNotFoundException si el padre directo no existe
+     * @throws CircularInheritanceException si se detecta un ciclo de herencia
+     * @throws InheritedAttributeRedeclaration si se redeclara un atributo del padre
+     * @throws InvalidOverrideException si la firma de una redefinición es incompatible
+     */
     public void checkClasses() {
         List<String> predefinedClasses = List.of("Object", "IO", "Int", "Str", "Bool", "Array");
         for (Class currentClass : classes.values()) {
@@ -130,6 +199,12 @@ public class SymbolTable implements JsonSerializable {
         }
     }
 
+    /**
+     * Verifica los nombres de tipo de las variables locales de {@code start}.
+     *
+     * @throws ObjectDeclarationException si una variable tiene tipo {@code Object}
+     * @throws ClassNotFoundException si el nombre del tipo no está registrado
+     */
     public void checkStart(){
         LinkedHashMap<String, Class> classList = this.getClasses()
                 .entrySet()
@@ -152,10 +227,25 @@ public class SymbolTable implements JsonSerializable {
         }
     }
 
+    /**
+     * Inicia el recorrido de la cadena de herencia con un conjunto de visitados vacío.
+     * Los padres consultados deben estar registrados en la tabla.
+     *
+     * @param currentClass clase desde la cual se recorrerá la cadena
+     * @throws CircularInheritanceException si se vuelve a visitar un padre
+     */
     public void checkCircularInheritance(Class currentClass) {
         validateInheritanceChain(currentClass, new HashSet<>());
     }
 
+    /**
+     * Recorre los padres hasta {@code Object} o una clase previamente comprobada.
+     * Al regresar marca la clase como verificada para evitar recorridos repetidos.
+     *
+     * @param currentClass clase del paso actual
+     * @param visited nombres de padres visitados en este recorrido
+     * @throws CircularInheritanceException si el padre ya pertenece al conjunto
+     */
     private void validateInheritanceChain(Class currentClass, Set<String> visited) {
         String parentName = currentClass.getParent();
 
@@ -176,12 +266,28 @@ public class SymbolTable implements JsonSerializable {
         }
     }
 
+    /**
+     * Completa la TS después de reconocer todas las declaraciones y el fin de archivo.
+     *
+     * <p>Incorpora las clases predefinidas, comprueba las clases del usuario y
+     * verifica las variables de {@code start}, en ese orden. Modifica la tabla
+     * en memoria y propaga el primer error; no revierte las modificaciones
+     * realizadas antes de la excepción ni comprueba las sentencias del AST.</p>
+     *
+     * @throws uncuyo.compiladores.exceptions.semantic.SemanticException si falla un control de declaraciones
+     */
     public void consolidate() {
         init();
         checkClasses();
         checkStart();
     }
 
+    /**
+     * Serializa las clases y el método de entrada en orden de inserción.
+     *
+     * @param indent indentación inicial
+     * @return objeto JSON con las entradas {@code classes} y {@code startMethod}
+     */
     @Override
     public String toJson(String indent) {
 
@@ -215,6 +321,13 @@ public class SymbolTable implements JsonSerializable {
         return sb.toString();
     }
 
+    /**
+     * Registra {@code Object}, {@code IO}, {@code Int}, {@code Str}, {@code Bool}
+     * y {@code Array}, junto con sus métodos predefinidos.
+     *
+     * <p>Se ejecuta al consolidar la tabla. Los tokens sintéticos tienen línea y
+     * columna cero. Una entrada previa con uno de esos nombres se reemplaza.</p>
+     */
     public void init() {
         Class Object = createPredefinedClass("Object", TokenType.OBJECT_CLASS, null);
         this.getClasses().put(Object.getToken().getLexeme(), Object);
@@ -270,6 +383,14 @@ public class SymbolTable implements JsonSerializable {
 
     }
 
+    /**
+     * Crea una entrada predefinida con sus marcas de comprobación activadas.
+     *
+     * @param name nombre de la clase
+     * @param type tipo de token del nombre predefinido
+     * @param parent nombre del padre, o {@code null} para la raíz
+     * @return nueva entrada, todavía no insertada en el mapa
+     */
     private Class createPredefinedClass(String name, TokenType type, String parent) {
         Class c = new Class();
         setPredefinedClassAtributes(c, name, type);
@@ -279,6 +400,13 @@ public class SymbolTable implements JsonSerializable {
         return c;
     }
 
+    /**
+     * Asigna un token sintético y marca una clase predefinida como declarada y comprobada.
+     *
+     * @param predefinedClass entrada que se inicializará
+     * @param lexeme nombre predefinido
+     * @param tokenType tipo de token asociado al nombre
+     */
     public void setPredefinedClassAtributes(Class predefinedClass, String lexeme, TokenType tokenType) {
         predefinedClass.setFoundClass(true);
         predefinedClass.setFoundImpl(true);
@@ -288,6 +416,15 @@ public class SymbolTable implements JsonSerializable {
         predefinedClass.setToken(new Token(lexeme, tokenType, 0, 0));
     }
 
+    /**
+     * Crea y registra un método predefinido con un token de posición cero.
+     *
+     * @param predefinedClass clase predefinida que recibirá el método
+     * @param lexeme nombre del método
+     * @param isStatic indica si el método es estático
+     * @param type tipo de retorno
+     * @param parameters parámetros con sus posiciones; admite {@code null} o un arreglo vacío
+     */
     public void setPredefinedClassMethods(Class predefinedClass, String lexeme, boolean isStatic, Type type, Parameter... parameters) {
         Method method = new Method(new Token(lexeme, TokenType.IDENTIFIER_VAR_METHOD, 0, 0), type, isStatic);
 

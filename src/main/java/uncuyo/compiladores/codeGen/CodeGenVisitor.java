@@ -663,7 +663,10 @@ public class CodeGenVisitor implements Visitor<Void> {
         // Acceso a variable sin encadenamiento
         Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(variableNode.getToken().getLexeme());
         Parameter currentParameter = AST.getSymbolTable().getCurrentMethod().getParameters().get(variableNode.getToken().getLexeme());
-        Attribute currentAttribute = AST.getSymbolTable().getCurrentClass().getAttributes().get(variableNode.getToken().getLexeme());
+        Attribute currentAttribute = null;
+        if (AST.getSymbolTable().getCurrentClass() != null) {
+            currentAttribute = AST.getSymbolTable().getCurrentClass().getAttributes().get(variableNode.getToken().getLexeme());
+        }
         if (!variableNode.isChainedNode() && variableNode.getChainedNode() == null) {
             if (currentVariable != null) {
                 codeGenerator.emitComment("Busco la variable en el RA");

@@ -7,6 +7,14 @@ import uncuyo.compiladores.semantic.JsonSerializable;
 
 import java.util.*;
 
+/**
+ * Entrada de una clase TinyS que reúne sus declaraciones e implementaciones.
+ *
+ * <p>Conserva el token del nombre, el nombre del padre,
+ * los miembros y los flags de consolidación. El constructor se representa
+ * con {@link Method} y se almacena separado del map de métodos. Los maps
+ * son mutables y mantienen el orden de inserción.</p>
+ */
 public class Class implements JsonSerializable {
 
     private Token token;
@@ -34,6 +42,11 @@ public class Class implements JsonSerializable {
         this.parent = parent;
     }
 
+    /**
+     * Método para copiar una clase, pero sin atributos ni métodos.
+     *
+     * @param other entrada original de la tabla de símbolos
+     */
     public Class(Class other) {
         this.token = other.token;
         this.parent = other.parent;
@@ -135,16 +148,39 @@ public class Class implements JsonSerializable {
         this.methodsConsolidationChecked = methodsConsolidationChecked;
     }
 
+    /**
+     * Busca un atributo en los miembros actualmente registrados en la clase.
+     *
+     * @param attributeName nombre del atributo
+     * @return atributo encontrado, o {@code null} si no está en el mapa
+     */
     public Attribute searchAttribute(String attributeName){
         return attributes.getOrDefault(attributeName, null);
     }
 
+    /**
+     * Integra otra declaración {@code class} en esta entrada.
+     * Primero incorpora sus atributos y luego valida el padre.
+     *
+     * @param newClassDeclaration parte reconocida para la misma clase
+     * @throws SemanticException si se repite un atributo
+     * @throws PrimitiveInheritanceException si el nuevo padre es un tipo prohibido
+     * @throws MultipleInheritanceException si las partes declaran padres diferentes
+     */
     public void mergeDeclarations(Class newClassDeclaration) {
         mergeAttributes(newClassDeclaration);
         validateAndSetParent(newClassDeclaration);
         this.setFoundClass(newClassDeclaration.isFoundClass());
     }
 
+    /**
+     * Integra el constructor y los métodos de otro {@code impl}.
+     * Si este impl todavía no tiene constructor, toma el del nuevo impl.
+     *
+     * @param newClassDeclaration implementación reconocida para la misma clase
+     * @throws ConstructorRedefinitionException si ambas partes tienen constructor
+     * @throws SemanticException si un método nuevo ya está registrado
+     */
     public void mergeImplements(Class newClassDeclaration) {
         if(newClassDeclaration.getConstructor() != null && this.getConstructor() != null){
             Token newClassDeclarationConstructorToken = newClassDeclaration.getConstructor().getToken();
@@ -158,6 +194,12 @@ public class Class implements JsonSerializable {
         this.setFoundImpl(newClassDeclaration.isFoundImpl());
     }
 
+    /**
+     * Agrega atributos de otra declaración y rechaza los nombres ya registrados.
+     *
+     * @param newClassDeclaration declaración que aporta los atributos
+     * @throws SemanticException si un atributo repite un nombre existente
+     */
     private void mergeAttributes(Class newClassDeclaration) {
         for (Map.Entry<String, Attribute> entry : newClassDeclaration.getAttributes().entrySet()) {
 
@@ -177,6 +219,12 @@ public class Class implements JsonSerializable {
         }
     }
 
+    /**
+     * Agrega métodos de otra implementación y rechaza los nombres ya registrados.
+     *
+     * @param newClassDeclaration declaración que aporta los métodos
+     * @throws SemanticException si un método repite un nombre existente
+     */
     private void mergeMethods(Class newClassDeclaration) {
         for (Map.Entry<String, Method> entry : newClassDeclaration.getMethods().entrySet()) {
 
@@ -195,6 +243,12 @@ public class Class implements JsonSerializable {
         }
     }
 
+    /**
+     * Rechaza la herencia de {@code Int}, {@code Bool}, {@code Str} o {@code Array}.
+     * Un padre {@code null} se admite mientras sólo se haya reconocido un {@code impl}.
+     *
+     * @throws PrimitiveInheritanceException si el padre pertenece a esos tipos
+     */
     public void validateParent() {
         String newClassDeclarationParent = this.getParent();
         List<String> primitiveTypes = List.of("Int", "Bool", "Str", "Array");
@@ -205,6 +259,15 @@ public class Class implements JsonSerializable {
         }
     }
 
+    /**
+     * Valida el padre de otra declaración y lo adopta si esta entrada todavía no tiene uno.
+     * Cuando adopta el padre, también toma el token de la declaración recibida.
+     * Si la nueva declaración no declara padre, conserva el estado actual.
+     *
+     * @param newClassDeclaration declaración cuyo padre se integrará
+     * @throws PrimitiveInheritanceException si el padre está prohibido
+     * @throws MultipleInheritanceException si difiere del padre ya registrado
+     */
     public void validateAndSetParent(Class newClassDeclaration) {
         String currentParent = this.getParent();
         String newClassDeclarationParent = newClassDeclaration.getParent();
@@ -228,22 +291,48 @@ public class Class implements JsonSerializable {
 
     }
 
+    /**
+     * Indica si el map actual contiene un atributo con el nombre solicitado.
+     *
+     * @param attributeName nombre que se consultará
+     * @return {@code true} si ya está registrado
+     */
     public boolean attributeAlreadyExists(String attributeName){
         return this.searchAttribute(attributeName) != null;
     }
 
+    /**
+     * Asigna al método la clase y una posición basada en el tamaño del map, y lo guarda.
+     *
+     * @param newMethod método que se registrará
+     */
     public void insertMethod(Method newMethod){
         newMethod.setPosition(this.getMethods().size());
         newMethod.setClassName(this.getName());
         this.getMethods().put(newMethod.getToken().getLexeme(), newMethod);
     }
 
+    /**
+     * Asigna al atributo la clase y una posición basada en el tamaño del map, y lo guarda.
+     *
+     * @param newAttribute atributo que se registrará
+     */
     public void insertAttribute(Attribute newAttribute){
         newAttribute.setPosition(this.getAttributes().size());
         newAttribute.setClassName(this.getName());
         this.getAttributes().put(newAttribute.getToken().getLexeme(), newAttribute);
     }
 
+    /**
+     * Rechaza la redeclaración de atributos del padre y agrega sus entradas heredadas.
+     *
+     * <p>Copia primero los atributos del padre, conservando sus posiciones y clase
+     * de origen, y luego agrega los propios con posiciones consecutivas. Utiliza
+     * los miembros disponibles en el padre sin consolidarlo recursivamente.</p>
+     *
+     * @param parentClass entrada del padre con los atributos que se heredarán
+     * @throws InheritedAttributeRedeclaration si un atributo propio repite uno del padre
+     */
     public void checkAndSetInheritedAttributes(Class parentClass) {
         LinkedHashMap<String, Attribute> parentAttributes = parentClass.getAttributes();
         LinkedHashMap<String, Attribute> currentAttributes = this.getAttributes();
@@ -277,6 +366,18 @@ public class Class implements JsonSerializable {
         this.setAtributesConsolidationChecked(true);
     }
 
+    /**
+     * Comprueba las firmas coincidentes y agrega los métodos heredados.
+     *
+     * <p>Compara los lexemas de los tipos de retorno, la cantidad de parámetros y
+     * los lexemas de sus tipos en orden. No compara el modificador estático ni
+     * el subtipo de los arreglos. Copia los métodos del padre conservando sus
+     * posiciones; ante una redefinición, marca esa copia y actualiza su clase
+     * asociada, sin reemplazar sus parámetros o variables por los de la hija.</p>
+     *
+     * @param parentClass entrada del padre con los métodos que se heredarán
+     * @throws InvalidOverrideException si difiere alguno de los componentes de firma comprobados
+     */
     public void checkAndSetInheritedMethods(Class parentClass) {
         LinkedHashMap<String, Method> parentMethods = parentClass.getMethods();
         LinkedHashMap<String, Method> currentMethods = this.getMethods();
@@ -332,6 +433,12 @@ public class Class implements JsonSerializable {
         this.setMethodsConsolidationChecked(true);
     }
 
+    /**
+     * Exporta la declaración de clase, sus atributos, constructor y métodos.
+     *
+     * @param indent sangría inicial
+     * @return representación JSON de la entrada
+     */
     @Override
     public String toJson(String indent) {
         StringBuilder sb = new StringBuilder();
