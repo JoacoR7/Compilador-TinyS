@@ -1,19 +1,70 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree;
 
-import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.*;
-import uncuyo.compiladores.exceptions.semantic.symbolTableException.*;
-import uncuyo.compiladores.exceptions.semantic.symbolTableException.ClassNotFoundException;
-import uncuyo.compiladores.lexer.Token;
-import uncuyo.compiladores.lexer.TokenDefinitions;
-import uncuyo.compiladores.lexer.TokenType;
-import uncuyo.compiladores.semantic.abstractSintaxTree.expression.*;
-import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.*;
-import uncuyo.compiladores.semantic.symbolTable.*;
-import uncuyo.compiladores.semantic.symbolTable.Class;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.ASTException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.InvalidAttributeAccessException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.InvalidConstructorArgumentTypeException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.InvalidConstructorArgumentsCountException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.InvalidLiteralNodeException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.InvalidLiteralOperationException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.InvalidMethodAccessException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.InvalidMethodArgumentCountException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.InvalidMethodArgumentTypeException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.InvalidPrimitiveAccessException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.InvalidReturnException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.InvalidVoidAccessException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.MissingReturnException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.NonStaticMethodCalledFromClassException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.SelfUsedInStaticMehthodException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.StaticMethodCalledFromInstanceException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.TypeMismatchException;
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.VariableRedeclarationInForLoopException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.AttributeNotFoundException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.ClassNotFoundException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.LocalVariableNotFoundException;
+import uncuyo.compiladores.exceptions.semantic.symbolTableException.MethodNotFoundException;
+import uncuyo.compiladores.lexer.Token;
+import uncuyo.compiladores.lexer.TokenDefinitions;
+import uncuyo.compiladores.lexer.TokenType;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ArrayConstructorNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ArrayNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.BinaryExpressionNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ChainedCallNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ChainedNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ClassConstructorNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ConclassorCallNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ExpressionNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.LiteralNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.OperandNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ParenthesizedExpressionNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SelfNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleAccessNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleArrayNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleChainedNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleSelfNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleVariableNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.UnaryExpressionNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.VariableNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.AssignmentNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.BlockNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.ForNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.IfElseNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.ReturnNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.SentenceNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.SimpleSentenceNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.WhileNode;
+import uncuyo.compiladores.semantic.symbolTable.ArrayType;
+import uncuyo.compiladores.semantic.symbolTable.Attribute;
+import uncuyo.compiladores.semantic.symbolTable.Block;
+import uncuyo.compiladores.semantic.symbolTable.Class;
+import uncuyo.compiladores.semantic.symbolTable.Method;
+import uncuyo.compiladores.semantic.symbolTable.Parameter;
+import uncuyo.compiladores.semantic.symbolTable.SymbolTable;
+import uncuyo.compiladores.semantic.symbolTable.Type;
+import uncuyo.compiladores.semantic.symbolTable.Variable;
 
 public class TypeVisitor implements Visitor<Type> {
 
@@ -23,7 +74,7 @@ public class TypeVisitor implements Visitor<Type> {
             TokenType.INT_CONSTANT, TokenType.STRING_CONSTANT);
 
     private final List<String> predefinedClasses = List.of("Int", "Str", "Bool", "Array");
-    private int forBlockIndex = 0;
+    private int blockIndex = 0;
     private Block currentBlock;
 
 
@@ -167,6 +218,7 @@ public class TypeVisitor implements Visitor<Type> {
                 }
             }
             type = chainedCallNode.getChainedNode().accept(this);
+            chainedCallNode.setType(type);
         } else {
             Method method = symbolTable.getCurrentClass().getMethodInHierarchy(chainedCallNodeToken.getLexeme(), symbolTable.getClasses());
             if (method == null) {
@@ -244,10 +296,11 @@ public class TypeVisitor implements Visitor<Type> {
                         variableNode.setIsChainedNode(true);
                     }
                 }
+                chainedCallNode.setType(type);
                 type = chainedCallNode.getChainedNode().accept(this);
             }
         }
-        chainedCallNode.setType(type);
+
         return type;
     }
 
@@ -449,10 +502,31 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(SimpleVariableNode simpleVariableNode) {
+        Class currentClass = AST.getSymbolTable().getCurrentClass();
+        Method currentMethod = symbolTable.getCurrentMethod();
         if (simpleVariableNode.getSimpleChainedNode() == null) {
+            if (simpleVariableNode.getType() == null){
+                if (currentClass != null) {
+                    Attribute currentAttribute = currentClass.getAttributes().get(simpleVariableNode.getToken().getLexeme());
+                    if (currentAttribute != null){
+                        simpleVariableNode.setType(currentAttribute.getType());
+                    }
+                }
+                if (simpleVariableNode.getType() == null) {
+                    if (currentMethod != null) {
+                        Variable currentVariable = currentMethod.getVariables().get(simpleVariableNode.getToken().getLexeme());
+                        Parameter currentParameter = currentMethod.getParameters().get(simpleVariableNode.getToken().getLexeme());
+                        if (currentVariable != null){
+                            simpleVariableNode.setType(currentVariable.getType());
+                        } else if (currentParameter != null){
+                            simpleVariableNode.setType(currentParameter.getType());
+                        }
+                    }
+                }
+            }
             return simpleVariableNode.getType();
         } else {
-            Class currentClass = symbolTable.getClasses().get(simpleVariableNode.getType().getLexeme());
+            currentClass = symbolTable.getClasses().get(simpleVariableNode.getType().getLexeme());
             Token auxToken = simpleVariableNode.getSimpleChainedNode().getToken();
             Attribute attribute = currentClass.getAttributes().get(auxToken.getLexeme());
             if (attribute != null) {
@@ -468,6 +542,10 @@ public class TypeVisitor implements Visitor<Type> {
 
     public Type visit(UnaryExpressionNode unaryExpressionNode) {
         List<TokenType> intOperators = List.of(TokenType.OPERATOR_SUB, TokenType.OPERATOR_ADD, TokenType.OPERATOR_INC, TokenType.OPERATOR_DEC);
+        if (unaryExpressionNode.getExpressionNode().getType() == null) {
+            Type type = unaryExpressionNode.getExpressionNode().accept(this);
+            unaryExpressionNode.getExpressionNode().setType(type);
+        }
         if(intOperators.contains(unaryExpressionNode.getUnaryOperatorToken().getTokenType())){
             if (unaryExpressionNode.getExpressionNode().getType().getTokenType() != TokenType.INT_CLASS &&
                     unaryExpressionNode.getExpressionNode().getType().getTokenType() != TokenType.INT_CONSTANT){
@@ -691,6 +769,11 @@ public class TypeVisitor implements Visitor<Type> {
     }
 
     public Type visit(BlockNode blockNode) {
+        if (blockNode.isMethod()) {
+            blockIndex = 0;
+            currentBlock = null;
+            symbolTable.setCurrentBlock(null);
+        }
         Class currentClass = blockNode.getClassName() != null ? symbolTable.getClasses().get(blockNode.getClassName()) : null;
         symbolTable.setCurrentClass(currentClass);
         if (currentClass != null) {
@@ -743,14 +826,24 @@ public class TypeVisitor implements Visitor<Type> {
             );
         }
 
-        Block savedBlock = currentBlock;
-        currentBlock = symbolTable.getCurrentMethod().getBlocks().get(forBlockIndex++);
-        symbolTable.setCurrentBlock(currentBlock);
-
-        forNode.getSentenceNode().accept(this);
-        forNode.setHasReturn(forNode.getSentenceNode().isHasReturn());
-        currentBlock = savedBlock;
+        visitScopedSentence(forNode.getSentenceNode());
+        forNode.setHasReturn(forNode.getSentenceNode() != null && forNode.getSentenceNode().isHasReturn());
         return null;
+    }
+
+    /** Recorre los ámbitos en el mismo orden que el analizador y restaura el padre. */
+    private void visitScopedSentence(SentenceNode sentence) {
+        Block savedBlock = currentBlock;
+        currentBlock = symbolTable.getCurrentMethod().getBlocks().get(blockIndex++);
+        symbolTable.setCurrentBlock(currentBlock);
+        try {
+            if (sentence != null) {
+                sentence.accept(this);
+            }
+        } finally {
+            currentBlock = savedBlock;
+            symbolTable.setCurrentBlock(savedBlock);
+        }
     }
 
     public Type visit(IfElseNode ifElseNode) {
@@ -758,12 +851,10 @@ public class TypeVisitor implements Visitor<Type> {
         if(!expressionType.getTypeName().equals("Bool")) {
             throw new TypeMismatchException(ifElseNode.getToken().getRowIndex(), ifElseNode.getToken().getColumnIndex(), "Bool", expressionType.getTypeName());
         }
-        if (ifElseNode.getSentenceNodeIf() != null) {
-            ifElseNode.getSentenceNodeIf().accept(this);
-        }
+        visitScopedSentence(ifElseNode.getSentenceNodeIf());
 
         if (ifElseNode.getSentenceNodeElse() != null) {
-            ifElseNode.getSentenceNodeElse().accept(this);
+            visitScopedSentence(ifElseNode.getSentenceNodeElse());
         }
 
         // Casos para verificar si el nodo tiene retorno
@@ -805,8 +896,8 @@ public class TypeVisitor implements Visitor<Type> {
         if(!expressionType.getTypeName().equals("Bool")) {
             throw new TypeMismatchException(whileNode.getToken().getRowIndex(), whileNode.getToken().getColumnIndex(), "Bool", expressionType.getTypeName());
         }
-        whileNode.getSentenceNode().accept(this);
-        whileNode.setHasReturn(whileNode.getSentenceNode().isHasReturn());
+        visitScopedSentence(whileNode.getSentenceNode());
+        whileNode.setHasReturn(whileNode.getSentenceNode() != null && whileNode.getSentenceNode().isHasReturn());
         return null;
     }
 
