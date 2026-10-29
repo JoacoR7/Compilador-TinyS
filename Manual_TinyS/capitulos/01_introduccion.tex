@@ -119,13 +119,12 @@ Los métodos predefinidos implementados por el entorno de ejecución tienen
 La exportación se realiza mediante \texttt{AstJsonVisitor} y
 \texttt{JsonWriter}, sin bibliotecas externas.
 
-Los casos de los nuevos ejecutadores están en \texttt{tc/etapa4} y
-\texttt{tc/tinyS}. Cada directorio contiene seis casos válidos y cuatro
-inválidos, separados en \texttt{success} y \texttt{error}. Los archivos
-fuente incluyen comentarios con su propósito y resultado esperado.
-Las pruebas automatizadas se ejecutan con:
+Los casos semánticos compartidos por las etapas 3 y 4 se encuentran en
+\texttt{tc/etapa3y4}. Se distribuyen en 36 casos válidos en
+\texttt{success} y 73 casos inválidos en \texttt{error}. Las pruebas
+automatizadas de ese conjunto se ejecutan con:
 \begin{verbatim}
-mvn -Dtest=SemanticStagesTest test
+mvn -Dtest=SemanticTest test
 \end{verbatim}
 
 Para preparar una entrega, se copia el JAR correspondiente desde
