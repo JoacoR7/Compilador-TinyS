@@ -1,13 +1,5 @@
 package uncuyo.compiladores;
 
-import org.junit.jupiter.api.Test;
-import uncuyo.compiladores.exceptions.lexical.LexicalException;
-import uncuyo.compiladores.exceptions.semantic.SemanticException;
-import uncuyo.compiladores.exceptions.syntactic.SyntacticException;
-import uncuyo.compiladores.lexer.Lexer;
-import uncuyo.compiladores.semantic.SemanticAnalyzer;
-import uncuyo.compiladores.syntactic.SyntacticAnalyzer;
-
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -16,7 +8,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.Test;
+
+import uncuyo.compiladores.exceptions.lexical.LexicalException;
+import uncuyo.compiladores.exceptions.semantic.SemanticException;
+import uncuyo.compiladores.lexer.Lexer;
+import uncuyo.compiladores.semantic.SemanticAnalyzer;
 
 public class SemanticTest {
 
@@ -29,7 +29,7 @@ public class SemanticTest {
     *********************************************/
     @Test
     public void errorCases() throws FileNotFoundException, LexicalException {
-        fileUtils = new FileUtils("testFiles/semanticFiles/error/");
+        fileUtils = new FileUtils("tc/etapa3y4/error/");
         List<String> testFiles = fileUtils.traverseFiles();
         HashMap<String, String> testsPassed = new HashMap<>();
         HashMap<String, String> testsFailed = new HashMap<>();
@@ -87,7 +87,7 @@ public class SemanticTest {
      *********************************************/
     @Test
     public void successCases() throws FileNotFoundException, LexicalException {
-        fileUtils = new FileUtils("testFiles/semanticFiles/success/");
+        fileUtils = new FileUtils("tc/etapa3y4/success/");
         List<String> testPassed = new ArrayList<>();
         HashMap<String, String> testFailed = new HashMap<>();
         List<String> testFiles = fileUtils.traverseFiles();
