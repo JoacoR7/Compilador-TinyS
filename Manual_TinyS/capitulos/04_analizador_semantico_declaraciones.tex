@@ -9,16 +9,190 @@ A continuación presenta el esquema de traducción con sus acciones semánticas 
 \input{gramaticas/06_gramatica_atributos}
 
 \clearpage
-\section{Diagrama UML del chequeo de declaraciones}
+\section{Diagrama de clases de la tabla de símbolos}
 \label{sec:uml-declaraciones}
-Para visualizar el diagrama con mayor detalle, puede hacer clic en el
-siguiente enlace a la imagen original en GitHub:
-\url{https://github.com/JoacoR7/Compiladores2026/blob/main/Manual_TinyS/diagramas/UML_symbol_table.png}.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\linewidth,height=0.76\textheight,keepaspectratio]{diagramas/UML_symbol_table.png}
-  \caption{Diagrama UML de la tabla de símbolos.}
+  \includegraphics[width=\linewidth,height=0.85\textheight,keepaspectratio]{diagramas/UML_symbol_table.png}
+  \caption{Diagrama de clases de la tabla de símbolos.}
   \label{fig:uml-declaraciones}
 \end{figure}
 \clearpage
+
+\section{Errores de declaraciones}
+\label{sec:errores-semanticos-declaraciones}
+\setlength{\emergencystretch}{4em}
+
+
+\subsection{Manejo de excepciones}
+La clase \lexcode{SemanticException} hereda de
+\lexcode{RuntimeException} y construye el mensaje del error. Las
+excepciones específicas de la tabla heredan de
+\lexcode{SymbolTableException}, que a su vez hereda de
+\lexcode{SemanticException}. Algunos conflictos de atributos y métodos
+utilizan directamente la excepción general.
+
+El ejecutador \lexcode{Etapa3} delega en
+\lexcode{SemanticStageRunner}, que captura las excepciones y muestra el
+encabezado \texttt{ERROR: SEMANTICO - DECLARACIONES}, seguido del
+diagnóstico, sin imprimir la traza de llamadas de Java. Si el error
+proviene de la lectura léxica o del reconocimiento sintáctico, se informa
+con \texttt{ERROR: LEXICO} o \texttt{ERROR: SINTACTICO}, respectivamente.
+
+Ante cualquiera de esos errores no se escribe un nuevo archivo
+\texttt{.ts.json}. Los resultados de una ejecución anterior no se
+eliminan automáticamente.
+
+\subsection{Errores durante la construcción de la tabla}
+\begin{description}[style=nextline]
+  \item[Atributo repetido]
+  \lexcode{SemanticException}. Se detecta en
+  \lexcode{listaDeclaracionVariables()} cuando el identificador ya está
+  registrado en la parte \texttt{class} actual. También se comprueba en
+  \lexcode{mergeAttributes()} al integrar otra declaración de la misma
+  clase.
+
+  \item[Variable local repetida o coincidente con un parámetro]
+  \lexcode{VariableAlreadyDefined}. El método
+  \lexcode{Method.insertVariable()} rechaza un nombre que ya figure en
+  el mapa de parámetros o de variables locales del método actual.
+  Se señala la nueva declaración. La descripción utiliza el texto
+  \texttt{ya existe como parametro} para ambos tipos de conflicto.
+
+  \item[Constructor redefinido]
+  \lexcode{ConstructorRedefinitionException}. Se rechaza un segundo
+  constructor dentro del mismo \texttt{impl} o al integrar otra
+  implementación de la clase. El mensaje ubica el nuevo constructor e
+  indica la línea y columna del constructor previamente registrado.
+
+  \item[Método repetido entre implementaciones]
+  \lexcode{SemanticException}. Durante
+  \lexcode{Class.mergeMethods()}, se rechaza un método cuyo nombre ya
+  existe en la entrada de la clase. El diagnóstico señala el nuevo método
+  y menciona la línea de la definición anterior. Este control corresponde
+  a la integración de partes \texttt{impl} diferentes.
+
+  \item[Herencia de un tipo no permitido]
+  \lexcode{PrimitiveInheritanceException}. La operación
+  \lexcode{validateParent()} rechaza como padre a \texttt{Int},
+  \texttt{Bool}, \texttt{Str} o \texttt{Array}, tanto al guardar una
+  clase como al integrar otra parte. La ubicación corresponde al token
+  del nombre de la clase que declara esa herencia.
+
+  \item[Padres incompatibles entre partes de una clase]
+  \lexcode{MultipleInheritanceException}. El método
+  \lexcode{validateAndSetParent()} rechaza que dos partes
+  \texttt{class} del mismo nombre declaren padres diferentes.
+  Se informan los nombres de ambos padres y la línea de la declaración
+  anterior. La escritura de varios padres en una misma cláusula de
+  herencia es un error sintáctico y se detecta en la fase correspondiente.
+\end{description}
+
+\subsection{Errores durante la consolidación}
+La consolidación incorpora las clases predefinidas, ejecuta
+\lexcode{checkClasses()} y finalmente verifica el bloque de entrada
+mediante \lexcode{checkStart()}. Las clases predefinidas quedan
+excluidas de los controles que exigen partes escritas por el usuario.
+
+\begin{description}[style=nextline]
+  \item[Implementación inexistente]
+  \lexcode{ImplNotFoundException}. Se produce cuando una clase del
+  usuario no tiene una parte \texttt{impl} registrada.
+
+  \item[Constructor inexistente]
+  \lexcode{ConstructorNotFoundException}. Se produce cuando la entrada
+  de una clase del usuario no contiene constructor, aunque se haya
+  encontrado su implementación.
+
+  \item[Clase no declarada]
+  \lexcode{ClassNotFoundException}. Se produce cuando existe una
+  implementación sin su parte \texttt{class}. La misma excepción se
+  utiliza cuando el tipo de una variable de \texttt{start} no figura
+  entre las clases de la tabla. Esta comprobación no constituye una
+  validación general de todos los tipos declarados en el programa.
+
+  \item[Superclase inexistente]
+  \lexcode{ParentClassNotFoundException}. El método
+  \lexcode{checkParentExistence()} comprueba que el padre directo esté
+  registrado. El mensaje identifica a la clase hija y al padre
+  desconocido; utiliza la ubicación de la declaración de la hija.
+
+  \item[Herencia circular]
+  \lexcode{CircularInheritanceException}. Se recorre la cadena de
+  padres utilizando un conjunto de nombres visitados. Si un padre
+  vuelve a aparecer en ese conjunto, se informa el ciclo. El diagnóstico
+  incluye los nombres visitados, cuyo orden de impresión depende del
+  conjunto utilizado.
+
+  \item[Redeclaración de un atributo heredado]
+  \lexcode{InheritedAttributeRedeclaration}. Durante la incorporación
+  de atributos del padre, se rechaza un atributo propio con un nombre
+  ya presente en el padre. El mensaje ubica la nueva declaración e
+  informa la clase de origen y la ubicación del atributo anterior.
+
+  \item[Redefinición incompatible de un método heredado]
+  \lexcode{InvalidOverrideException}. Se comparan el lexema del tipo
+  de retorno, la cantidad de parámetros y los lexemas de sus tipos en
+  orden. Se informa la primera diferencia encontrada, utilizando el
+  token del método de la clase hija.
+
+  \item[Variable de tipo \texttt{Object} en el bloque de entrada]
+  \lexcode{ObjectDeclarationException}. La comprobación de variables
+  de \texttt{start} excluye a \texttt{Object} como tipo declarado.
+  El diagnóstico señala el token de la variable.
+\end{description}
+
+Para cada clase, los controles de presencia se realizan en este orden:
+implementación, constructor y declaración. Si falta más de una de esas
+partes, sólo se informa la primera ausencia detectada.
+
+\clearpage
+\section{Escenarios y casos de prueba}
+\label{sec:casos-declaraciones}
+\begingroup
+\setlength{\emergencystretch}{3em}
+Los archivos se encuentran en \lexcode{tc/etapa3}, dentro de la raíz
+del proyecto. Este directorio contiene 36 casos válidos y 19 casos
+inválidos de declaraciones.
+Los escenarios cubren atributos, parámetros y variables locales,
+constructores, integración de partes \texttt{class} e \texttt{impl},
+herencia y compatibilidad de firmas de métodos heredados.
+
+\subsection{Técnica y alcance de la verificación}
+La clase \lexcode{SemanticDeclarationsTest} comprueba las declaraciones
+mediante \lexcode{analyzeDeclarations()}. Sus dos pruebas agrupan los
+36 archivos válidos y los 19 inválidos. Cada grupo muestra un resumen
+con el total de casos y el total aprobado; los fallos se detallan por
+archivo. En cada archivo se
+crea un lector y un analizador nuevos, se reconoce el programa hasta EOF
+y se construye y consolida la tabla de símbolos. Un caso válido debe
+terminar sin excepciones; uno inválido debe producir una excepción
+semántica de declaraciones por el motivo indicado en la tabla.
+Desde la raíz del proyecto se ejecutan mediante:
+\begin{verbatim}
+mvn -Dtest=SemanticDeclarationsTest test
+\end{verbatim}
+
+El ejecutador \lexcode{Etapa3} utiliza esa misma entrada y, al completar
+el análisis, escribe el archivo \texttt{.ts.json}. Por ejemplo, desde
+la raíz del proyecto, después de compilar la etapa:
+\begin{verbatim}
+java -jar target/etapa3.jar tc/etapa3/success/classAttributes.s
+java -jar target/etapa3.jar tc/etapa3/error/duplicatedAttribute.s
+\end{verbatim}
+Se espera \texttt{CORRECTO: SEMANTICO - DECLARACIONES} para el primer
+archivo y \texttt{ERROR: SEMANTICO - DECLARACIONES} para el segundo.
+
+En el chequeo de declaraciones se reconoce la sintaxis de los cuerpos,
+pero no se comprueban los tipos de asignaciones, argumentos, condiciones
+o retornos, ni los accesos de las expresiones.
+
+\subsection{Casos que deben aceptarse}
+\input{tablas/10_casos_declaraciones_validos}
+
+\subsection{Casos que deben rechazarse}
+\input{tablas/11_casos_declaraciones_invalidos}
+\endgroup
+
+

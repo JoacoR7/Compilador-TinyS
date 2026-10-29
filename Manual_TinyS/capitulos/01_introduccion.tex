@@ -13,6 +13,23 @@ se declaran en el archivo \texttt{pom.xml}. El procedimiento común de
 compilación y ejecución se describe a continuación. Los escenarios y las
 pruebas de cada etapa se detallan en el capítulo correspondiente.
 
+Las clases de prueba se encuentran en
+\path{src/test/java/uncuyo/compiladores}. Los archivos de entrada están
+en \texttt{tc/etapaN}, según la etapa, y en
+\texttt{testFiles/codeGenFiles} para generación de código.
+Desde la raíz del proyecto se ejecutan todas las pruebas con:
+\begin{verbatim}
+mvn test
+\end{verbatim}
+Para ejecutar una etapa en particular se utiliza el comando correspondiente:
+\begin{verbatim}
+mvn -Dtest=LexerTest test
+mvn -Dtest=SyntacticTest test
+mvn -Dtest=SemanticDeclarationsTest test
+mvn -Dtest=SemanticSentencesTest test
+mvn -Dtest=CodeGenTest test
+\end{verbatim}
+
 \section{Compilación y ejecución}
 \label{sec:compilacion-ejecucion}
 Los comandos se ejecutan desde la raíz del proyecto, es decir, el directorio
@@ -118,14 +135,6 @@ Los métodos predefinidos implementados por el entorno de ejecución tienen
 \texttt{body} nulo, ya que no proceden de un bloque del archivo fuente.
 La exportación se realiza mediante \texttt{AstJsonVisitor} y
 \texttt{JsonWriter}, sin bibliotecas externas.
-
-Los casos semánticos compartidos por las etapas 3 y 4 se encuentran en
-\texttt{tc/etapa3y4}. Se distribuyen en 36 casos válidos en
-\texttt{success} y 73 casos inválidos en \texttt{error}. Las pruebas
-automatizadas de ese conjunto se ejecutan con:
-\begin{verbatim}
-mvn -Dtest=SemanticTest test
-\end{verbatim}
 
 Para preparar una entrega, se copia el JAR correspondiente desde
 \texttt{target} al directorio de entrega. Desde allí puede ejecutarse con

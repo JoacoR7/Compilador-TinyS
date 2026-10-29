@@ -1,0 +1,35 @@
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{5pt}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|
+>{\raggedright\arraybackslash}p{0.40\textwidth}|
+>{\raggedright\arraybackslash}p{0.28\textwidth}|
+>{\raggedright\arraybackslash}p{\dimexpr0.32\textwidth-6\tabcolsep-4\arrayrulewidth\relax}|}
+\caption{Casos válidos del chequeo de declaraciones}\label{tab:declaraciones-validos}\\
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\ \hline
+\endfirsthead
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\ \hline
+\endhead
+\texttt{array\allowbreak .s} & Registrar variables de tipo arreglo y primitivo en start. & Aceptar nums de tipo Array Int y x de tipo Int. \\ \hline
+\texttt{arrayInMethod\allowbreak .s} & Registrar un atributo y un parámetro de tipo arreglo. & Aceptar datos, el parámetro arr y la variable local suma. \\ \hline
+\texttt{bloqueValido\allowbreak .s} & Registrar un parámetro y una variable local con nombres distintos. & Aceptar x y resultado en el método doble. \\ \hline
+\texttt{classAttributes\allowbreak .s} & Registrar varios atributos en una declaración. & Aceptar a, b y c de tipo Int en Base. \\ \hline
+\texttt{classMethod\allowbreak .s} & Integrar implementaciones anteriores a la declaración de la clase. & Reunir constructor, métodos y atributos de A, con sus parámetros y variables locales. \\ \hline
+\texttt{constructorArray\allowbreak .s} & Registrar arreglos de los tres tipos primitivos. & Aceptar las variables Array Int, Array Str y Array Bool de start. \\ \hline
+\texttt{inheritanceChain\allowbreak .s} & Consolidar una cadena de herencia y partes de una clase. & Integrar las partes de A y propagar b1 por B, C y D sin ciclos. \\ \hline
+\texttt{inheritedPublicAttribute\allowbreak .s} & Incorporar atributos y métodos heredados. & Consolidar x y getX de A en B. \\ \hline
+\texttt{mergeClass\allowbreak .s} & Integrar atributos de partes compatibles y redefinir un método heredado. & Reunir i1 e i2 en Base y aceptar m1 con la misma firma que en A. \\ \hline
+\texttt{methods\&Attributes\allowbreak .s} & Integrar varias partes class e impl con herencia. & Reunir los miembros de A y aceptar m1 y m2 con firmas compatibles con B. \\ \hline
+\texttt{methods\allowbreak .s} & Registrar métodos de instancia y estáticos. & Aceptar el constructor y los métodos m1, m2 y m3 de A. \\ \hline
+\texttt{publicAttributes\allowbreak .s} & Registrar un atributo con visibilidad pública. & Guardar edad como atributo público de Persona y registrar getEdad. \\ \hline
+\texttt{returns\allowbreak .s} & Registrar métodos con tipos de retorno distintos. & Aceptar valor de tipo Int y nada de tipo void. \\ \hline
+\texttt{sonidosAnimales\allowbreak .s} & Redefinir un método heredado con firma compatible. & Aceptar sonido en Perro con retorno Str y sin parámetros, como en Animal. \\ \hline
+\texttt{startVariables\allowbreak .s} & Resolver los tipos de las variables del bloque de entrada. & Aceptar Persona, Mascota e Int como tipos registrados en la tabla. \\ \hline
+\texttt{validReturnType\allowbreak .s} & Registrar el retorno y el parámetro formal de un método. & Guardar identidad con retorno Int y el parámetro valor de tipo Int. \\ \hline
+\end{longtable}
+\endgroup

@@ -1,0 +1,38 @@
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{5pt}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|
+>{\raggedright\arraybackslash}p{0.40\textwidth}|
+>{\raggedright\arraybackslash}p{0.28\textwidth}|
+>{\raggedright\arraybackslash}p{\dimexpr0.32\textwidth-6\tabcolsep-4\arrayrulewidth\relax}|}
+\caption{Casos inválidos del chequeo de declaraciones}\label{tab:declaraciones-invalidos}\\
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\ \hline
+\endfirsthead
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\ \hline
+\endhead
+\texttt{atributosDistintos\allowbreak EnMultiplesClass\allowbreak .s} & Rechazar un atributo repetido entre partes de una clase. & Error al integrar x en A, aunque su tipo cambie de Int a Str; ocurre antes del segundo constructor. \\ \hline
+\texttt{circularInheritance\allowbreak .s} & Detectar un ciclo de herencia entre varias clases. & Error por el ciclo entre B, D y C. \\ \hline
+\texttt{claseNoDeclarada\allowbreak .s} & Rechazar un tipo desconocido en una variable de start. & Error porque Auto no está declarada; se detecta al comprobar la variable a. \\ \hline
+\texttt{classNotDeclarated\allowbreak .s} & Rechazar una implementación sin declaración de clase. & Error porque impl A tiene constructor, pero falta class A. \\ \hline
+\texttt{constructorNotFound\allowbreak .s} & Exigir un constructor en una clase del usuario. & Error por ausencia de constructor en Persona, aunque existe impl. \\ \hline
+\texttt{duplicatedAttribute\allowbreak .s} & Rechazar un nombre repetido en la lista de atributos. & Error en la segunda declaración de b en Base. \\ \hline
+\texttt{herenciaCircular\allowbreak .s} & Detectar un ciclo de herencia de dos clases. & Error por la dependencia circular entre A y B. \\ \hline
+\texttt{herenciaTipoPrimitivo\allowbreak .s} & Rechazar la herencia de un tipo primitivo. & Error porque MiInt intenta heredar de Int. \\ \hline
+\texttt{mergeClassError\allowbreak .s} & Rechazar un atributo propio que ya se hereda. & Error porque B declara v2, definido previamente en A. \\ \hline
+\texttt{mismaVariableYParametro\allowbreak .s} & Rechazar una variable local con el nombre de un parámetro. & Error al declarar x dentro de metodo, que ya recibe el parámetro x. \\ \hline
+\texttt{multipleInheritance\allowbreak .s} & Rechazar padres incompatibles entre partes de una clase. & Error porque A ya tiene padre Object y otra parte indica Base. \\ \hline
+\texttt{noImplClass\allowbreak .s} & Exigir una implementación para cada clase del usuario. & Error por ausencia de impl A; se informa antes de comprobar el constructor. \\ \hline
+\texttt{overrideInvalido\allowbreak .s} & Rechazar una redefinición con retorno incompatible. & Error porque f en B retorna Str y el método heredado retorna Int. \\ \hline
+\texttt{overrideMetodoEstatico\allowbreak .s} & Detectar el cambio de retorno en un método estático heredado. & Error porque foo en B retorna Int y en A retorna void. \\ \hline
+\texttt{primitiveInheritance\allowbreak .s} & Detectar una superclase inexistente. & Error porque A hereda de B y B no está declarada; el archivo no hereda de un primitivo. \\ \hline
+\texttt{redefinicionAtributoHeredado\allowbreak .s} & Rechazar la redeclaración de un atributo heredado. & Error porque x en B ya está definido en A, aunque conserva el tipo Int. \\ \hline
+\texttt{undefinedParent\allowbreak .s} & Comprobar la existencia del padre directo. & Error porque Auto hereda de Vehiculo, que no está registrada. \\ \hline
+\texttt{varAndParamWithSameName\allowbreak .s} & Detectar un conflicto entre parámetro y variable local. & Error al declarar la variable x en metodo, donde ya existe el parámetro x. \\ \hline
+\texttt{variableLocalRepetida\allowbreak .s} & Rechazar dos variables locales con el mismo nombre. & Error en la segunda declaración local de x en metodo. \\ \hline
+\end{longtable}
+\endgroup
