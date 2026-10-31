@@ -66,6 +66,15 @@ import uncuyo.compiladores.semantic.symbolTable.SymbolTable;
 import uncuyo.compiladores.semantic.symbolTable.Type;
 import uncuyo.compiladores.semantic.symbolTable.Variable;
 
+/**
+ * Visitante que comprueba tipos, accesos, llamadas y retornos del AST.
+ * Utiliza la tabla compartida de {@link AST} y actualiza el contexto de
+ * clase, método y bloque durante el recorrido. Los nodos conservan los
+ * tipos calculados y las marcas de retorno que asigna cada sobrecarga.
+ * La primera incompatibilidad detectada interrumpe el recorrido con una
+ * excepción semántica. Sus instancias mantienen estado de recorrido y no
+ * deben compartirse entre chequeos concurrentes.
+ */
 public class TypeVisitor implements Visitor<Type> {
 
     private final SymbolTable symbolTable = AST.getSymbolTable();
@@ -82,10 +91,23 @@ public class TypeVisitor implements Visitor<Type> {
     // #               Visitor type de expresiones                     #
     // #################################################################
 
+    /**
+     * Devuelve el tipo declarado del arreglo.
+     *
+     * @param arrayConstructorNode nodo que se comprueba
+     * @return tipo almacenado en el nodo
+     */
     public Type visit(ArrayConstructorNode arrayConstructorNode) {
         return arrayConstructorNode.getType();
     }
 
+    /**
+     * Comprueba que el índice sea entero y resuelve el tipo del elemento.
+     *
+     * @param arrayNode nodo que se comprueba
+     * @return subtipo del arreglo, que también se almacena en el nodo
+     * @throws TypeMismatchException si los tipos no cumplen los requisitos de la operación
+     */
     public Type visit(ArrayNode arrayNode) {
         Type indexType = arrayNode.getExpression().accept(this);
         if (!indexType.getTokenType().isInt()) {
@@ -129,6 +151,13 @@ public class TypeVisitor implements Visitor<Type> {
         return subType;
     }
 
+    /**
+     * Comprueba los operandos y determina el tipo de la operación binaria.
+     *
+     * @param binaryExpressionNode nodo que se comprueba
+     * @return tipo de resultado, almacenado también en el nodo
+     * @throws TypeMismatchException si los tipos no cumplen los requisitos de la operación
+     */
     public Type visit(BinaryExpressionNode binaryExpressionNode) {
         Type type = null;
         Type leftNodeType = binaryExpressionNode.getLeftNode().accept(this);
@@ -199,6 +228,20 @@ public class TypeVisitor implements Visitor<Type> {
         return type;
     }
 
+    /**
+     * Resuelve la llamada, comprueba argumentos y continúa el encadenado.
+     *
+     * @param chainedCallNode nodo que se comprueba
+     * @return tipo de la llamada o del último acceso del encadenado
+     * @throws ClassNotFoundException si la clase requerida no está registrada
+     * @throws InvalidMethodAccessException si no se encuentra el método solicitado en el receptor
+     * @throws NonStaticMethodCalledFromClassException si se accede a un método de instancia desde una clase
+     * @throws InvalidMethodArgumentCountException si la cantidad de argumentos no coincide con la firma
+     * @throws InvalidMethodArgumentTypeException si un argumento no es compatible con su parámetro
+     * @throws InvalidVoidAccessException si se intenta continuar un acceso desde un retorno {@code void}
+     * @throws InvalidPrimitiveAccessException si el encadenado solicita un acceso no permitido sobre un primitivo
+     * @throws InvalidAttributeAccessException si el acceso al atributo privado no está permitido
+     */
     public Type visit(ChainedCallNode chainedCallNode) {
         Type type;
         Token chainedCallNodeToken = chainedCallNode.getToken();
@@ -304,10 +347,22 @@ public class TypeVisitor implements Visitor<Type> {
         return type;
     }
 
+    /**
+     * @param chainedNode nodo que se comprueba
+     * @return tipo devuelto por la visita del nodo concreto
+     */
     public Type visit(ChainedNode chainedNode) {
         return chainedNode.accept(this);
     }
 
+    /**
+     * Comprueba la cantidad y los tipos de los argumentos del constructor.
+     *
+     * @param classConstructorNode nodo que se comprueba
+     * @return tipo de la instancia creada
+     * @throws InvalidConstructorArgumentsCountException si la cantidad de argumentos no coincide con el constructor
+     * @throws InvalidConstructorArgumentTypeException si un argumento no es compatible con el constructor
+     */
     public Type visit(ClassConstructorNode classConstructorNode) {
         Method constructor = symbolTable.getClasses().get(classConstructorNode.getType().getLexeme()).getConstructor();
         if(classConstructorNode.getExpressionNodes().size() != constructor.getParameters().size()) {
@@ -328,14 +383,29 @@ public class TypeVisitor implements Visitor<Type> {
         return classConstructorNode.getType();
     }
 
+    /**
+     * @param conclassorCallNode nodo que se comprueba
+     * @return tipo devuelto por la visita del nodo concreto
+     */
     public Type visit(ConclassorCallNode conclassorCallNode) {
         return conclassorCallNode.accept(this);
     }
 
+    /**
+     * @param expressionNode nodo que se comprueba
+     * @return tipo devuelto por la visita del nodo concreto
+     */
     public Type visit(ExpressionNode expressionNode) {
         return expressionNode.accept(this);
     }
 
+    /**
+     * Comprueba que la categoría del literal sea admitida.
+     *
+     * @param literalNode nodo que se comprueba
+     * @return tipo inicializado por el literal
+     * @throws InvalidLiteralNodeException si el token no corresponde a un literal admitido
+     */
     public Type visit(LiteralNode literalNode) {
         if (!literalTokenTypes.contains(literalNode.getType().getTokenType())) {
             throw new InvalidLiteralNodeException(literalNode.getToken().getRowIndex(), literalNode.getToken().getColumnIndex(),
@@ -344,10 +414,21 @@ public class TypeVisitor implements Visitor<Type> {
         return literalNode.getType();
     }
 
+    /**
+     * @param operandNode nodo que se comprueba
+     * @return tipo devuelto por la visita del nodo concreto
+     */
     public Type visit(OperandNode operandNode) {
         return operandNode.accept(this);
     }
 
+    /**
+     * Visita la expresión agrupada y su encadenado, si existe.
+     *
+     * @param parenthesizedExpressionNode nodo que se comprueba
+     * @return tipo de la expresión o del último acceso encadenado
+     * @throws InvalidAttributeAccessException si el acceso al atributo privado no está permitido
+     */
     public Type visit(ParenthesizedExpressionNode parenthesizedExpressionNode) {
         Type type = parenthesizedExpressionNode.getExpresion().accept(this);
         if (parenthesizedExpressionNode.getChainedNode() != null) {
@@ -370,6 +451,14 @@ public class TypeVisitor implements Visitor<Type> {
         return type;
     }
 
+    /**
+     * Resuelve el tipo de {@code self} o de su encadenado.
+     *
+     * @param selfNode nodo que se comprueba
+     * @return tipo de la referencia o del acceso final
+     * @throws SelfUsedInStaticMehthodException si el acceso encadenado mediante {@code self} ocurre en un método estático
+     * @throws InvalidAttributeAccessException si el acceso al atributo privado no está permitido
+     */
     public Type visit(SelfNode selfNode) {
 
         Class currentClass = symbolTable.getClasses().get(symbolTable.getCurrentMethod().getClassName());
@@ -409,10 +498,21 @@ public class TypeVisitor implements Visitor<Type> {
         return type;
     }
 
+    /**
+     * @param simpleAccessNode nodo que se comprueba
+     * @return tipo devuelto por la visita del nodo concreto
+     */
     public Type visit(SimpleAccessNode simpleAccessNode) {
         return simpleAccessNode.accept(this);
     }
 
+    /**
+     * Comprueba el índice y resuelve el tipo del elemento de destino.
+     *
+     * @param simpleArrayNode nodo que se comprueba
+     * @return subtipo del arreglo, que también se almacena en el nodo
+     * @throws TypeMismatchException si los tipos no cumplen los requisitos de la operación
+     */
     public Type visit(SimpleArrayNode simpleArrayNode) {
         Type indexType = simpleArrayNode.getExpressionNode().accept(this);
         if (!indexType.getTokenType().isInt()) {
@@ -447,6 +547,14 @@ public class TypeVisitor implements Visitor<Type> {
         return subType;
     }
 
+    /**
+     * Resuelve el atributo de destino, su visibilidad y la continuación.
+     *
+     * @param simpleChainedNode nodo que se comprueba
+     * @return tipo del acceso final, o {@code null} si no se resuelve la clase de contexto
+     * @throws AttributeNotFoundException si no se encuentra el atributo en la clase de contexto
+     * @throws InvalidAttributeAccessException si el acceso al atributo privado no está permitido
+     */
     public Type visit(SimpleChainedNode simpleChainedNode) {
 
         if (simpleChainedNode.getClassName() == null){
@@ -485,6 +593,13 @@ public class TypeVisitor implements Visitor<Type> {
 
     }
 
+    /**
+     * Comprueba el acceso de destino desde {@code self} y visita sus atributos.
+     *
+     * @param simpleSelfNode nodo que se comprueba
+     * @return tipo del encadenado, o {@code null} si no existe
+     * @throws SelfUsedInStaticMehthodException si el acceso encadenado mediante {@code self} ocurre en un método estático
+     */
     public Type visit(SimpleSelfNode simpleSelfNode) {
         if (simpleSelfNode.getSimpleChainedNode() == null) {
             return null;
@@ -501,6 +616,13 @@ public class TypeVisitor implements Visitor<Type> {
         }
     }
 
+    /**
+     * Resuelve el tipo del destino y comprueba los atributos encadenados.
+     *
+     * @param simpleVariableNode nodo que se comprueba
+     * @return tipo de la variable o del destino final; puede ser {@code null} si no se resuelve
+     * @throws InvalidAttributeAccessException si el acceso al atributo privado no está permitido
+     */
     public Type visit(SimpleVariableNode simpleVariableNode) {
         Class currentClass = AST.getSymbolTable().getCurrentClass();
         Method currentMethod = symbolTable.getCurrentMethod();
@@ -540,6 +662,14 @@ public class TypeVisitor implements Visitor<Type> {
         }
     }
 
+    /**
+     * Comprueba el tipo requerido por el operador unario.
+     *
+     * @param unaryExpressionNode nodo que se comprueba
+     * @return tipo del operando; los incrementos y decrementos rechazan literales directos
+     * @throws TypeMismatchException si los tipos no cumplen los requisitos de la operación
+     * @throws InvalidLiteralOperationException si se incrementa o decrementa directamente un literal
+     */
     public Type visit(UnaryExpressionNode unaryExpressionNode) {
         List<TokenType> intOperators = List.of(TokenType.OPERATOR_SUB, TokenType.OPERATOR_ADD, TokenType.OPERATOR_INC, TokenType.OPERATOR_DEC);
         if (unaryExpressionNode.getExpressionNode().getType() == null) {
@@ -566,6 +696,20 @@ public class TypeVisitor implements Visitor<Type> {
         return unaryExpressionNode.getExpressionNode().getType();
     }
 
+    /**
+     * Resuelve la variable o atributo y comprueba su encadenado en el contexto actual.
+     *
+     * @param variableNode nodo que se comprueba
+     * @return tipo resuelto del acceso final, almacenado también en el nodo
+     * @throws VariableRedeclarationInForLoopException si la resolución detecta una variable repetida en el ámbito del recorrido
+     * @throws LocalVariableNotFoundException si la variable no se encuentra en el contexto local
+     * @throws ClassNotFoundException si la clase requerida no está registrada
+     * @throws MethodNotFoundException si el método requerido no pertenece a la clase de contexto
+     * @throws AttributeNotFoundException si no se encuentra el atributo en la clase de contexto
+     * @throws InvalidAttributeAccessException si el acceso al atributo privado no está permitido
+     * @throws ASTException si no se puede resolver el acceso encadenado
+     * @throws StaticMethodCalledFromInstanceException si se invoca un método estático mediante una instancia
+     */
     public Type visit(VariableNode variableNode){
         if (variableNode.isChainedNode()
                 && variableNode.getChainedNode() == null
@@ -753,6 +897,13 @@ public class TypeVisitor implements Visitor<Type> {
     // #               Visitor type de sentencias                      #
     // #################################################################
 
+    /**
+     * Comprueba la compatibilidad entre el destino y el valor de la asignación.
+     *
+     * @param assignmentNode nodo que se comprueba
+     * @return tipo del destino de la asignación
+     * @throws TypeMismatchException si los tipos no cumplen los requisitos de la operación
+     */
     @Override
     public Type visit(AssignmentNode assignmentNode) {
         Type leftNodeType = assignmentNode.getSimpleAccessNode().accept(this);
@@ -768,6 +919,13 @@ public class TypeVisitor implements Visitor<Type> {
         return leftNodeType;
     }
 
+    /**
+     * Establece el contexto del bloque, visita sus sentencias y propaga sus retornos.
+     *
+     * @param blockNode nodo que se comprueba
+     * @return {@code null}; los resultados del chequeo quedan en los nodos
+     * @throws MissingReturnException si un bloque raíz de método no {@code void} no tiene marca de retorno
+     */
     public Type visit(BlockNode blockNode) {
         if (blockNode.isMethod()) {
             blockIndex = 0;
@@ -804,6 +962,13 @@ public class TypeVisitor implements Visitor<Type> {
         return null;
     }
 
+    /**
+     * Comprueba el arreglo y el tipo de iteración, y visita el cuerpo en su ámbito.
+     *
+     * @param forNode nodo que se comprueba
+     * @return {@code null}; propaga al ciclo la marca de retorno del cuerpo
+     * @throws TypeMismatchException si los tipos no cumplen los requisitos de la operación
+     */
     public Type visit(ForNode forNode) {
         Type var1Type = forNode.getType();
         Type var2Type = forNode.getVarNode2().accept(this);
@@ -831,7 +996,13 @@ public class TypeVisitor implements Visitor<Type> {
         return null;
     }
 
-    /** Recorre los ámbitos en el mismo orden que el analizador y restaura el padre. */
+    /**
+     * Visita una sentencia en el siguiente ámbito registrado por el analizador.
+     * Consume un índice de bloque y restaura el ámbito anterior incluso si
+     * la visita lanza una excepción. Una sentencia vacía también consume su ámbito.
+     *
+     * @param sentence cuerpo o rama que se visita; puede ser {@code null}
+     */
     private void visitScopedSentence(SentenceNode sentence) {
         Block savedBlock = currentBlock;
         currentBlock = symbolTable.getCurrentMethod().getBlocks().get(blockIndex++);
@@ -846,6 +1017,13 @@ public class TypeVisitor implements Visitor<Type> {
         }
     }
 
+    /**
+     * Exige una condición booleana y comprueba cada rama en su ámbito.
+     *
+     * @param ifElseNode nodo que se comprueba
+     * @return {@code null}; marca retorno sólo si ambas ramas lo tienen
+     * @throws TypeMismatchException si los tipos no cumplen los requisitos de la operación
+     */
     public Type visit(IfElseNode ifElseNode) {
         Type expressionType = ifElseNode.getExpression().accept(this);
         if(!expressionType.getTypeName().equals("Bool")) {
@@ -873,6 +1051,13 @@ public class TypeVisitor implements Visitor<Type> {
         return null;
     }
 
+    /**
+     * Comprueba el retorno frente al método actual y marca la sentencia.
+     *
+     * @param returnNode nodo que se comprueba
+     * @return tipo de la expresión devuelta, o {@code null} si no hay expresión
+     * @throws InvalidReturnException si el retorno no es compatible con el tipo del método actual
+     */
     public Type visit(ReturnNode returnNode) {
         Type returnType = returnNode.getExpression() != null ?
                 returnNode.getExpression().accept(this) : null;
@@ -883,14 +1068,31 @@ public class TypeVisitor implements Visitor<Type> {
         return returnType;
     }
 
+    /**
+     * @param sentenceNode nodo que se comprueba
+     * @return tipo devuelto por la visita del nodo concreto
+     */
     public Type visit(SentenceNode sentenceNode) {
         return sentenceNode.accept(this);
     }
 
+    /**
+     * Comprueba la expresión utilizada como sentencia.
+     *
+     * @param simpleSentenceNode nodo que se comprueba
+     * @return tipo obtenido al visitar la expresión
+     */
     public Type visit(SimpleSentenceNode simpleSentenceNode) {
         return simpleSentenceNode.getExpressionNode().accept(this);
     }
 
+    /**
+     * Exige una condición booleana y comprueba el cuerpo en su ámbito.
+     *
+     * @param whileNode nodo que se comprueba
+     * @return {@code null}; propaga al ciclo la marca de retorno del cuerpo
+     * @throws TypeMismatchException si los tipos no cumplen los requisitos de la operación
+     */
     public Type visit(WhileNode whileNode) {
         Type expressionType = whileNode.getExpressionNode().accept(this);
         if(!expressionType.getTypeName().equals("Bool")) {
