@@ -1,0 +1,347 @@
+{
+	"classes": [
+		{
+			"name": "Base",
+			"parent": "Object",
+			"foundClass": true,
+			"foundImpl": true,
+			"constructor": 
+				{
+					"name": ".",
+					"type": "Base",
+					"static": false,
+					"className": "Base",
+					"position": 0,
+					"parameters": [],
+					"variables": [],
+					"blocks": []
+				},
+			"attributes": [
+				{
+					"name": "valor",
+					"type": "Int",
+					"className": "Base",
+					"isInherited": "false",
+					"private": false,
+					"position": 0
+				}
+			],
+			"methods": []
+		},
+		{
+			"name": "Derivada",
+			"parent": "Base",
+			"foundClass": true,
+			"foundImpl": true,
+			"constructor": 
+				{
+					"name": ".",
+					"type": "Derivada",
+					"static": false,
+					"className": "Derivada",
+					"position": 0,
+					"parameters": [],
+					"variables": [],
+					"blocks": []
+				},
+			"attributes": [
+				{
+					"name": "valor",
+					"type": "Int",
+					"className": "Base",
+					"isInherited": "true",
+					"private": false,
+					"position": 0
+				}
+			],
+			"methods": [
+				{
+					"name": "leer",
+					"type": "Int",
+					"static": false,
+					"className": "Derivada",
+					"position": 0,
+					"parameters": [],
+					"variables": [
+						{
+							"name": "copia",
+							"type": "Int",
+							"position": 0
+						}
+					],
+					"blocks": []
+				}
+			]
+		},
+		{
+			"name": "Object",
+			"parent": "null",
+			"foundClass": true,
+			"foundImpl": true,
+			"attributes": [],
+			"methods": []
+		},
+		{
+			"name": "IO",
+			"parent": "Object",
+			"foundClass": true,
+			"foundImpl": true,
+			"attributes": [],
+			"methods": [
+				{
+					"name": "out_str",
+					"type": "void",
+					"static": true,
+					"className": "IO",
+					"position": 0,
+					"parameters": [
+						{
+							"name": "s",
+							"type": "Str",
+							"position": 0
+						}
+					],
+					"variables": [],
+					"blocks": []
+				},
+				{
+					"name": "out_int",
+					"type": "void",
+					"static": true,
+					"className": "IO",
+					"position": 1,
+					"parameters": [
+						{
+							"name": "i",
+							"type": "Int",
+							"position": 0
+						}
+					],
+					"variables": [],
+					"blocks": []
+				},
+				{
+					"name": "out_bool",
+					"type": "void",
+					"static": true,
+					"className": "IO",
+					"position": 2,
+					"parameters": [
+						{
+							"name": "b",
+							"type": "Bool",
+							"position": 0
+						}
+					],
+					"variables": [],
+					"blocks": []
+				},
+				{
+					"name": "out_array_int",
+					"type": "void",
+					"static": true,
+					"className": "IO",
+					"position": 3,
+					"parameters": [
+						{
+							"name": "a",
+							"type": "Array Int",
+							"position": 0
+						}
+					],
+					"variables": [],
+					"blocks": []
+				},
+				{
+					"name": "out_array_str",
+					"type": "void",
+					"static": true,
+					"className": "IO",
+					"position": 4,
+					"parameters": [
+						{
+							"name": "a",
+							"type": "Array Str",
+							"position": 0
+						}
+					],
+					"variables": [],
+					"blocks": []
+				},
+				{
+					"name": "out_array_bool",
+					"type": "void",
+					"static": true,
+					"className": "IO",
+					"position": 5,
+					"parameters": [
+						{
+							"name": "a",
+							"type": "Array Bool",
+							"position": 0
+						}
+					],
+					"variables": [],
+					"blocks": []
+				},
+				{
+					"name": "in_str",
+					"type": "Str",
+					"static": true,
+					"className": "IO",
+					"position": 6,
+					"parameters": [],
+					"variables": [],
+					"blocks": []
+				},
+				{
+					"name": "in_int",
+					"type": "Int",
+					"static": true,
+					"className": "IO",
+					"position": 7,
+					"parameters": [],
+					"variables": [],
+					"blocks": []
+				},
+				{
+					"name": "in_bool",
+					"type": "Bool",
+					"static": true,
+					"className": "IO",
+					"position": 8,
+					"parameters": [],
+					"variables": [],
+					"blocks": []
+				}
+			]
+		},
+		{
+			"name": "Int",
+			"parent": "Object",
+			"foundClass": true,
+			"foundImpl": true,
+			"attributes": [],
+			"methods": []
+		},
+		{
+			"name": "Str",
+			"parent": "Object",
+			"foundClass": true,
+			"foundImpl": true,
+			"attributes": [],
+			"methods": [
+				{
+					"name": "length",
+					"type": "Int",
+					"static": false,
+					"className": "Str",
+					"position": 0,
+					"parameters": [],
+					"variables": [],
+					"blocks": []
+				},
+				{
+					"name": "concat",
+					"type": "Str",
+					"static": false,
+					"className": "Str",
+					"position": 1,
+					"parameters": [
+						{
+							"name": "s",
+							"type": "Str",
+							"position": 0
+						}
+					],
+					"variables": [],
+					"blocks": []
+				}
+			]
+		},
+		{
+			"name": "Bool",
+			"parent": "Object",
+			"foundClass": true,
+			"foundImpl": true,
+			"attributes": [],
+			"methods": []
+		},
+		{
+			"name": "Array",
+			"parent": "Object",
+			"foundClass": true,
+			"foundImpl": true,
+			"attributes": [],
+			"methods": [
+				{
+					"name": "length",
+					"type": "Int",
+					"static": false,
+					"className": "Array",
+					"position": 0,
+					"parameters": [],
+					"variables": [],
+					"blocks": []
+				},
+				{
+					"name": "hasNext",
+					"type": "Bool",
+					"static": false,
+					"className": "Array",
+					"position": 1,
+					"parameters": [],
+					"variables": [],
+					"blocks": []
+				},
+				{
+					"name": "next_int",
+					"type": "Int",
+					"static": false,
+					"className": "Array",
+					"position": 2,
+					"parameters": [],
+					"variables": [],
+					"blocks": []
+				},
+				{
+					"name": "next_bool",
+					"type": "Bool",
+					"static": false,
+					"className": "Array",
+					"position": 3,
+					"parameters": [],
+					"variables": [],
+					"blocks": []
+				},
+				{
+					"name": "next_str",
+					"type": "Str",
+					"static": false,
+					"className": "Array",
+					"position": 4,
+					"parameters": [],
+					"variables": [],
+					"blocks": []
+				}
+			]
+		}
+	],
+	"startMethod": 
+	{
+		"name": "start",
+		"type": "void",
+		"static": false,
+		"className": null,
+		"position": 0,
+		"parameters": [],
+		"variables": [
+			{
+				"name": "derivada",
+				"type": "Derivada",
+				"position": 0
+			}
+		],
+		"blocks": []
+	}
+}
