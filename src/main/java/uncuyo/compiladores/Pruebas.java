@@ -1,8 +1,6 @@
 package uncuyo.compiladores;
 
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Map;
 
 import uncuyo.compiladores.exceptions.lexical.LexicalException;
 import uncuyo.compiladores.exceptions.syntactic.SyntacticException;
@@ -13,7 +11,6 @@ import uncuyo.compiladores.semantic.symbolTable.SymbolTable;
 
 public class Pruebas {
     public static void main(String[] args) throws IOException, LexicalException, SyntacticException {
-        Map<String, String> env = System.getenv();
         String inputPath = "testFiles\\codeGenFiles\\success\\prueba.s";
         Lexer lexer = new Lexer(inputPath);
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(lexer, lexer.getNextToken());
@@ -28,9 +25,6 @@ public class Pruebas {
         System.out.println("###### AST ######");
         System.out.println(ast.toJson(""));
         System.out.println("###### CODIGO GENERADO ######");
-        String codigo = ast.getCodeGenerator().generate();
-        String fileName = Paths.get(inputPath).getFileName().toString();
-        String outputName = fileName.replaceFirst("\\.s$", ".asm");
 
         String outputPath = "testFiles\\codeGenFiles\\pruebas\\prueba.asm";
 

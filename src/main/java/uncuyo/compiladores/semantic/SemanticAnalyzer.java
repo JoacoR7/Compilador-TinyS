@@ -1,12 +1,11 @@
 package uncuyo.compiladores.semantic;
 
+import java.util.LinkedList;
+
 import uncuyo.compiladores.exceptions.lexical.LexerFileReadException;
 import uncuyo.compiladores.exceptions.lexical.LexicalException;
 import uncuyo.compiladores.exceptions.semantic.SemanticException;
 import uncuyo.compiladores.exceptions.semantic.symbolTableException.ConstructorRedefinitionException;
-import uncuyo.compiladores.exceptions.semantic.symbolTableException.ForVariableOutOfScopeException;
-import uncuyo.compiladores.exceptions.semantic.symbolTableException.LocalVariableNotFoundException;
-import uncuyo.compiladores.exceptions.semantic.symbolTableException.VariableNotFoundException;
 import uncuyo.compiladores.exceptions.syntactic.MethodOutsideImplException;
 import uncuyo.compiladores.exceptions.syntactic.SyntacticException;
 import uncuyo.compiladores.lexer.Lexer;
@@ -14,13 +13,42 @@ import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.lexer.TokenDefinitions;
 import uncuyo.compiladores.lexer.TokenType;
 import uncuyo.compiladores.semantic.abstractSintaxTree.AST;
-import uncuyo.compiladores.semantic.abstractSintaxTree.expression.*;
-import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.*;
-import uncuyo.compiladores.semantic.symbolTable.*;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ArrayConstructorNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ArrayNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.BinaryExpressionNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ChainedCallNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ChainedNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ClassConstructorNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ConclassorCallNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ExpressionNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.LiteralNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ParenthesizedExpressionNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SelfNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleAccessNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleArrayNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleChainedNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleSelfNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleVariableNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.UnaryExpressionNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.VariableNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.AssignmentNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.BlockNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.ForNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.IfElseNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.ReturnNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.SentenceNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.SimpleSentenceNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.WhileNode;
+import uncuyo.compiladores.semantic.symbolTable.ArrayType;
+import uncuyo.compiladores.semantic.symbolTable.Attribute;
+import uncuyo.compiladores.semantic.symbolTable.Block;
 import uncuyo.compiladores.semantic.symbolTable.Class;
+import uncuyo.compiladores.semantic.symbolTable.Method;
+import uncuyo.compiladores.semantic.symbolTable.Parameter;
+import uncuyo.compiladores.semantic.symbolTable.SymbolTable;
+import uncuyo.compiladores.semantic.symbolTable.Type;
+import uncuyo.compiladores.semantic.symbolTable.Variable;
 import uncuyo.compiladores.syntactic.SyntacticAnalyzer;
-
-import java.util.LinkedList;
 
 
 public class SemanticAnalyzer {
@@ -33,15 +61,31 @@ public class SemanticAnalyzer {
     private AST ast;
     private boolean declarationsOnly;
 
+    /**
+     * Prepara el análisis con el primer token ya obtenido del lector léxico.
+     *
+     * @param lexer lector que entregará los tokens restantes
+     * @param token primer token del archivo, que todavía debe reconocerse
+     */
     public SemanticAnalyzer(Lexer lexer, Token token) {
         this.lexer = lexer;
         this.currentToken = token;
     }
 
+    /**
+     * Obtiene la tabla construida por esta instancia.
+     *
+     * @return tabla mutable; queda consolidada si el análisis termina correctamente
+     */
     public SymbolTable getSymbolTable() {
         return this.symbolTable;
     }
 
+    /**
+     * Obtiene el árbol construido durante el análisis de sentencias.
+     *
+     * @return AST de la instancia, o {@code null} en el modo de sólo declaraciones
+     */
     public AST getAst() {
         return ast;
     }
@@ -82,24 +126,56 @@ public class SemanticAnalyzer {
 
     }
 
-    /* ⟨program⟩ ::= ⟨Lista-Definiciones⟩ ⟨Start⟩ */
+    /**
+     * Reconoce el programa completo, consolida la TS, verifica el AST y genera código.
+     * Para limitar el análisis a declaraciones debe usarse {@link #analyzeDeclarations()}.
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     * @throws SemanticException si falla un chequeo semántico
+     */
     public void program() throws LexicalException, SyntacticException {
         analyzeProgram(Phase.CODE_GENERATION);
     }
 
     /**
-     * Construye y consolida la tabla de símbolos, sin crear el AST ni ejecutar
-     * el chequeo de sentencias o la generación de código.
+     * Construye y consolida la tabla de símbolos sin crear el AST ni generar código.
+     *
+     * <p>Registra clases, miembros, parámetros y variables locales. Los cuerpos
+     * se delegan al analizador sintáctico, de modo que esta entrada no verifica
+     * asignaciones, llamadas, condiciones ni retornos. Al terminar exige EOF
+     * y ejecuta {@link SymbolTable#consolidate()}.</p>
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     * @throws SemanticException si se detecta un error de declaraciones
      */
     public void analyzeDeclarations() throws LexicalException, SyntacticException {
         analyzeProgram(Phase.DECLARATIONS);
     }
 
-    /** Construye y comprueba el AST sin ejecutar la generación de código. */
+    /**
+     * Construye y comprueba el AST, después de consolidar la TS, sin generar código.
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     * @throws SemanticException si falla el chequeo de declaraciones o sentencias
+     */
     public void analyzeSentences() throws LexicalException, SyntacticException {
         analyzeProgram(Phase.SENTENCES);
     }
 
+    /**
+     * Coordina el reconocimiento, la consolidación y las fases opcionales.
+     * Restablece el contexto de clase antes de reconocer {@code start} y sólo
+     * verifica el AST después de completar la TS.
+     *
+     * @param phase última fase que se ejecutará en esta lectura
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     * @throws SemanticException si falla una comprobación semántica
+     */
     private void analyzeProgram(Phase phase) throws LexicalException, SyntacticException {
         declarationsOnly = phase == Phase.DECLARATIONS;
         ast = declarationsOnly ? null : new AST();
@@ -119,9 +195,16 @@ public class SemanticAnalyzer {
         }
     }
 
-    /*
-        ⟨Start⟩ ::= start ⟨Bloque-Método⟩
-    */
+    /**
+     * Reconoce el bloque de entrada y lo registra como método actual de tipo void.
+     *
+     * <pre>{@code
+     * Start ::= start Bloque-Método
+     * }</pre>
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void start() throws LexerFileReadException, LexicalException, SyntacticException {
         Token auxToken = currentToken;
         if (checkLexeme("start")){
@@ -135,10 +218,16 @@ public class SemanticAnalyzer {
         bloqueMetodo(true);
     }
 
-    /* ⟨Lista-Definiciones⟩ ::= ⟨class⟩ ⟨Lista-Definiciones⟩
-            | ⟨Impl⟩ ⟨Lista-Definiciones⟩
-            | λ
-    */
+    /**
+     * Reconoce las partes class e impl hasta llegar al identificador de entrada.
+     *
+     * <pre>{@code
+     * Lista-Definiciones ::= class Lista-Definiciones | Impl Lista-Definiciones | λ
+     * }</pre>
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void listaDefiniciones() throws LexicalException, SyntacticException {
         if (checkType(TokenType.KW_CLASS)){
             class_();
@@ -157,10 +246,18 @@ public class SemanticAnalyzer {
         }
     }
 
-    /*
-        class idclass ⟨classF⟩ {idclass.padre = classF.tipo, TS.guardar(HTClass , idclass.lex)}
-            INCOMPLETO FALTA AGREGAR ACCIONES SEMÁNTICAS
-	    */
+    /**
+     * Reconoce una parte class sobre una entrada temporal y luego la integra en la TS.
+     * Conserva el token del nombre, asigna el padre y marca la presencia de la declaración.
+     *
+     * <pre>{@code
+     * class ::= class idclass classF
+     * }</pre>
+     * @throws SemanticException si se repiten atributos o hay un conflicto de herencia
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void class_() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.KW_CLASS);
 
@@ -187,10 +284,17 @@ public class SemanticAnalyzer {
         }
     }
 
-    /*
-        ⟨classF⟩ ::= {classF.tipo = Object} { ⟨AtributoK⟩ }
-            | ⟨Herencia⟩ {classF.tipo = Herencia.tipo} { ⟨AtributoK⟩ }
-    */
+    /**
+     * Reconoce los atributos y sintetiza el padre explícito, u Object si se omite.
+     *
+     * <pre>{@code
+     * classF ::= { AtributoK } | Herencia { AtributoK }
+     * }</pre>
+     * @return tipo que identifica el padre de la clase
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public Type classF() throws LexicalException, SyntacticException {
         Type type;
 
@@ -214,9 +318,15 @@ public class SemanticAnalyzer {
         return type;
     }
 
-    /*
-        ⟨AtributoK⟩ ::= ⟨Atributo⟩ ⟨AtributoK⟩
-            | λ
+    /**
+     * Reconoce e incorpora los atributos hasta la llave de cierre de class.
+     *
+     * <pre>{@code
+     * AtributoK ::= Atributo AtributoK | λ
+     * }</pre>
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
      */
     public void atributoK() throws LexicalException, SyntacticException {
         if (checkType(TokenType.STR_CLASS, TokenType.BOOL_CLASS, TokenType.INT_CLASS,
@@ -234,8 +344,17 @@ public class SemanticAnalyzer {
         }
     }
 
-    /*
-        ⟨Impl ⟩ ::= impl idclass { ⟨MiembroK⟩ }
+    /**
+     * Reconoce una parte impl y la integra con los miembros previamente registrados.
+     * La entrada temporal permite procesar la implementación antes de su class.
+     *
+     * <pre>{@code
+     * Impl ::= impl idclass { MiembroK }
+     * }</pre>
+     * @throws SemanticException si se repite un constructor o método al integrar las partes
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
      */
     public void impl() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.KW_IMPL);
@@ -266,18 +385,32 @@ public class SemanticAnalyzer {
         }
     }
 
-    /*
-        ⟨Herencia⟩ ::= : ⟨Tipo⟩ {Herencia.tipo = Tipo.tipo}
+    /**
+     * Reconoce el padre explícito sin comprobar todavía su existencia en la TS.
+     *
+     * <pre>{@code
+     * Herencia ::= : Tipo
+     * }</pre>
+     * @return tipo declarado como padre
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
      */
     public Type herencia() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.SPECIAL_SYMBOL_CL);
         return tipo();
     }
 
-    /*
-        ⟨MiembroK⟩ ::= ⟨Miembro⟩ ⟨MiembroK⟩
-            | λ
-    */
+    /**
+     * Reconoce los miembros de una implementación hasta su llave de cierre.
+     *
+     * <pre>{@code
+     * MiembroK ::= Miembro MiembroK | λ
+     * }</pre>
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void miembroK() throws LexicalException, SyntacticException {
         if (checkType(TokenType.SPECIAL_SYMBOL_P, TokenType.KW_ST, TokenType.KW_FN)) {
             miembro();
@@ -292,10 +425,17 @@ public class SemanticAnalyzer {
             );
         }
     }
-    /*
-        ⟨Miembro⟩ ::= ⟨Método⟩
-            | ⟨Constructor⟩
-    */
+
+    /**
+     * Selecciona el reconocimiento de un método o un constructor.
+     *
+     * <pre>{@code
+     * Miembro ::= Método | Constructor
+     * }</pre>
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void miembro() throws LexicalException, SyntacticException {
         if (checkType(TokenType.KW_ST, TokenType.KW_FN)) {
             metodo();
@@ -309,9 +449,19 @@ public class SemanticAnalyzer {
             );
         }
     }
-    /*
-        ⟨Constructor ⟩ ::= . ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
-    */
+
+    /**
+     * Registra el constructor como Method separado del mapa de métodos.
+     * Conserva el token del punto y establece como tipo el nombre de la clase actual.
+     *
+     * <pre>{@code
+     * Constructor ::= . Argumentos-Formales Bloque-Método
+     * }</pre>
+     * @throws ConstructorRedefinitionException si la parte actual ya tiene constructor
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void constructor() throws LexicalException, SyntacticException {
         Token auxToken = currentToken;
         matchTokenType(TokenType.SPECIAL_SYMBOL_P);
@@ -328,11 +478,18 @@ public class SemanticAnalyzer {
         bloqueMetodo(false);
     }
 
-    /*
-
-    ⟨Atributo⟩ ::= ⟨Tipo⟩ {ListaDeclaracionVariables.tipo = Tipo.tipo, ListaDeclaracionVariables.privado = true } ⟨Lista-Declaración-Variables⟩ ;
-        | pub ⟨Tipo⟩ {ListaDeclaracionVariables.tipo = Tipo.tipo, ListaDeclaracionVariables.privado = false}  ⟨Lista-Declaración-Variables⟩ ;
-    */
+    /**
+     * Propaga el tipo y la privacidad a todos los atributos de la lista declarada.
+     *
+     * <pre>{@code
+     * Atributo ::= Tipo Lista-Declaración-Variables ;
+     *            | pub Tipo Lista-Declaración-Variables ;
+     * }</pre>
+     * @throws SemanticException si se repite un atributo en la clase actual
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void atributo() throws LexicalException, SyntacticException {
         Type type;
         if (checkType(TokenType.IDENTIFIER_CLASS, TokenType.STR_CLASS, TokenType.BOOL_CLASS,
@@ -354,10 +511,16 @@ public class SemanticAnalyzer {
         }
     }
 
-    /*
-    ⟨Método⟩ ::= fn ⟨MétodoF⟩
-        | st fn ⟨MétodoF⟩
-    */
+    /**
+     * Reconoce el modificador estático y registra el método al terminar su cuerpo.
+     *
+     * <pre>{@code
+     * Método ::= fn MétodoF | st fn MétodoF
+     * }</pre>
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void metodo() throws LexicalException, SyntacticException {
         boolean isStatic = false;
         if(checkType(TokenType.KW_FN)){
@@ -378,10 +541,19 @@ public class SemanticAnalyzer {
         symbolTable.getCurrentClass().insertMethod(symbolTable.getCurrentMethod());
     }
 
-    /*
-        ⟨MétodoF⟩ ::= {MétodoF.tipo = void} idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
-            | ⟨Tipo-Método⟩ {MétodoF.tipo = Tipo-Método.tipo} idMetAt ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
-    */
+    /**
+     * Crea el método actual y reconoce su firma y cuerpo.
+     * La alternativa sin tipo de retorno explícito utiliza void.
+     *
+     * <pre>{@code
+     * MétodoF ::= idMetAt Argumentos-Formales Bloque-Método
+     *           | Tipo-Método idMetAt Argumentos-Formales Bloque-Método
+     * }</pre>
+     * @param isStatic indica si la producción anterior reconoció el modificador st
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void metodoF(boolean isStatic) throws LexicalException, SyntacticException {
         Type type;
         if(checkType(TokenType.IDENTIFIER_VAR_METHOD)){
@@ -411,9 +583,19 @@ public class SemanticAnalyzer {
         }
     }
 
-    /*
-        ⟨Bloque-Método⟩ ::= { ⟨Decl-Var-LocalesK⟩ ⟨SentenciaK⟩ }
-    */
+    /**
+     * Registra las variables locales y procesa el cuerpo del método actual.
+     * En modo de declaraciones delega las sentencias en
+     * {@link SyntacticAnalyzer#parseStatements()}; en los otros modos crea un BlockNode.
+     *
+     * <pre>{@code
+     * Bloque-Método ::= { Decl-Var-LocalesK SentenciaK }
+     * }</pre>
+     * @param isStart indica si el cuerpo corresponde al bloque de entrada
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void bloqueMetodo(boolean isStart) throws LexicalException, SyntacticException {
         matchTokenType(TokenType.SPECIAL_SYMBOL_LCB);
         declVarLocalesK();
@@ -434,10 +616,16 @@ public class SemanticAnalyzer {
         matchTokenType(TokenType.SPECIAL_SYMBOL_RCB);
     }
 
-    /*
-        ⟨Decl-Var-LocalesK⟩ ::= ⟨Decl-Var-Locales⟩ ⟨Decl-Var-LocalesK⟩
-            | λ
-    */
+    /**
+     * Reconoce las declaraciones locales que preceden a las sentencias del método.
+     *
+     * <pre>{@code
+     * Decl-Var-LocalesK ::= Decl-Var-Locales Decl-Var-LocalesK | λ
+     * }</pre>
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void declVarLocalesK() throws LexicalException, SyntacticException {
         if (checkType(TokenType.STR_CLASS, TokenType.BOOL_CLASS, TokenType.INT_CLASS, TokenType.ARRAY_CLASS,
                 TokenType.IDENTIFIER_CLASS)) {
@@ -458,19 +646,38 @@ public class SemanticAnalyzer {
         }
     }
 
-    /*
-        ⟨Decl-Var-Locales⟩ ::= ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ ;
-    */
+    /**
+     * Propaga el tipo declarado a la lista de variables locales del método actual.
+     *
+     * <pre>{@code
+     * Decl-Var-Locales ::= Tipo Lista-Declaración-Variables ;
+     * }</pre>
+     * @throws SemanticException si una variable repite un nombre local o de parámetro
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void declVarLocales() throws LexicalException, SyntacticException {
         Type tipo = tipo();
         listaDeclaracionVariables(tipo , true, false);
         matchTokenType(TokenType.SPECIAL_SYMBOL_S);
     }
 
-    /*
-        ⟨Lista-Declaración-Variables⟩ ::= idMetAt {if(TS.yaExiste(ClaseActual, idMetAt.lex)) then Error
-         else TS.guardar(ClaseActual, idMetAt.lex, ListaDeclaracionVariables.tipo) }
-         {ListaDeclaracionVariablesF.tipo = ListaDeclaracionVariables.tipo, ListaDeclaracionVariablesF.privado = ListaDeclaracionVariables.privado} ⟨Lista-Declaración-VariablesF⟩    */
+    /**
+     * Registra cada identificador como atributo o variable local según el contexto.
+     * Guarda el token antes de consumirlo para conservar la ubicación del diagnóstico.
+     *
+     * <pre>{@code
+     * Lista-Declaración-Variables ::= idMetAt Lista-Declaración-VariablesF
+     * }</pre>
+     * @param type tipo compartido por los identificadores de la lista
+     * @param isPrivate privacidad de los atributos; no se aplica a variables locales
+     * @param isClass true para insertar en la clase, false para insertar en el método
+     * @throws SemanticException si el nombre entra en conflicto con una declaración previa
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void listaDeclaracionVariables(Type type , boolean isPrivate, boolean isClass) throws LexicalException, SyntacticException {
         Token auxToken = currentToken;
 
@@ -494,11 +701,20 @@ public class SemanticAnalyzer {
 
         listaDeclaracionVariablesF(type, isPrivate, isClass);
     }
-    
-    /*
-        ⟨Lista-Declaración-VariablesF⟩ ::= , {ListaDeclaracionVariables.tipo = ListaDeclaracionVariablesF.tipo, ListaDeclaracionVariables.privado = ListaDeclaracionVariablesF.privado } ⟨Lista-Declaración-Variables⟩
-            | λ
-    */
+
+    /**
+     * Propaga el contexto de inserción a los siguientes identificadores de la lista.
+     *
+     * <pre>{@code
+     * Lista-Declaración-VariablesF ::= , Lista-Declaración-Variables | λ
+     * }</pre>
+     * @param type tipo de las declaraciones
+     * @param isPrivate privacidad que se propagará a los atributos
+     * @param isClass indica si se están registrando atributos
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void listaDeclaracionVariablesF(Type type, boolean isPrivate, boolean isClass) throws LexicalException, SyntacticException {
         if (checkType(TokenType.SPECIAL_SYMBOL_CM)) {
             matchTokenType(TokenType.SPECIAL_SYMBOL_CM);
@@ -518,19 +734,32 @@ public class SemanticAnalyzer {
             );
         }
     }
-    
-    /*
-	⟨Argumentos-Formales⟩::= ( ⟨Argumentos-FormalesF⟩
-	*/
+
+    /**
+     * Reconoce los paréntesis y los parámetros de la firma del método actual.
+     *
+     * <pre>{@code
+     * Argumentos-Formales ::= ( Argumentos-FormalesF
+     * }</pre>
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void argumentosFormales() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
         argumentosFormalesF();
     }
 
-    /*
-	⟨Argumentos-FormalesF⟩ ::= )
-		| ⟨Lista-Argumentos-Formales⟩ )
-    */
+    /**
+     * Distingue la lista vacía de una secuencia de parámetros formales.
+     *
+     * <pre>{@code
+     * Argumentos-FormalesF ::= ) | Lista-Argumentos-Formales )
+     * }</pre>
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void argumentosFormalesF() throws LexicalException, SyntacticException {
         if (checkType(TokenType.SPECIAL_SYMBOL_PC)) {
             matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
@@ -547,18 +776,31 @@ public class SemanticAnalyzer {
         }
     }
 
-    /*
-        ⟨Lista-Argumentos-Formales⟩ ::= ⟨Argumento-Formal ⟩ ⟨Lista-Argumentos-FormalesF⟩
-    */
+    /**
+     * Reconoce los parámetros formales respetando su orden de declaración.
+     *
+     * <pre>{@code
+     * Lista-Argumentos-Formales ::= Argumento-Formal Lista-Argumentos-FormalesF
+     * }</pre>
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void listaArgumentosFormales() throws LexicalException, SyntacticException {
         argumentoFormal();
         listaArgumentosFormalesF();
     }
-    
-    /*
-        ⟨Lista-Argumentos-FormalesF⟩ ::=  , ⟨Lista-Argumentos-Formales⟩
-            | λ
-    */
+
+    /**
+     * Reconoce los parámetros restantes, separados por comas.
+     *
+     * <pre>{@code
+     * Lista-Argumentos-FormalesF ::= , Lista-Argumentos-Formales | λ
+     * }</pre>
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void listaArgumentosFormalesF() throws LexicalException, SyntacticException {
         if (checkType(TokenType.SPECIAL_SYMBOL_CM)) {
             matchTokenType(TokenType.SPECIAL_SYMBOL_CM);
@@ -573,10 +815,18 @@ public class SemanticAnalyzer {
             );
         }
     }
-    
-    /*
-        ⟨Argumento-Formal ⟩ ::= ⟨Tipo⟩ idMetAt
-    */
+
+    /**
+     * Registra el nombre y tipo del parámetro en la siguiente posición de la firma.
+     * La entrada Parameter conserva el nombre como cadena y no retiene el token.
+     *
+     * <pre>{@code
+     * Argumento-Formal ::= Tipo idMetAt
+     * }</pre>
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public void argumentoFormal() throws LexicalException, SyntacticException {
         Type type = tipo();
         Token auxToken = currentToken;
@@ -584,10 +834,17 @@ public class SemanticAnalyzer {
         symbolTable.getCurrentMethod().insertParameter(type, auxToken.getLexeme());
     }
 
-    /*
-        ⟨Tipo-Método⟩ ::= ⟨Tipo⟩
-            | void
-    */
+    /**
+     * Sintetiza el tipo de retorno de un método, admitiendo void.
+     *
+     * <pre>{@code
+     * Tipo-Método ::= Tipo | void
+     * }</pre>
+     * @return representación del tipo de retorno
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public Type tipoMetodo() throws LexicalException, SyntacticException {
         Type type;
         if(checkType(TokenType.STR_CLASS, TokenType.BOOL_CLASS,
@@ -606,11 +863,17 @@ public class SemanticAnalyzer {
         return type;
     }
 
-    /*
-        ⟨Tipo⟩ ::= ⟨Tipo-Primitivo⟩
-            | ⟨Tipo-Referencia⟩
-            | ⟨Tipo-Arreglo⟩
-    */
+    /**
+     * Selecciona la representación de un tipo primitivo, de referencia o arreglo.
+     *
+     * <pre>{@code
+     * Tipo ::= Tipo-Primitivo | Tipo-Referencia | Tipo-Arreglo
+     * }</pre>
+     * @return tipo reconocido
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public Type tipo() throws LexicalException, SyntacticException {
         Type type;
 
@@ -630,11 +893,17 @@ public class SemanticAnalyzer {
         return type;
     }
 
-    /*
-        ⟨Tipo-Primitivo⟩ ::= Str {TipoPrimitivo.tipo = STR_CLASS}
-            | Bool {TipoPrimitivo.tipo = BOOL_CLASS}
-            | Int {TipoPrimitivo.tipo = INT_CLASS}
-    */
+    /**
+     * Sintetiza un tipo primitivo a partir de su token.
+     *
+     * <pre>{@code
+     * Tipo-Primitivo ::= Str | Bool | Int
+     * }</pre>
+     * @return representación del tipo primitivo
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public Type tipoPrimitivo() throws LexicalException, SyntacticException {
         Type type = new Type(currentToken.getTokenType(), currentToken.getLexeme());
 
@@ -654,17 +923,34 @@ public class SemanticAnalyzer {
         return type;
     }
 
-    /*
-        ⟨Tipo-Referencia⟩ ::= idclass {TipoReferencia.tipo = idclass}
-    */
+    /**
+     * Registra el nombre de un tipo de referencia sin resolver su declaración.
+     *
+     * <pre>{@code
+     * Tipo-Referencia ::= idclass
+     * }</pre>
+     * @return tipo con el nombre de la clase reconocida
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public Type tipoReferencia() throws LexicalException, SyntacticException {
         Type type = new Type(currentToken.getTokenType(), currentToken.getLexeme());
         matchTokenType(TokenType.IDENTIFIER_CLASS);
         return type;
     }
-    /*
-        ⟨Tipo-Arreglo⟩ ::= Array ⟨Tipo-Primitivo⟩ {TipoArreglo.tipo = TipoPrimitivo.tipo}
-    */
+
+    /**
+     * Construye un ArrayType que conserva el tipo primitivo de sus elementos.
+     *
+     * <pre>{@code
+     * Tipo-Arreglo ::= Array Tipo-Primitivo
+     * }</pre>
+     * @return representación del arreglo y su tipo de elemento
+     *
+     * @throws LexicalException si el analizador léxico rechaza la entrada
+     * @throws SyntacticException si no se reconoce la producción esperada
+     */
     public Type tipoArreglo() throws LexicalException, SyntacticException {
         matchTokenType(TokenType.ARRAY_CLASS);
         Type subType = tipoPrimitivo();
@@ -719,7 +1005,7 @@ public class SemanticAnalyzer {
             matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
             ExpressionNode expressionNode = expresion();
             matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
-            sentenceNode = new WhileNode(auxToken, expressionNode, sentencia());
+            sentenceNode = new WhileNode(auxToken, expressionNode, sentenciaConBloque());
         } else if (checkType(TokenType.KW_FOR)) {
             matchTokenType(TokenType.KW_FOR);
             matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
@@ -746,7 +1032,7 @@ public class SemanticAnalyzer {
             matchTokenType(TokenType.SPECIAL_SYMBOL_PO);
             ExpressionNode expressionNode = expresion();
             matchTokenType(TokenType.SPECIAL_SYMBOL_PC);
-            sentenceNode = new IfElseNode(auxToken, expressionNode, sentencia(), sentenciaF1());
+            sentenceNode = new IfElseNode(auxToken, expressionNode, sentenciaConBloque(), sentenciaF1());
         } else if (checkType(TokenType.KW_RET)) {
             Token auxToken = currentToken;
             matchTokenType(TokenType.KW_RET);
@@ -760,6 +1046,28 @@ public class SemanticAnalyzer {
         }
         return sentenceNode;
     }
+    
+    /**
+     * Reconoce el cuerpo de una rama o ciclo dentro de un ámbito propio,
+     * incluso cuando es una sentencia sin llaves o una sentencia vacía.
+     */
+    private SentenceNode sentenciaConBloque() throws LexicalException, SyntacticException {
+        Block previousBlock = symbolTable.getCurrentBlock();
+        Block block = new Block(symbolTable.getCurrentMethod());
+        block.setParent(previousBlock);
+        symbolTable.getCurrentMethod().getBlocks().add(block);
+        symbolTable.setCurrentBlock(block);
+        try {
+            SentenceNode sentence = sentencia();
+            // Una rama vacía sigue teniendo ámbito y debe distinguirse de un else ausente.
+            return sentence != null ? sentence : new BlockNode(new LinkedList<>(),
+                    symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null,
+                    symbolTable.getCurrentMethod().getName(), false);
+        } finally {
+            symbolTable.setCurrentBlock(previousBlock);
+        }
+    }
+
     /*
 	⟨SentenciaF1⟩ ::= else ⟨Sentencia⟩
 		| λ
@@ -768,7 +1076,7 @@ public class SemanticAnalyzer {
         SentenceNode sentenceNode = null;
         if (checkType(TokenType.KW_ELSE)) {
             matchTokenType(TokenType.KW_ELSE);
-            sentenceNode = sentencia();
+            sentenceNode = sentenciaConBloque();
         } else if (checkType(TokenType.SPECIAL_SYMBOL_S, TokenType.KW_WHILE, TokenType.KW_FOR,
                 TokenType.KW_IF, TokenType.KW_RET, TokenType.SPECIAL_SYMBOL_PO, TokenType.SPECIAL_SYMBOL_LCB,
                 TokenType.IDENTIFIER_VAR_METHOD, TokenType.KW_SELF, TokenType.SPECIAL_SYMBOL_RCB)) {
@@ -883,7 +1191,7 @@ public class SemanticAnalyzer {
         } else if (checkType(TokenType.OPERATOR_ASSIGN)) {
             // Primeros(⟨Encadenado-SimpleK⟩) contiene λ, por lo tanto checkeo siguientes
             // Siguientes de accesoVarSimpleF, cierro
-
+            /*
             Type type;
             Variable variable = this.getSymbolTable().getCurrentMethod().getVariables().get(token.getLexeme());
 
@@ -903,8 +1211,8 @@ public class SemanticAnalyzer {
             } else {
                 type = variable.getType();
             }
-
-            simpleAccessNode = new SimpleVariableNode(token, type, null);
+            */
+            simpleAccessNode = new SimpleVariableNode(token, null, null);
         } else {
             throw new SyntacticException(currentToken.getRowIndex(),
                     currentToken.getColumnIndex(),
@@ -1437,59 +1745,8 @@ public class SemanticAnalyzer {
                 TokenType.SPECIAL_SYMBOL_PC, TokenType.SPECIAL_SYMBOL_S, TokenType.SPECIAL_SYMBOL_RB,
                 TokenType.SPECIAL_SYMBOL_CM)) {
 
-            Variable variable = this.getSymbolTable()
-                    .getCurrentMethod()
-                    .getVariables()
-                    .get(token.getLexeme());
 
-            Attribute attribute = null;
-
-            if (this.getSymbolTable().getCurrentClass() != null) {
-                attribute = this.getSymbolTable()
-                        .getClasses().get(this.getSymbolTable().getCurrentClass().getName())
-                        .getAttributes().get(token.getLexeme());
-            }
-
-            Parameter parameter = this.getSymbolTable()
-                    .getCurrentMethod()
-                    .getParameters()
-                    .get(token.getLexeme());
-
-            // Busco variables en el bloque actual
-            if (variable == null && parameter == null) {
-                if (symbolTable.getCurrentBlock() != null) {
-                    variable = symbolTable.getCurrentBlock()
-                            .findVariable(token.getLexeme());
-                }
-            }
-
-            // Si no existe ninguno de los tres
-            if (variable == null && parameter == null && attribute == null) {
-                if (symbolTable.getCurrentBlock() != null) {
-                    throw new ForVariableOutOfScopeException(
-                            token.getRowIndex(),
-                            token.getColumnIndex(),
-                            token.getLexeme(),
-                            symbolTable.getCurrentMethod().getName()
-                    );
-                }
-
-                throw new LocalVariableNotFoundException(
-                        token.getRowIndex(),
-                        token.getColumnIndex(),
-                        token.getLexeme(),
-                        symbolTable.getCurrentMethod().getName()
-                );
-            }
-
-            // Obtengo el tipo según lo encontrado
-            Type type = variable != null
-                    ? variable.getType()
-                    : parameter != null
-                    ? parameter.getType()
-                    : attribute.getType();
-
-            chainedNode = new VariableNode(token, type, null, symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null,
+            chainedNode = new VariableNode(token, null, null, symbolTable.getCurrentClass() != null ? symbolTable.getCurrentClass().getName() : null,
                     symbolTable.getCurrentMethod() != null ? symbolTable.getCurrentMethod().getName() : "start");
         } else{
             throw new SyntacticException(currentToken.getRowIndex(),
