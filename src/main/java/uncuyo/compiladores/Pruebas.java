@@ -1,21 +1,20 @@
 package uncuyo.compiladores;
 
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Map;
+
 import uncuyo.compiladores.exceptions.lexical.LexicalException;
 import uncuyo.compiladores.exceptions.syntactic.SyntacticException;
 import uncuyo.compiladores.lexer.Lexer;
 import uncuyo.compiladores.semantic.SemanticAnalyzer;
 import uncuyo.compiladores.semantic.abstractSintaxTree.AST;
-import uncuyo.compiladores.semantic.symbolTable.*;
-import uncuyo.compiladores.semantic.symbolTable.Class;
-
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Map;
+import uncuyo.compiladores.semantic.symbolTable.SymbolTable;
 
 public class Pruebas {
     public static void main(String[] args) throws IOException, LexicalException, SyntacticException {
         Map<String, String> env = System.getenv();
-        String inputPath = env.get("TEST_PATH") + "\\codeGenFiles\\success\\herencia.s";
+        String inputPath = "testFiles\\codeGenFiles\\success\\prueba.s";
         Lexer lexer = new Lexer(inputPath);
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(lexer, lexer.getNextToken());
         semanticAnalyzer.program();
@@ -33,14 +32,8 @@ public class Pruebas {
         String fileName = Paths.get(inputPath).getFileName().toString();
         String outputName = fileName.replaceFirst("\\.s$", ".asm");
 
-        String outputPath = Paths.get(
-                env.get("TEST_PATH"),
-                "codeGenFiles",
-                "pruebas",
-                "prueba.asm"
-        ).toString();
+        String outputPath = "testFiles\\codeGenFiles\\pruebas\\prueba.asm";
 
         ast.getCodeGenerator().writeOutput(outputPath);
-        System.out.println(codigo);
     }
 }
