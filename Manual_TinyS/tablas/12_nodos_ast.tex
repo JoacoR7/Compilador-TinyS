@@ -1,0 +1,44 @@
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{5pt}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.35\textwidth}|>{\raggedright\arraybackslash}p{\dimexpr0.65\textwidth-4\tabcolsep-3\arrayrulewidth\relax}|}
+\caption{Datos conservados por los nodos del AST}\label{tab:nodos-ast}\\
+\hline
+\textbf{Clase} & \textbf{Estructura} \\ \hline
+\endfirsthead
+\hline
+\textbf{Clase} & \textbf{Estructura} \\ \hline
+\endhead
+\texttt{Node} & Raíz abstracta. Operaciones accept(visitor) y toJson(indent). \\ \hline
+\texttt{Assignment\allowbreak Node} & \texttt{simple\allowbreak Access\allowbreak Node}: \texttt{Simple\allowbreak Access\allowbreak Node}\newline \texttt{expression\allowbreak Node}: \texttt{Expression\allowbreak Node} \\ \hline
+\texttt{Block\allowbreak Node} & \texttt{sentences}: \texttt{Linked\allowbreak List<Sentence\allowbreak Node>}\newline \texttt{class\allowbreak Name}: \texttt{String}\newline \texttt{method\allowbreak Name}: \texttt{String}\newline \texttt{is\allowbreak Method}: \texttt{boolean} \\ \hline
+\texttt{For\allowbreak Node} & \texttt{type}: \texttt{Type}\newline \texttt{var\allowbreak Node1}: \texttt{Variable\allowbreak Node}\newline \texttt{var\allowbreak Node2}: \texttt{Variable\allowbreak Node}\newline \texttt{sentence\allowbreak Node}: \texttt{Sentence\allowbreak Node} \\ \hline
+\texttt{If\allowbreak Else\allowbreak Node} & \texttt{token}: \texttt{Token}\newline \texttt{expression}: \texttt{Expression\allowbreak Node}\newline \texttt{sentence\allowbreak Node\allowbreak If}: \texttt{Sentence\allowbreak Node}\newline \texttt{sentence\allowbreak Node\allowbreak Else}: \texttt{Sentence\allowbreak Node} \\ \hline
+\texttt{Return\allowbreak Node} & \texttt{token}: \texttt{Token}\newline \texttt{expression}: \texttt{Expression\allowbreak Node} \\ \hline
+\texttt{Sentence\allowbreak Node} & \texttt{has\allowbreak Return}: \texttt{boolean} \\ \hline
+\texttt{Simple\allowbreak Sentence\allowbreak Node} & \texttt{expression\allowbreak Node}: \texttt{Expression\allowbreak Node} \\ \hline
+\texttt{While\allowbreak Node} & \texttt{expression\allowbreak Node}: \texttt{Expression\allowbreak Node}\newline \texttt{sentence\allowbreak Node}: \texttt{Sentence\allowbreak Node}\newline \texttt{token}: \texttt{Token} \\ \hline
+\texttt{Array\allowbreak Constructor\allowbreak Node} & \texttt{expression}: \texttt{Expression\allowbreak Node} \\ \hline
+\texttt{Array\allowbreak Node} & \texttt{expression}: \texttt{Expression\allowbreak Node}\newline \texttt{class\allowbreak Name}: \texttt{String}\newline \texttt{method\allowbreak Name}: \texttt{String} \\ \hline
+\texttt{Binary\allowbreak Expression\allowbreak Node} & \texttt{left\allowbreak Node}: \texttt{Expression\allowbreak Node}\newline \texttt{right\allowbreak Node}: \texttt{Expression\allowbreak Node}\newline \texttt{binary\allowbreak Operator\allowbreak Token}: \texttt{Token} \\ \hline
+\texttt{Chained\allowbreak Call\allowbreak Node} & \texttt{expression\allowbreak Nodes}: \texttt{Linked\allowbreak List<Expression\allowbreak Node>} \\ \hline
+\texttt{Chained\allowbreak Node} & \texttt{token}: \texttt{Token}\newline \texttt{chained\allowbreak Node}: \texttt{Chained\allowbreak Node}\newline \texttt{is\allowbreak Chained\allowbreak Node}: \texttt{boolean} \\ \hline
+\texttt{Class\allowbreak Constructor\allowbreak Node} & \texttt{expression\allowbreak Nodes}: \texttt{Linked\allowbreak List<Expression\allowbreak Node>}\newline \texttt{chained\allowbreak Node}: \texttt{Chained\allowbreak Node} \\ \hline
+\texttt{Conclassor\allowbreak Call\allowbreak Node} & \texttt{token}: \texttt{Token}\newline \texttt{chained\allowbreak Node}: \texttt{Chained\allowbreak Node} \\ \hline
+\texttt{Expression\allowbreak Node} & \texttt{type}: \texttt{Type} \\ \hline
+\texttt{Literal\allowbreak Node} & \texttt{token}: \texttt{Token} \\ \hline
+\texttt{Operand\allowbreak Node} & No agrega campos propios. \\ \hline
+\texttt{Parenthesized\allowbreak Expression\allowbreak Node} & \texttt{expresion}: \texttt{Expression\allowbreak Node}\newline \texttt{chained\allowbreak Node}: \texttt{Chained\allowbreak Node} \\ \hline
+\texttt{Self\allowbreak Node} & \texttt{chained\allowbreak Node}: \texttt{Chained\allowbreak Node}\newline \texttt{token}: \texttt{Token} \\ \hline
+\texttt{Simple\allowbreak Access\allowbreak Node} & \texttt{token}: \texttt{Token} \\ \hline
+\texttt{Simple\allowbreak Array\allowbreak Node} & \texttt{expression\allowbreak Node}: \texttt{Expression\allowbreak Node} \\ \hline
+\texttt{Simple\allowbreak Chained\allowbreak Node} & \texttt{token}: \texttt{Token}\newline \texttt{simple\allowbreak Chained\allowbreak Node}: \texttt{Simple\allowbreak Chained\allowbreak Node}\newline \texttt{class\allowbreak Name}: \texttt{String}\newline \texttt{method\allowbreak Name}: \texttt{String} \\ \hline
+\texttt{Simple\allowbreak Self\allowbreak Node} & \texttt{simple\allowbreak Chained\allowbreak Node}: \texttt{Simple\allowbreak Chained\allowbreak Node} \\ \hline
+\texttt{Simple\allowbreak Variable\allowbreak Node} & \texttt{simple\allowbreak Chained\allowbreak Node}: \texttt{Simple\allowbreak Chained\allowbreak Node} \\ \hline
+\texttt{Unary\allowbreak Expression\allowbreak Node} & \texttt{unary\allowbreak Operator\allowbreak Token}: \texttt{Token}\newline \texttt{expression\allowbreak Node}: \texttt{Expression\allowbreak Node} \\ \hline
+\texttt{Variable\allowbreak Node} & \texttt{class\allowbreak Name}: \texttt{String}\newline \texttt{method\allowbreak Name}: \texttt{String} \\ \hline
+\end{longtable}
+\endgroup

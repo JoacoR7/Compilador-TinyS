@@ -1,0 +1,70 @@
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{5pt}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.40\textwidth}|>{\raggedright\arraybackslash}p{0.28\textwidth}|>{\raggedright\arraybackslash}p{\dimexpr0.32\textwidth-6\tabcolsep-4\arrayrulewidth\relax}|}
+\caption{Casos inválidos del chequeo de sentencias}\label{tab:sentencias-error}\\
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\ \hline
+\endfirsthead
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\ \hline
+\endhead
+\texttt{acceder\allowbreak AVar\allowbreak Que\allowbreak No\allowbreak Es\allowbreak Array.s} & Rechazar un índice sobre una variable escalar. & a es Int y se requiere Array. Línea 4. \\ \hline
+\texttt{acceso\allowbreak Atributo\allowbreak Privado.s} & Rechazar una escritura externa de un atributo privado. & No se permite escribir secreto desde start. Línea 10. \\ \hline
+\texttt{acceso\allowbreak Atributo\allowbreak Privado\allowbreak Herencia.s} & Rechazar una escritura de un atributo privado heredado. & No se permite acceder a secreto declarado en A. Línea 2. \\ \hline
+\texttt{acceso\allowbreak Atributo\allowbreak Privado\allowbreak Herencia\allowbreak Lectura.s} & Rechazar la lectura de un atributo privado heredado. & self.secreto pertenece a Base y no es público. Línea 14. \\ \hline
+\texttt{acceso\allowbreak Atributo\allowbreak Privado\allowbreak Herencia\allowbreak Parametro.s} & Rechazar un atributo privado heredado usado como argumento. & No se permite leer self.secreto de Base. Línea 13. \\ \hline
+\texttt{acceso\allowbreak Atributo\allowbreak Privado\allowbreak Lectura.s} & Rechazar una lectura externa de un atributo privado. & No se permite leer caja.secreto. Línea 13. \\ \hline
+\texttt{acceso\allowbreak Atributo\allowbreak Privado\allowbreak Parametro.s} & Rechazar un atributo privado usado como argumento externo. & No se permite leer caja.secreto al preparar la llamada. Línea 12. \\ \hline
+\texttt{add\allowbreak Int\allowbreak Str.s} & Rechazar una asignación de resultado entero a Str. & a+a produce Int; el destino c es Str. Línea 5. \\ \hline
+\texttt{argumento\allowbreak Incorrecto\allowbreak Constructor.s} & Comprobar el tipo de un argumento de constructor. & La posición 0 exige Int y recibe Bool. Línea 9. \\ \hline
+\texttt{array\allowbreak Index\allowbreak Not\allowbreak Int.s} & Rechazar un índice de arreglo de tipo cadena. & El índice es Str y debe ser Int. Línea 4. \\ \hline
+\texttt{array\allowbreak Type\allowbreak Mismatch.s} & Rechazar la escritura de una cadena en un arreglo entero. & El elemento exige Int y recibe Str. Línea 4. \\ \hline
+\texttt{asignar\allowbreak Bool\allowbreak AInt.s} & Rechazar una asignación entre tipos primitivos distintos. & El destino es Int y el origen es Bool. Línea 5. \\ \hline
+\texttt{cantidad\allowbreak Argumentos\allowbreak Incorrecta.s} & Comprobar la cantidad de argumentos de un método. & hacer espera un argumento y recibe dos. Línea 9. \\ \hline
+\texttt{cantidad\allowbreak De\allowbreak Parametros\allowbreak Invalida.s} & Comprobar el tipo del segundo argumento del constructor. & La posición 1 exige Str y recibe Int; la cantidad coincide. Línea 9. \\ \hline
+\texttt{chain\allowbreak On\allowbreak Primitive\allowbreak Attribute.s} & Detectar el primer error antes del encadenado final. & Falta retorno Str en setX; no se alcanza la llamada de start. Línea 7. \\ \hline
+\texttt{condicion\allowbreak If\allowbreak No\allowbreak Booleana.s} & Exigir una condición booleana para if. & La condición es Int y debe ser Bool. Línea 4. \\ \hline
+\texttt{condicion\allowbreak While\allowbreak No\allowbreak Booleana.s} & Exigir una condición booleana para while. & La condición es Int y debe ser Bool. Línea 4. \\ \hline
+\texttt{declarar\allowbreak Array.s} & Comparar los tipos de elementos en una asignación de arreglos. & El destino es Array Int y el origen es Array Bool. Línea 3. \\ \hline
+\texttt{decremento\allowbreak Literal\allowbreak Entero.s} & Rechazar un decremento directo de un literal. & No se permite aplicar -- al literal 4. Línea 3. \\ \hline
+\texttt{equals\allowbreak Int\allowbreak Bool.s} & Rechazar una igualdad entre primitivos incompatibles. & Los operandos son Int y Bool. Línea 7. \\ \hline
+\texttt{for\allowbreak Variable\allowbreak Redeclaration.s} & Detectar conflicto del iterador con una variable de start. & i ya existe al consultarlo en el cuerpo del for. Línea 9. \\ \hline
+\texttt{for\allowbreak Variable\allowbreak Redeclaration\allowbreak In\allowbreak Method.s} & Detectar conflicto del iterador con una variable del método. & i ya está declarada en procesar. Línea 9. \\ \hline
+\texttt{inc\allowbreak Bool.s} & Exigir un entero para incremento. & El operando es Bool y se requiere Int. Línea 4. \\ \hline
+\texttt{incremento\allowbreak Literal\allowbreak Entero.s} & Rechazar un incremento directo de un literal. & No se permite aplicar ++ al literal 5. Línea 3. \\ \hline
+\texttt{invalid\allowbreak Access\allowbreak For\allowbreak Variable.s} & Rechazar el uso de un iterador fuera de su ámbito. & j ya no es visible después del for interior. Línea 16. \\ \hline
+\texttt{invalid\allowbreak Access\allowbreak For\allowbreak Variable2.s} & Rechazar un iterador de otro bloque hermano. & La primera búsqueda inválida es j en el segundo for interior. Línea 22. \\ \hline
+\texttt{Invalid\allowbreak Arr\allowbreak Index.s} & Exigir un índice entero en el destino de una asignación. & El índice es Bool y debe ser Int. Línea 6. \\ \hline
+\texttt{iterar\allowbreak Sobre\allowbreak Variable\allowbreak Que\allowbreak No\allowbreak Es\allowbreak Array.s} & Exigir un arreglo como origen del recorrido. & a es Int y el for exige Array. Línea 4. \\ \hline
+\texttt{local\allowbreak Variable\allowbreak Not\allowbreak Found.s} & Detectar el primer error en los cuerpos de métodos. & Falta retorno Int en m3; el nombre del archivo no describe este rechazo. Línea 10. \\ \hline
+\texttt{method\allowbreak Arguments\allowbreak Count\allowbreak Mismatch.s} & Comprobar la cantidad de argumentos de una llamada. & sumar espera dos argumentos y recibe tres. Línea 15. \\ \hline
+\texttt{method\allowbreak Argument\allowbreak Type\allowbreak Mismatch.s} & Comprobar el tipo de un argumento de método. & La posición 1 de sumar exige Int y recibe Str. Línea 15. \\ \hline
+\texttt{metodo\allowbreak Estatico\allowbreak Llamado\allowbreak Desde\allowbreak Instancia.s} & Rechazar el acceso estático mediante una variable receptora. & cosa es estático y se invoca mediante a. Línea 9. \\ \hline
+\texttt{metodo\allowbreak Inexistente.s} & Comprobar la existencia del método del receptor. & noExiste no está definido en Int. Línea 4. \\ \hline
+\texttt{metodo\allowbreak No\allowbreak Estatico\allowbreak Llamado\allowbreak Desde\allowbreak Clase.s} & Exigir instancia para un método no estático. & A.cosa() intenta invocar un método de instancia. Línea 9. \\ \hline
+\texttt{metodo\allowbreak No\allowbreak Void\allowbreak Sin\allowbreak Return.s} & Detectar el retorno incompatible antes de evaluar la falta de caminos. & metodo exige Int y ret b produce Bool. Línea 6. \\ \hline
+\texttt{metodo\allowbreak Sin\allowbreak Return\allowbreak En\allowbreak Todos\allowbreak Caminos.s} & Exigir la marca de retorno al finalizar un método con resultado. & El if sin else no garantiza el retorno Str. Línea 4. \\ \hline
+\texttt{non\allowbreak Boolean\allowbreak If.s} & Rechazar un literal entero como condición. & if exige Bool y recibe Int. Línea 2. \\ \hline
+\texttt{non\allowbreak Boolean\allowbreak While.s} & Rechazar una cadena como condición. & while exige Bool y recibe Str. Línea 2. \\ \hline
+\texttt{not\allowbreak Int.s} & Exigir un booleano para negación lógica. & ! recibe Int y requiere Bool. Línea 5. \\ \hline
+\texttt{null\allowbreak Int.s} & Rechazar nil en una variable entera. & El destino exige Int. Línea 3. \\ \hline
+\texttt{null\allowbreak Str.s} & Rechazar nil en una variable Str. & El destino exige Str. Línea 3. \\ \hline
+\texttt{or\allowbreak Bool\allowbreak Int.s} & Exigir booleanos a ambos lados de la conjunción. & El archivo usa \&\& con un operando Int. Línea 5. \\ \hline
+\texttt{primitive\allowbreak Type\allowbreak Chained.s} & Detectar el primer error antes del encadenado de start. & Falta retorno Str en setX. Línea 7. \\ \hline
+\texttt{return\allowbreak En\allowbreak Void.s} & Rechazar un valor de retorno en un método void. & Se devuelve Int cuando el retorno declarado es void. Línea 5. \\ \hline
+\texttt{return\allowbreak Incompatible.s} & Comparar el retorno encontrado con el declarado. & Se devuelve Bool en un método Int. Línea 5. \\ \hline
+\texttt{self\allowbreak En\allowbreak Metodo\allowbreak Estatico.s} & Rechazar self en un destino dentro de un método estático. & self.x no puede utilizarse en funcionA estático. Línea 7. \\ \hline
+\texttt{self\allowbreak En\allowbreak Metodo\allowbreak Estatico2.s} & Rechazar self como origen dentro de un método estático. & No se permite leer self.x en funcionA estático. Línea 8. \\ \hline
+\texttt{tipo\allowbreak Argumento\allowbreak Incorrecto.s} & Comprobar argumentos de métodos predefinidos. & out\_int exige Int en la posición 0 y recibe Bool. Línea 2. \\ \hline
+\texttt{tipo\allowbreak Iteracion\allowbreak Invalida.s} & Comparar el iterador con el elemento del arreglo. & El elemento es Int y el iterador se declara Bool. Línea 4. \\ \hline
+\texttt{unary.s} & Exigir tipo entero para incremento de una variable. & var3 es Str y ++ exige Int. Línea 10. \\ \hline
+\texttt{variable\allowbreak Not\allowbreak Declared.s} & Resolver una variable usada en una expresión. & b no se encuentra en el ámbito de start. Línea 3. \\ \hline
+\texttt{void\allowbreak Chained.s} & Rechazar la continuación sobre un retorno void. & setX retorna void y no admite el acceso posterior a x. Línea 14. \\ \hline
+\texttt{wrong\allowbreak Binary\allowbreak Operands.s} & Exigir enteros en una suma binaria. & Los operandos true y false son Bool. Línea 3. \\ \hline
+\texttt{wrong\allowbreak Return\allowbreak Type.s} & Comprobar el tipo de la expresión retornada. & valor exige Int y devuelve Str. Línea 5. \\ \hline
+\end{longtable}
+\endgroup

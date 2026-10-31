@@ -1,0 +1,52 @@
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{5pt}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.40\textwidth}|>{\raggedright\arraybackslash}p{0.28\textwidth}|>{\raggedright\arraybackslash}p{\dimexpr0.32\textwidth-6\tabcolsep-4\arrayrulewidth\relax}|}
+\caption{Casos válidos del chequeo de sentencias}\label{tab:sentencias-success}\\
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\ \hline
+\endfirsthead
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\ \hline
+\endhead
+\texttt{acceso\allowbreak Atributo\allowbreak Publico\allowbreak Herencia\allowbreak Lectura.s} & Leer un atributo público heredado dentro de un método. & Aceptar valor heredado, su asignación a copia y el retorno Int. \\ \hline
+\texttt{acceso\allowbreak Atributo\allowbreak Publico\allowbreak Herencia\allowbreak Parametro.s} & Usar un atributo público heredado como argumento. & Aceptar self.valor como argumento Int de IO.out\_int. \\ \hline
+\texttt{acceso\allowbreak Atributo\allowbreak Publico\allowbreak Lectura.s} & Leer un atributo público desde una variable receptora. & Aceptar caja.valor como origen de una asignación Int. \\ \hline
+\texttt{acceso\allowbreak Atributo\allowbreak Publico\allowbreak Parametro.s} & Pasar un atributo público como argumento. & Aceptar caja.valor al llamar a IO.out\_int. \\ \hline
+\texttt{array.s} & Crear, escribir y leer un arreglo entero. & Aceptar índices Int y la suma de elementos Int. \\ \hline
+\texttt{array\allowbreak In\allowbreak Method.s} & Usar arreglos en atributos, parámetros y retornos de elementos. & Aceptar datos, arr y las operaciones sobre sus elementos. \\ \hline
+\texttt{array\allowbreak Operations.s} & Combinar accesos a elementos en una expresión. & Aceptar la suma entera usada como argumento de salida. \\ \hline
+\texttt{array\allowbreak Tamanio\allowbreak Dinamico.s} & Crear un arreglo con una expresión de longitud variable. & Aceptar new Int[n] en el recorrido actual. \\ \hline
+\texttt{bloque\allowbreak Valido.s} & Comprobar una operación con parámetro y variable local. & Aceptar x por 2, la asignación a resultado y el retorno Int. \\ \hline
+\texttt{boolean\allowbreak And\allowbreak Comparison\allowbreak Types.s} & Combinar precedencia aritmética, comparación y conjunción. & Aceptar el resultado Bool y las condiciones de if y while. \\ \hline
+\texttt{boolean\allowbreak Operations.s} & Retornar comparaciones desde métodos Bool. & Aceptar las comparaciones de enteros y sus llamadas. \\ \hline
+\texttt{chained\allowbreak Methods.s} & Encadenar atributo de objeto y llamada a método. & Aceptar b.miA.saludo() y su resultado Str. \\ \hline
+\texttt{class\allowbreak Attributes.s} & Procesar cuerpos vacíos con atributos declarados. & Aceptar constructor, método y start vacíos. \\ \hline
+\texttt{class\allowbreak Equal.s} & Comparar referencias del mismo tipo. & Aceptar x == y y asignar su resultado a Bool. \\ \hline
+\texttt{class\allowbreak Method.s} & Procesar parámetros, variables locales y varias implementaciones. & Aceptar sus cuerpos vacíos después de consolidar A. \\ \hline
+\texttt{complex\allowbreak Expression.s} & Comprobar aritmética con precedencia y argumentos. & Aceptar el retorno Int de calcular y su asignación a resultado. \\ \hline
+\texttt{constructor\allowbreak Array.s} & Crear arreglos de tipos primitivos. & Aceptar Array Int, Array Str y Array Bool con sus creaciones. \\ \hline
+\texttt{for\allowbreak Anidado.s} & Resolver variables en recorridos anidados. & Aceptar j en su cuerpo e i después del recorrido interior. \\ \hline
+\texttt{for\allowbreak Inside\allowbreak Method.s} & Recorrer un parámetro arreglo dentro de un método. & Aceptar el iterador Int y la llamada a procesar. \\ \hline
+\texttt{for\allowbreak With\allowbreak If.s} & Combinar ámbito de for y condición if. & Aceptar i en la comparación y en el cuerpo del condicional. \\ \hline
+\texttt{if\&else.s} & Comprobar condiciones y llamadas en ramas sin llaves. & Aceptar comparaciones Bool y argumentos Str. \\ \hline
+\texttt{inheritance\allowbreak Chain.s} & Recorrer cuerpos vacíos después de consolidar herencia. & Aceptar los constructores de A, B, C y D y start vacío. \\ \hline
+\texttt{inherited\allowbreak Public\allowbreak Attribute.s} & Escribir un atributo heredado e invocar un método heredado. & Aceptar b.x y b.getX() con resultado Int. \\ \hline
+\texttt{literals.s} & Asignar constantes a tipos primitivos. & Aceptar las asignaciones Int, Bool y Str. \\ \hline
+\texttt{merge\allowbreak Class.s} & Comprobar cuerpos con herencia y partes de una clase. & Aceptar operaciones Int y el retorno de un arreglo declarado. \\ \hline
+\texttt{method\allowbreak Arguments\allowbreak Correct.s} & Comprobar argumentos y llamadas anidadas. & Aceptar dos argumentos Int en cada llamada a sumar. \\ \hline
+\texttt{methods\&Attributes.s} & Comprobar métodos distribuidos y acceso a atributos propios. & Aceptar las asignaciones y el retorno entero de m3. \\ \hline
+\texttt{methods.s} & Comprobar un retorno de atributo propio. & Aceptar self.i1 como resultado Int de m3. \\ \hline
+\texttt{object\allowbreak Methods.s} & Combinar construcción, actualización y lectura de un objeto. & Aceptar el incremento de valor y las llamadas de instancia. \\ \hline
+\texttt{print\allowbreak For.s} & Recorrer un arreglo y usar el iterador como argumento. & Aceptar el iterador Int al llamar a IO.out\_int. \\ \hline
+\texttt{prints.s} & Invocar métodos predefinidos con argumentos compatibles. & Aceptar IO.out\_str con Str e IO.out\_int con Int. \\ \hline
+\texttt{public\allowbreak Attributes.s} & Actualizar un atributo público y obtenerlo por un método. & Aceptar p.edad y el retorno de getEdad. \\ \hline
+\texttt{returns.s} & Comprobar métodos con retorno Int y cuerpo void. & Aceptar ret 42 en valor y el cuerpo vacío de nada. \\ \hline
+\texttt{sonidos\allowbreak Animales.s} & Comprobar cuerpos de una redefinición heredada. & Aceptar los retornos Str y la llamada a sonido. \\ \hline
+\texttt{start\allowbreak Variables.s} & Resolver accesos y llamadas encadenados entre objetos. & Aceptar la lectura final de edad como Int. \\ \hline
+\texttt{valid\allowbreak Return\allowbreak Type.s} & Retornar un parámetro del tipo declarado. & Aceptar valor de tipo Int como retorno de identidad. \\ \hline
+\end{longtable}
+\endgroup

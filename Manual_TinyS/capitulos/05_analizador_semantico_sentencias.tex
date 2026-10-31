@@ -1,0 +1,305 @@
+\chapter{Análisis semántico: chequeo de sentencias}
+\label{cap:semantico-sentencias}
+\begingroup
+\setlength{\emergencystretch}{4em}
+
+Esta etapa construye los árboles sintácticos abstractos de los cuerpos
+de métodos, constructores y del bloque \texttt{start}. A partir de la
+tabla de símbolos consolidada, comprueba las expresiones, asignaciones,
+llamadas, condiciones, recorridos y retornos.
+
+\section{Diseño y ejecución de la etapa}
+\label{sec:diseno-sentencias}
+
+\begin{description}[style=nextline]
+  \item[Reconocimiento y construcción]
+  \lexcode{SemanticAnalyzer} crea los nodos al reconocer las producciones
+  de la gramática. Las declaraciones se registran en la tabla; los
+  cuerpos se guardan como árboles de sentencias y expresiones.
+  \item[Chequeo]
+  \lexcode{TypeVisitor} implementa \lexcode{Visitor<Type>}. Cada nodo
+  selecciona la sobrecarga correspondiente mediante \lexcode{accept()}.
+  Las expresiones devuelven su tipo; las sentencias comprueban sus hijos
+  y actualizan la información de retorno cuando corresponde.
+  \item[Exportación]
+  \lexcode{AstJsonVisitor} implementa \lexcode{Visitor<Object>} y
+  construye la representación que serializa \lexcode{JsonWriter}.
+  El archivo de tabla se obtiene de \lexcode{SymbolTable.toJson()}.
+\end{description}
+
+
+La compilación y ejecución desde la raíz del proyecto son:
+\begin{verbatim}
+mvn -Petapa4 -DskipTests package
+java -jar target/etapa4.jar <ARCH_FUENTE>.s
+\end{verbatim}
+Si tanto el chequeo de declaraciones como el de sentencias terminan correctamente, se muestra:
+\begin{verbatim}
+CORRECTO: SEMANTICO - SENTENCIAS
+\end{verbatim}
+Se escriben \texttt{<ARCH\_FUENTE>.ts.json} y
+\texttt{<ARCH\_FUENTE>.ast.json} junto al archivo fuente. El nombre
+base se conserva y la escritura reemplaza los resultados anteriores.
+
+\section{Esquema de traducción}
+\label{sec:edt-sentencias}
+
+\input{gramaticas/07_esquema_traduccion_sentencias}
+
+\section{Estructuras y diagrama de clases del AST}
+\label{sec:uml-sentencias}
+La clase \lexcode{AST} conserva una lista de bloques iniciales de cada método para los
+cuerpos de métodos y constructores, y una referencia separada al bloque
+de \texttt{start}. La asociación con las entidades de la tabla se
+realiza mediante los nombres de clase y método almacenados en cada
+\lexcode{BlockNode}. El nombre del constructor es el punto.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth,height=0.9\textheight,keepaspectratio]{diagramas/UML_AST.png}
+  \caption{Diagrama de clases del AST.}
+  \label{fig:uml-ast}
+\end{figure}
+\clearpage
+
+\input{diagramas/uml_ast_sentencias}
+
+\subsection{Información almacenada y operaciones}
+\lexcode{Node} define \lexcode{accept(Visitor<T>)} y
+\lexcode{toJson(String)}.
+\lexcode{ExpressionNode} agrega el atributo \texttt{type} y
+\lexcode{SentenceNode} agrega \texttt{hasReturn}.
+
+\lexcode{AST.consolidate()} visita primero los bloques de métodos y
+constructores, y luego \texttt{start}. \lexcode{AST.toJson()} utiliza
+el exportador del árbol completo.
+
+La tabla siguiente detalla los datos propios de cada clase; los atributos
+heredados se obtienen de la jerarquía de los diagramas.
+\input{tablas/12_nodos_ast}
+
+\section{Estrategias de chequeo semántico}
+\label{sec:chequeos-sentencias}
+
+\subsection{Literales, operadores y asignaciones}
+\begin{description}[style=nextline]
+  \item[Literal]
+  \lexcode{visit(LiteralNode)} admite las categorías de literal entero,
+  cadena, booleano y \texttt{nil}. El tipo conserva la categoría del
+  token; \lexcode{Type.getTypeName()} presenta los nombres
+  \texttt{Int}, \texttt{Str} y \texttt{Bool} para sus constantes.
+  \item[Operación binaria]
+  Se visitan los dos operandos antes de comprobar el operador.
+  Las operaciones aritméticas exigen \texttt{Int}; las lógicas exigen
+  \texttt{Bool}; las relacionales exigen \texttt{Int} y devuelven
+  \texttt{Bool}. La igualdad y desigualdad utilizan la operación común
+  de compatibilidad y devuelven \texttt{Bool}.
+  \item[Operación unaria]
+  Los operadores \texttt{+}, \texttt{-}, \texttt{++} y \texttt{--}
+  exigen un operando entero. El operador \texttt{!} exige un booleano.
+  El incremento y decremento rechazan un operando que sea directamente
+  un \lexcode{LiteralNode}. La comprobación del tipo utiliza el tipo
+  almacenado en el hijo, visitándolo antes si todavía no lo tiene.
+  \item[Asignación]
+  Se visita el acceso del lado izquierdo y la expresión del derecho.
+  Ambos tipos se guardan en los nodos y se comparan mediante
+  \lexcode{Type.areCompatible()}. La incompatibilidad se informa en el
+  token del acceso de destino.
+\end{description}
+
+\begin{center}
+\small
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Operadores} & \textbf{Operandos requeridos} & \textbf{Resultado} \\ \hline
+\texttt{+ - * /} binarios & \texttt{Int}, \texttt{Int} & \texttt{Int} \\ \hline
+\texttt{\&\& ||} & \texttt{Bool}, \texttt{Bool} & \texttt{Bool} \\ \hline
+\texttt{< > <= >=} & \texttt{Int}, \texttt{Int} & \texttt{Bool} \\ \hline
+\texttt{== !=} & Tipos compatibles & \texttt{Bool} \\ \hline
+\texttt{+ - ++ --} unarios & \texttt{Int} & \texttt{Int} \\ \hline
+\texttt{!} & \texttt{Bool} & \texttt{Bool} \\ \hline
+\end{tabular}
+\end{center}
+
+\subsection{Arreglos y recorridos}
+\lexcode{ArrayNode} y \lexcode{SimpleArrayNode} comprueban que el
+índice sea entero y que el identificador resuelto tenga tipo
+\lexcode{ArrayType}. El tipo del acceso es el subtipo de los elementos.
+Una asignación a un elemento se comprueba después contra ese subtipo.
+
+\lexcode{visit(ForNode)} obtiene el tipo del identificador que se
+recorre, exige un arreglo y compara el tipo de su elemento con el tipo
+declarado para la variable de iteración. Luego visita el cuerpo en su
+ámbito. Los límites de los índices y los valores nulos corresponden
+a controles durante la ejecución del código generado.
+
+\subsection{Llamadas, encadenados y visibilidad}
+\begin{description}[style=nextline]
+  \item[Llamada a método]
+  Se busca el nombre en la clase receptora y su jerarquía. Primero se
+  compara la cantidad de argumentos, si coincide, se visitan sus
+  expresiones y se comparan los tipos con los parámetros formales en
+  orden. El resultado de la llamada es el tipo de retorno del método.
+  \item[Llamada a constructor]
+  Se obtiene el constructor de la clase y se compara la cantidad y los
+  tipos de argumentos. El nodo conserva como tipo el de la clase creada.
+  Las posiciones de argumentos de los diagnósticos comienzan en cero.
+  \item[Acceso estático o de instancia]
+  El acceso a través del nombre de clase exige un método estático.
+  El recorrido a través de una variable receptora rechaza la llamada
+  a un método estático mediante una instancia.
+  \item[Encadenado]
+  El tipo del receptor determina la clase donde se busca el siguiente
+  miembro. Se rechaza continuar un acceso sobre el retorno
+  \texttt{void}, y se comprueban los accesos a miembros que no existen
+  y los encadenados incompatibles sobre tipos primitivos.
+  \item[Atributo público o privado]
+  Los visitantes consultan la visibilidad y la clase que declaró el
+  atributo. El acceso externo a un atributo privado se rechaza, al igual
+  que los accesos privados heredados cubiertos por las pruebas.
+  \item[Uso de self]
+  Los nodos \lexcode{SelfNode} y \lexcode{SimpleSelfNode} comprueban
+  el contexto del método al recorrer un acceso encadenado y rechazan
+  ese uso de \texttt{self} en un método estático.
+\end{description}
+
+\subsection{Condiciones y retornos}
+Las condiciones de \texttt{if} y \texttt{while} se visitan y deben
+tener tipo \texttt{Bool}. Cada rama o cuerpo se recorre dentro del
+ámbito correspondiente.
+
+En \lexcode{visit(ReturnNode)} se obtiene el tipo de la expresión y
+se compara con el retorno declarado del método actual. Un retorno válido
+marca \texttt{hasReturn}. Al cerrar un bloque raíz de método no \texttt{void},
+se exige que la marca esté establecida. Los constructores se excluyen
+del control de retorno faltante.
+
+\subsection{Decisiones de representación}
+\label{sec:limites-sentencias}
+\begin{description}[style=nextline]
+  \item[Sentencias vacías]
+  El punto y coma aislado se conserva como una entrada nula en la lista
+  del bloque. El exportador la representa con
+  \lexcode{{"nodeType": "EmptySentence"}}. Una rama vacía puede
+  envolverse en un bloque vacío para conservar su ámbito.
+  \item[Compatibilidad de tipos]
+  Se compara categorías de token y se admite
+  equivalencias entre constantes y clases primitivas. Para Arrays, se
+  compara las categorías de sus elementos; no almacena la longitud
+  como parte de \lexcode{ArrayType} ya que se define en tiempo de ejecución.
+  \item[Retorno dentro de ciclos]
+  Los visitantes de \texttt{while} y \texttt{for} propagan la marca
+  de retorno de su bloque. 
+\end{description}
+
+\section{Errores de sentencias}
+\label{sec:errores-sentencias}
+El análisis se interrumpe con la primera excepción: no se recupera ni se
+continúa con las sentencias posteriores. \lexcode{ASTException} hereda
+de \lexcode{SemanticException}. Los conflictos de búsqueda pueden
+provenir también de las excepciones de tabla de símbolos.
+
+\begin{description}[style=nextline]
+  \item[Tipos incompatibles]
+  \lexcode{TypeMismatchException}: asignaciones, operadores, condiciones,
+  índices o recorridos con tipos distintos de los esperados.
+  \item[Retorno incorrecto o ausente]
+  \lexcode{InvalidReturnException} compara el retorno encontrado con el
+  declarado. \lexcode{MissingReturnException} señala un método con
+  resultado cuyo bloque no quedó marcado con retorno.
+  \item[Argumentos de métodos y constructores]
+  \texttt{Invalid\allowbreak Method\allowbreak Argument\allowbreak Count\allowbreak Exception} e
+  \texttt{Invalid\allowbreak Constructor\allowbreak Arguments\allowbreak Count\allowbreak Exception} informan diferencias
+  de cantidad. \texttt{Invalid\allowbreak Method\allowbreak Argument\allowbreak Type\allowbreak Exception} y
+  \texttt{Invalid\allowbreak Constructor\allowbreak Argument\allowbreak Type\allowbreak Exception} informan el índice y
+  los tipos del argumento incompatible.
+  \item[Acceso inválido]
+  \texttt{Invalid\allowbreak Attribute\allowbreak Access\allowbreak Exception},
+  \texttt{Invalid\allowbreak Method\allowbreak Access\allowbreak Exception},
+  \lexcode{InvalidVoidAccessException} e
+  \texttt{Invalid\allowbreak Primitive\allowbreak Access\allowbreak Exception} cubren visibilidad y
+  encadenados. Las búsquedas también pueden producir
+  \texttt{Local\allowbreak Variable\allowbreak Not\allowbreak Found\allowbreak Exception},
+  \lexcode{MethodNotFoundException},
+  \lexcode{AttributeNotFoundException} o
+  \lexcode{ClassNotFoundException}.
+  \item[Contexto estático]
+  \texttt{Non\allowbreak Static\allowbreak Method\allowbreak Called\allowbreak From\allowbreak Class\allowbreak Exception},
+  \texttt{Static\allowbreak Method\allowbreak Called\allowbreak From\allowbreak Instance\allowbreak Exception} y
+  \texttt{Self\allowbreak Used\allowbreak In\allowbreak Static\allowbreak Mehthod\allowbreak Exception} corresponden a las formas de
+  acceso estático y al uso de \texttt{self}. Los nombres conservan la
+  escritura de las clases Java.
+  \item[Operación sobre literal o conflicto de iteración]
+  \texttt{Invalid\allowbreak Literal\allowbreak Operation\allowbreak Exception} rechaza el incremento o
+  decremento directo de un literal.
+  \texttt{Variable\allowbreak Redeclaration\allowbreak In\allowbreak For\allowbreak Loop\allowbreak Exception} señala un conflicto
+  de la variable de iteración con el método que la contiene.
+\end{description}
+
+El ejecutador muestra \texttt{ERROR: SEMANTICO - SENTENCIAS} y el
+diagnóstico sin la traza de llamadas de Java. Los errores detectados en
+la lectura previa conservan el encabezado de declaraciones, léxico o
+sintáctico que corresponda. Por ejemplo,
+\lexcode{tc/etapa4/error/returnIncompatible.s} produce:
+\lstinputlisting[style=bnftinys]{ejemplos/sentencias/returnIncompatible.salida.txt}
+
+Cuando falla el análisis no se escriben nuevos JSON. Los archivos de
+ejecuciones anteriores permanecen en el directorio. Una vez completado
+el análisis, la escritura de los dos archivos no es transaccional.
+
+\section{Formato de exportación del AST}
+\label{sec:json-sentencias}
+\lexcode{AstJsonVisitor.export()} recorre las clases de la tabla e
+incluye las entradas de usuario y las predefinidas. La raíz del JSON
+tiene dos propiedades: \texttt{classes} y \texttt{startMethod}.
+\begin{description}[style=nextline]
+  \item[Clase]
+  Contiene \texttt{name}, \texttt{parent}, \texttt{predefined},
+  \texttt{attributes}, \texttt{constructor} y \texttt{methods}.
+  Cada atributo incluye nombre, tipo y visibilidad.
+  \item[Método o constructor]
+  Contiene \texttt{name}, \texttt{returnType}, \texttt{static},
+  \texttt{parameters}, \texttt{variables} y \texttt{body}.
+  Los parámetros y variables conservan sus posiciones.
+  \item[Sentencia o expresión]
+  La propiedad \texttt{nodeType} identifica la clase concreta del nodo.
+  Sus propiedades anidadas conservan los hijos y permiten observar la
+  estructura del árbol. Si el nodo tiene token, se agregan
+  \texttt{lexeme}, \texttt{row} y \texttt{column}; si una expresión
+  tiene tipo calculado, también se agrega \texttt{type}.
+  \item[Orden de los cuerpos]
+  \texttt{BlockNode.sentences} es un arreglo que conserva el orden del
+  fuente. Los nodos binarios tienen \texttt{left} y \texttt{right};
+  las llamadas, \texttt{arguments} y \texttt{chained}; los condicionales,
+  \texttt{condition}, \texttt{then} y \texttt{else}; los ciclos,
+  su condición o iterable y \texttt{body}.
+\end{description}
+
+Los métodos predefinidos tienen \texttt{body: null} porque sus cuerpos
+pertenecen al entorno de ejecución. Para un método heredado, el
+exportador busca el bloque por nombre en la clase y continúa por los
+padres hasta encontrar su cuerpo. Una alternativa \texttt{else}
+ausente se exporta como \texttt{null}. Los caracteres especiales de
+las cadenas se escapan mediante \lexcode{JsonWriter}.
+
+\clearpage
+\subsection{Ejemplo: lectura de un atributo público heredado}
+\lstinputlisting[style=bnftinys]{../tc/etapa4/success/accesoAtributoPublicoHerenciaLectura.s}
+
+Y su salida JSON correspondiente:
+\lstinputlisting[style=bnftinys,basicstyle=\ttfamily\footnotesize]{../tc/etapa4/success/accesoAtributoPublicoHerenciaLectura.ast.json}
+
+\clearpage
+\section{Escenarios y casos de prueba}
+\label{sec:casos-sentencias}
+
+\subsection{Casos que deben aceptarse}
+Se espera finalizar el chequeo de sentencias sin excepciones.
+La ejecución mediante \lexcode{Etapa4} debe producir los dos JSON.
+\input{tablas/13_casos_sentencias_validos}
+
+\subsection{Casos que deben rechazarse}
+Se espera superar declaraciones y detenerse en la primera incompatibilidad
+de sentencias indicada.
+\input{tablas/14_casos_sentencias_invalidos}
+\endgroup

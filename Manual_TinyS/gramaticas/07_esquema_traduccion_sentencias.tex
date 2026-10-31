@@ -1,0 +1,998 @@
+% Transcripción del EDT de sentencias proporcionado por el autor.
+% https://docs.google.com/document/d/1fLvQLmMxuIsQLP6FdxHd5cRqd1_4q0jBzG1xYV_XgVE/edit
+% Se conservan el texto, el orden y los tramos resaltados del documento fuente.
+\begingroup
+\definecolor{edtAstVerde}{RGB}{213,242,220}
+\newcommand{\astaccion}[1]{{\setlength{\fboxsep}{0pt}\colorbox{edtAstVerde}{\strut #1}}}
+\newcommand{\astlinea}[1]{\hangindent=1.6em\hangafter=1\noindent#1\par}
+\begin{tcolorbox}[enhanced jigsaw,breakable,sharp corners,colback=white,colframe=gray,boxrule=0.4pt,boxsep=0pt,left=4pt,right=4pt,top=4pt,bottom=4pt]
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}program\ensuremath{\rangle} ::= \astaccion{\{} \astaccion{AST} \astaccion{=} \astaccion{new} \astaccion{AST}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{\}} \ensuremath{\langle}Lista-{}Definiciones\ensuremath{\rangle} \ensuremath{\langle}Start\ensuremath{\rangle} \astaccion{\{AST}\astaccion{.}\allowbreak{}\astaccion{setSymbolTable}\astaccion{(}\allowbreak{}\astaccion{this}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{AST}\astaccion{.}\allowbreak{}\astaccion{consolidate}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Start\ensuremath{\rangle} ::= start \ensuremath{\langle}Bloque-{}Método\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Lista-{}Definiciones\ensuremath{\rangle} ::= \ensuremath{\langle}class\ensuremath{\rangle} \ensuremath{\langle}Lista-{}Definiciones\ensuremath{\rangle}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Impl\ensuremath{\rangle} \ensuremath{\langle}Lista-{}Definiciones\ensuremath{\rangle}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}class\ensuremath{\rangle} ::= class idclass \ensuremath{\langle}classF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}classF\ensuremath{\rangle} ::= \{ \ensuremath{\langle}AtributoK\ensuremath{\rangle} \}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Herencia\ensuremath{\rangle} \{ \ensuremath{\langle}AtributoK\ensuremath{\rangle} \}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}AtributoK\ensuremath{\rangle} ::= \ensuremath{\langle}Atributo\ensuremath{\rangle} \ensuremath{\langle}AtributoK\ensuremath{\rangle}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Impl\ensuremath{\rangle} ::= impl idclass \{ \ensuremath{\langle}MiembroK\ensuremath{\rangle} \}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Herencia\ensuremath{\rangle} ::= : \ensuremath{\langle}Tipo\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}MiembroK\ensuremath{\rangle} ::= \ensuremath{\langle}Miembro\ensuremath{\rangle} \ensuremath{\langle}MiembroK\ensuremath{\rangle}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Miembro\ensuremath{\rangle} ::= \ensuremath{\langle}Método\ensuremath{\rangle}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Constructor\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Constructor\ensuremath{\rangle} ::= . \ensuremath{\langle}Argumentos-{}Formales\ensuremath{\rangle} \ensuremath{\langle}Bloque-{}Método\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Atributo\ensuremath{\rangle} ::= \ensuremath{\langle}Tipo\ensuremath{\rangle} \ensuremath{\langle}Lista-{}Declaración-{}Variables\ensuremath{\rangle} ;}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} pub \ensuremath{\langle}Tipo\ensuremath{\rangle} \ensuremath{\langle}Lista-{}Declaración-{}Variables\ensuremath{\rangle} ;}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Método\ensuremath{\rangle} ::= fn \ensuremath{\langle}MétodoF\ensuremath{\rangle}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} st fn \ensuremath{\langle}MétodoF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}MétodoF\ensuremath{\rangle} ::= idMetAt \ensuremath{\langle}Argumentos-{}Formales\ensuremath{\rangle} \ensuremath{\langle}Bloque-{}Método\ensuremath{\rangle}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Tipo-{}Método\ensuremath{\rangle} idMetAt \ensuremath{\langle}Argumentos-{}Formales\ensuremath{\rangle} \ensuremath{\langle}Bloque-{}Método\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Bloque-{}Método\ensuremath{\rangle} ::= \{ \ensuremath{\langle}Decl-{}Var-{}LocalesK\ensuremath{\rangle} \astaccion{\{sentenceNodeList} \astaccion{=} \astaccion{new} \astaccion{List}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{sentenciaK}\astaccion{.}\allowbreak{}\astaccion{setSentenceNodes}\astaccion{(}\allowbreak{} \astaccion{sentenceNodeList}\astaccion{)}\allowbreak{}\astaccion{\}} \ensuremath{\langle}SentenciaK\ensuremath{\rangle} \} \astaccion{\{currentBlockNode} \astaccion{=} \astaccion{newBlackNode}\astaccion{(}\allowbreak{}\astaccion{sentenciaK}\astaccion{.}\allowbreak{}\astaccion{getSentenceNodes}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{TS}\astaccion{.}\allowbreak{}\astaccion{getCurrentClass}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{TS}\astaccion{.}\allowbreak{}\astaccion{getCurrentMethod}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{iif} \astaccion{currentMethod} \astaccion{==} \astaccion{start} \astaccion{then} \astaccion{AST}\astaccion{.}\allowbreak{}\astaccion{setStartBlockNode}\astaccion{(}\allowbreak{}\astaccion{currentBlockNode}\astaccion{)}\allowbreak{} \astaccion{else} \astaccion{AST}\astaccion{.}\allowbreak{}\astaccion{addBlockNode}\astaccion{(}\allowbreak{}\astaccion{currentBlockNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Decl-{}Var-{}LocalesK\ensuremath{\rangle} ::= \ensuremath{\langle}Decl-{}Var-{}Locales\ensuremath{\rangle} \ensuremath{\langle}Decl-{}Var-{}LocalesK\ensuremath{\rangle}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Decl-{}Var-{}Locales\ensuremath{\rangle} ::= \ensuremath{\langle}Tipo\ensuremath{\rangle} \ensuremath{\langle}Lista-{}Declaración-{}Variables\ensuremath{\rangle} ;}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Lista-{}Declaración-{}Variables\ensuremath{\rangle} ::= idMetAt \ensuremath{\langle}Lista-{}Declaración-{}VariablesF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Lista-{}Declaración-{}VariablesF\ensuremath{\rangle} ::= , \ensuremath{\langle}Lista-{}Declaración-{}Variables\ensuremath{\rangle}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Argumentos-{}Formales\ensuremath{\rangle} ::= ( \ensuremath{\langle}Argumentos-{}FormalesF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Argumentos-{}FormalesF\ensuremath{\rangle} ::= )}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Lista-{}Argumentos-{}Formales\ensuremath{\rangle} )}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Lista-{}Argumentos-{}Formales\ensuremath{\rangle} ::= \ensuremath{\langle}Argumento-{}Formal\ensuremath{\rangle} \ensuremath{\langle}Lista-{}Argumentos-{}FormalesF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Lista-{}Argumentos-{}FormalesF\ensuremath{\rangle} ::= , \ensuremath{\langle}Lista-{}Argumentos-{}Formales\ensuremath{\rangle}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Argumento-{}Formal\ensuremath{\rangle} ::= \ensuremath{\langle}Tipo\ensuremath{\rangle} idMetAt}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Tipo-{}Método\ensuremath{\rangle} ::= \ensuremath{\langle}Tipo\ensuremath{\rangle}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} void}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Tipo\ensuremath{\rangle} ::= \ensuremath{\langle}Tipo-{}Primitivo\ensuremath{\rangle}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Tipo-{}Referencia\ensuremath{\rangle}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Tipo-{}Arreglo\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Tipo-{}Primitivo\ensuremath{\rangle} ::= Str}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} Bool}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} Int}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Tipo-{}Referencia\ensuremath{\rangle} ::= idclass}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Tipo-{}Arreglo\ensuremath{\rangle} ::= Array \ensuremath{\langle}Tipo-{}Primitivo\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}SentenciaK1\ensuremath{\rangle} ::= \ensuremath{\langle}Sentencia\ensuremath{\rangle} \astaccion{\{SentenciaK1}\astaccion{.}\allowbreak{}\astaccion{getSentenceNodes}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{.}\allowbreak{}\astaccion{add}\astaccion{(}\allowbreak{}\astaccion{Sentencia}\astaccion{.}\allowbreak{}\astaccion{getSentenceNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{SentenciaK2}\astaccion{.}\allowbreak{}\astaccion{setSentenceNodes}\astaccion{(}\allowbreak{}\astaccion{SentenciaK1}\astaccion{.}\allowbreak{}\astaccion{getSentenceNodes}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}  \ensuremath{\langle}SentenciaK2\ensuremath{\rangle} \astaccion{\{SentenciaK1}\astaccion{.}\allowbreak{}\astaccion{setSentenceNodes}\astaccion{(}\allowbreak{}\astaccion{SentenciaK2}\astaccion{.}\allowbreak{}\astaccion{getSentenceNodes}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\lambda}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Sentencia\ensuremath{\rangle} ::= \astaccion{\{sentenceNode} \astaccion{=} \astaccion{null\}} ; \astaccion{\{Sentencia}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{sentenceNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \astaccion{\{sentenceNode} \astaccion{=} \astaccion{null\}} \ensuremath{\langle}Asignación\ensuremath{\rangle} \astaccion{\{} \astaccion{sentenceNode} \astaccion{=} \astaccion{Asignación}\astaccion{.}\allowbreak{}\astaccion{getSentenceNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}} ; \astaccion{\{Sentencia}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{sentenceNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \astaccion{\{sentenceNode} \astaccion{=} \astaccion{null\}} \ensuremath{\langle}Sentencia-{}Simple\ensuremath{\rangle} \astaccion{\{} \astaccion{sentenceNode} \astaccion{=} \astaccion{Sentencia-{}Simple}\astaccion{.}\allowbreak{}\astaccion{getSentenceNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{\}} ; \astaccion{\{Sentencia}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{sentenceNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \astaccion{\{sentenceNode} \astaccion{=} \astaccion{null\}} while ( \ensuremath{\langle}Expresión\ensuremath{\rangle} \astaccion{\{expressionNode} \astaccion{=} \astaccion{Expresion}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}} ) \ensuremath{\langle}Sentencia\ensuremath{\rangle} \astaccion{\{} \astaccion{sentenceNode} \astaccion{=} \astaccion{new} \astaccion{WhileNode}\astaccion{(}\allowbreak{}\astaccion{tokenWhile}\astaccion{,}\allowbreak{} \astaccion{expressionNode}\astaccion{,}\allowbreak{} \astaccion{sentencia}\astaccion{.}\allowbreak{}\astaccion{getSentenceNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{Sentencia}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{sentenceNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \astaccion{\{sentenceNode} \astaccion{=} \astaccion{null\}} for ( \ensuremath{\langle}Tipo-{}Primitivo\ensuremath{\rangle} idMetAt1 \astaccion{\{variableNode1} \astaccion{=} \astaccion{new} \astaccion{VariableNode}\astaccion{(}\allowbreak{}\astaccion{idMetAt1}\astaccion{.}\allowbreak{}\astaccion{token}\astaccion{,}\allowbreak{} \astaccion{null}\astaccion{,}\allowbreak{} \astaccion{TS}\astaccion{.}\allowbreak{}\astaccion{getCurrentClass}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{TS}\astaccion{.}\allowbreak{}\astaccion{getCurrentMethod}\astaccion{)}\allowbreak{}\astaccion{\}} in idMetAt2 \astaccion{\{variableNode2} \astaccion{=} \astaccion{new} \astaccion{VariableNode}\astaccion{(}\allowbreak{}\astaccion{idMetAt2}\astaccion{.}\allowbreak{}\astaccion{token}\astaccion{,}\allowbreak{} \astaccion{null}\astaccion{,}\allowbreak{} \astaccion{TS}\astaccion{.}\allowbreak{}\astaccion{getCurrentClass}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{TS}\astaccion{.}\allowbreak{}\astaccion{getCurrentMethod}\astaccion{)}\allowbreak{}\astaccion{\}} ) \ensuremath{\langle}Sentencia\ensuremath{\rangle} \astaccion{\{sentenceNode} \astaccion{=} \astaccion{new} \astaccion{ForNode}\astaccion{(}\allowbreak{}\astaccion{TipoPrimitivo}\astaccion{.}\allowbreak{}\astaccion{tipo}\astaccion{,}\allowbreak{} \astaccion{variableNode1}\astaccion{,}\allowbreak{} \astaccion{variableNode2}\astaccion{,}\allowbreak{} \astaccion{Sentencia}\astaccion{.}\allowbreak{}\astaccion{getSentenceNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{Sentencia}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{sentenceNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \astaccion{\{sentenceNode} \astaccion{=} \astaccion{null\}} \ensuremath{\langle}Bloque\ensuremath{\rangle} \astaccion{\{} \astaccion{sentenceNode} \astaccion{=} \astaccion{Bloque}\astaccion{.}\allowbreak{}\astaccion{getSentenceNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{Sentencia}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{sentenceNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \astaccion{\{sentenceNode} \astaccion{=} \astaccion{null\}} if ( \ensuremath{\langle}Expresión\ensuremath{\rangle} \astaccion{\{expressionNode} \astaccion{=} \astaccion{Expresion}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}} ) \ensuremath{\langle}Sentencia\ensuremath{\rangle} \ensuremath{\langle}SentenciaF1\ensuremath{\rangle} \astaccion{\{sentenceNode} \astaccion{=} \astaccion{new} \astaccion{IfElseNode}\astaccion{(}\allowbreak{}\astaccion{if}\astaccion{.}\allowbreak{}\astaccion{token}\astaccion{,}\allowbreak{} \astaccion{expressionNode}\astaccion{,}\allowbreak{} \astaccion{Sentencia}\astaccion{.}\allowbreak{}\astaccion{getSentenceNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{SentenciaF1}\astaccion{.}\allowbreak{}\astaccion{getSentenceNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{Sentencia}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{sentenceNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \astaccion{\{sentenceNode} \astaccion{=} \astaccion{null\}} ret \ensuremath{\langle}SentenciaF2\ensuremath{\rangle} \astaccion{\{sentenceNode} \astaccion{=} \astaccion{SentenciaF2}\astaccion{.}\allowbreak{}\astaccion{getSentenceNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{Sentencia}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{sentenceNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}SentenciaF1\ensuremath{\rangle} ::= \astaccion{\{} \astaccion{sentenceNode} \astaccion{=} \astaccion{null} \astaccion{\}} else \ensuremath{\langle}Sentencia\ensuremath{\rangle} \astaccion{\{} \astaccion{sentenceNode} \astaccion{=} \astaccion{Sentencia}\astaccion{.}\allowbreak{}\astaccion{getSentenceNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{SentenciaF1}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{sentenceNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\lambda} \astaccion{\{} \astaccion{sentenceNode} \astaccion{=} \astaccion{null} \astaccion{,}\allowbreak{} \astaccion{SentenciaF1}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{sentenceNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}SentenciaF2\ensuremath{\rangle} ::= \astaccion{\{} \astaccion{sentenceNode} \astaccion{=} \astaccion{new} \astaccion{ReturnNode}\astaccion{(}\allowbreak{}\astaccion{currentToken}\astaccion{,}\allowbreak{} \astaccion{null}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{SentenciaF2}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{sentenceNode}\astaccion{)}\allowbreak{}\astaccion{\}} ; \astaccion{\{SentenciaF2}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{sentenceNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \astaccion{\{} \astaccion{sentenceNode} \astaccion{=} \astaccion{new} \astaccion{ReturnNode}\astaccion{(}\allowbreak{}\astaccion{currentToken}\astaccion{,}\allowbreak{} \astaccion{null}\astaccion{)}\allowbreak{}\astaccion{\}} \ensuremath{\langle}Expresión\ensuremath{\rangle} \astaccion{\{} \astaccion{sentenceNode}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{Expresion}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{SentenciaF2}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{sentenceNode}\astaccion{)}\allowbreak{}\astaccion{\}} ; \astaccion{\{SentenciaF2}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{sentenceNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Bloque\ensuremath{\rangle} ::= \astaccion{\{sentenceNodes} \astaccion{=} \astaccion{new} \astaccion{List}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{SentenciaK}\astaccion{.}\allowbreak{}\astaccion{setSentenceNodes}\astaccion{(}\allowbreak{}\astaccion{sentenceNodes}\astaccion{)}\allowbreak{}\astaccion{\}} \{ \ensuremath{\langle}SentenciaK\ensuremath{\rangle} \} \astaccion{\{Bloque}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{new} \astaccion{BlockNode}\astaccion{(}\allowbreak{}\astaccion{SentenciaK}\astaccion{.}\allowbreak{}\astaccion{getSentenceNodes}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{TS}\astaccion{.}\allowbreak{}\astaccion{getCurrentClass}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{TS}\astaccion{.}\allowbreak{}\astaccion{getCurrentMethod}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{false}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Asignación\ensuremath{\rangle} ::= \ensuremath{\langle}AccesoVar-{}Simple\ensuremath{\rangle} = \ensuremath{\langle}Expresión\ensuremath{\rangle} \astaccion{\{Asignacion}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{new} \astaccion{AssignmentNode}\astaccion{(}\allowbreak{}\astaccion{AccesoVarSimple}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{Expresion}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}AccesoSelf-{}Simple\ensuremath{\rangle} = \ensuremath{\langle}Expresión\ensuremath{\rangle} \astaccion{\{Asignacion}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{new} \astaccion{AssignmentNode}\astaccion{(}\allowbreak{}\astaccion{AccesoSelfSimple}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{Expresion}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}AccesoVar-{}Simple\ensuremath{\rangle} ::= id \ensuremath{\langle}AccesoVar-{}SimpleF\ensuremath{\rangle} \astaccion{\{AccesoVarSimple}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{AccesoVarSimpleF}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}AccesoVar-{}SimpleF\ensuremath{\rangle} ::= \astaccion{\{expressionNode} \astaccion{=} \astaccion{new} \astaccion{SimpleVariableNode}\astaccion{(}\allowbreak{}\astaccion{AccesoVarSimpleF}\astaccion{.}\allowbreak{}\astaccion{token}\astaccion{,}\allowbreak{} \astaccion{currentVariable} \astaccion{!=} \astaccion{null} \astaccion{?} \astaccion{currentVariable}\astaccion{.}\allowbreak{}\astaccion{getType}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{:} \astaccion{currentParameter}\astaccion{.}\allowbreak{}\astaccion{getType}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{null}\astaccion{)}\allowbreak{}\astaccion{\}} \ensuremath{\langle}Encadenado-{}SimpleK\ensuremath{\rangle} \astaccion{\{} \astaccion{expressionNode}\astaccion{.}\allowbreak{}\astaccion{setSimpleChainedNode}\astaccion{(}\allowbreak{}\astaccion{EncadenadoSimpleK}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{AccesoVarSimpleF}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{expressionNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} [ \ensuremath{\langle}Expresión\ensuremath{\rangle} \astaccion{\{} \astaccion{expressionNode} \astaccion{=} \astaccion{new} \astaccion{SimpleArrayNode}\astaccion{(}\allowbreak{}\astaccion{AccesoVarSimpleF}\astaccion{.}\allowbreak{}\astaccion{token}\astaccion{,}\allowbreak{} \astaccion{Expresion}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{AccesoVarSimpleF}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{expressionNode}\astaccion{)}\allowbreak{}\astaccion{\}} ]}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}AccesoSelf-{}Simple\ensuremath{\rangle} ::= self \ensuremath{\langle}Encadenado-{}SimpleK\ensuremath{\rangle} \astaccion{\{AccesoSelfSimple}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{new} \astaccion{SimpleSelfNode}\astaccion{(}\allowbreak{}\astaccion{self}\astaccion{.}\allowbreak{}\astaccion{token}\astaccion{,}\allowbreak{} \astaccion{EncadenadoSimpleK}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Encadenado-{}SimpleK1\ensuremath{\rangle} ::= \ensuremath{\langle}Encadenado-{}Simple\ensuremath{\rangle} \astaccion{\{expressionNode} \astaccion{=} \astaccion{EncadenadoSimple}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\{}  \ensuremath{\langle}Encadenado-{}SimpleK2\ensuremath{\rangle} \astaccion{\{} \astaccion{expressionNode}\astaccion{.}\allowbreak{}\astaccion{setSimpleChainedNode}\astaccion{(}\allowbreak{}\astaccion{EncadenadoSimpleK2}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{EncadenadoSimpleK1}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{expressionNode}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\lambda} \astaccion{\{EncadenadoSimpleK1}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{null}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Encadenado-{}Simple\ensuremath{\rangle} ::= . id \astaccion{\{EncadenadoSimple}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{new} \astaccion{SimpleChainedNode}\astaccion{(}\allowbreak{}\astaccion{id}\astaccion{.}\allowbreak{}\astaccion{token}\astaccion{,}\allowbreak{} \astaccion{TS}\astaccion{.}\allowbreak{}\astaccion{getCurrentClass}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{TS}\astaccion{.}\allowbreak{}\astaccion{getCurrentMethod}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Sentencia-{}Simple\ensuremath{\rangle} ::= (\ensuremath{\langle}Expresión\ensuremath{\rangle} \astaccion{\{SentenciaSimple}\astaccion{.}\allowbreak{}\astaccion{setSentenceNode}\astaccion{(}\allowbreak{}\astaccion{new} \astaccion{SimpleSentenceNode}\astaccion{(}\allowbreak{}\astaccion{Expresion}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}} )}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Expresión\ensuremath{\rangle} ::= \ensuremath{\langle}ExpOr\ensuremath{\rangle} \astaccion{\{Expresion}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{ExpOr}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}ExpOr\ensuremath{\rangle} ::= \ensuremath{\langle}ExpAnd\ensuremath{\rangle} \astaccion{\{expresionNode} \astaccion{=} \astaccion{ExpAnd}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{}\astaccion{ExpOrR}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{expressionNode}\astaccion{)}\allowbreak{}\astaccion{\}} \ensuremath{\langle}ExpOrR\ensuremath{\rangle} \astaccion{\{binaryExpressionNode} \astaccion{=} \astaccion{ExpOrR}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExpOr}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{binaryExpressionNode} \astaccion{==} \astaccion{null} \astaccion{?} \astaccion{expressionNode} \astaccion{:} \astaccion{binaryExpressionNode}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}ExpOrR1\ensuremath{\rangle} ::= \textbar{}\textbar{} \ensuremath{\langle}ExpAnd\ensuremath{\rangle} \astaccion{\{expressionNodeR} \astaccion{=} \astaccion{ExpAnd}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{binaryExpressionNode} \astaccion{=} \astaccion{new} \astaccion{BinaryExpresionNode}\astaccion{(}\allowbreak{}\astaccion{orToken}\astaccion{,}\allowbreak{} \astaccion{ExpOrR1}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{expressionNodeR}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExpOrR2}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{binaryExpressionNode}\astaccion{)}\allowbreak{}\astaccion{\}} \ensuremath{\langle}ExpOrR2\ensuremath{\rangle} \astaccion{\{ExpOrR1}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{ExpOrR2}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{!=} \astaccion{null} \astaccion{?} \astaccion{ExpOrR2}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode} \astaccion{:} \astaccion{binaryExpressionNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\lambda} \astaccion{\{ExpOrR1}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{null}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}ExpAnd\ensuremath{\rangle} ::= \ensuremath{\langle}ExpIgual\ensuremath{\rangle} \astaccion{\{expressionNode} \astaccion{=} \astaccion{ExpIgual}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExpAndR}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{expressionNode}\astaccion{)}\allowbreak{}\astaccion{\}} \ensuremath{\langle}ExpAndR\ensuremath{\rangle} \astaccion{\{binaryExpressionNode} \astaccion{=} \astaccion{ExpAndR}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExpAnd}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{binaryExpressionNode} \astaccion{==} \astaccion{null} \astaccion{?} \astaccion{expressionNode} \astaccion{:} \astaccion{binaryExpressionNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}ExpAndR1\ensuremath{\rangle} ::= \&\& \ensuremath{\langle}ExpIgual\ensuremath{\rangle} \astaccion{\{expressionNodeR} \astaccion{=} \astaccion{ExpIgual}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{binaryExpressionNode} \astaccion{=} \astaccion{new} \astaccion{BinaryExpressionNode}\astaccion{(}\allowbreak{}\astaccion{andToken}\astaccion{,}\allowbreak{} \astaccion{ExpAndR1}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{expressionNodeR}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExpAndR2}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{binaryExpressionNode}\astaccion{)}\allowbreak{}\astaccion{\}} \ensuremath{\langle}ExpAndR2\ensuremath{\rangle} \astaccion{\{ExpAndR1}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{ExpAndR2}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{!=} \astaccion{null} \astaccion{?} \astaccion{ExpAndR2}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode} \astaccion{:} \astaccion{binaryExpressionNode}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\lambda} \astaccion{\{ExpAndR1}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{null}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}ExpIgual\ensuremath{\rangle} ::= \ensuremath{\langle}ExpCompuesta\ensuremath{\rangle} \astaccion{\{expressionNode} \astaccion{=} \astaccion{ExpCompuesta}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExpIgualR}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{expressionNode}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}} \ensuremath{\langle}ExpIgualR\ensuremath{\rangle} \astaccion{\{ExpIgual}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{ExpIgualR}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode} \astaccion{!=} \astaccion{null} \astaccion{?} \astaccion{ExpIgualR}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode} \astaccion{:} \astaccion{expressionNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}ExpIgualR1\ensuremath{\rangle} ::= \ensuremath{\langle}OpIgual\ensuremath{\rangle} \ensuremath{\langle}ExpCompuesta\ensuremath{\rangle} \astaccion{\{expressionNodeR} \astaccion{=} \astaccion{ExpCompuesta}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{binaryExpressionNode} \astaccion{=} \astaccion{new} \astaccion{BinaryExpressionNode}\astaccion{(}\allowbreak{}\astaccion{OpIgual}\astaccion{.}\allowbreak{}\astaccion{getToken}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExpIgualR1}\astaccion{.}\allowbreak{}\astaccion{getExpressioNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{expressionNodeR}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExpIgualR2}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{binaryExpressionNode} \astaccion{)}\allowbreak{}\astaccion{\}} \ensuremath{\langle}ExpIgualR2\ensuremath{\rangle} \astaccion{\{ExpIgualR1}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{ExpIgualR2}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{!=} \astaccion{null} \astaccion{?} \astaccion{ExpIgualR2}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{:} \astaccion{binaryExpressionNode}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\lambda} \astaccion{\{ExpIgualR1}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{null}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}ExpCompuesta\ensuremath{\rangle} ::= \ensuremath{\langle}ExpAd\ensuremath{\rangle} \astaccion{\{expressionNode} \astaccion{=} \astaccion{ExpAd}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExpCompuestaF}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{expressionNode}\astaccion{)}\allowbreak{}\astaccion{\}} \ensuremath{\langle}ExpCompuestaF\ensuremath{\rangle} \astaccion{\{ExpCompuesta}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{ExpCompuestaF}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{!=} \astaccion{null} \astaccion{?} \astaccion{ExpCompuestaF}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{:} \astaccion{expressionNode}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}ExpCompuestaF\ensuremath{\rangle} ::= \ensuremath{\langle}OpCompuesto\ensuremath{\rangle} \ensuremath{\langle}ExpAd\ensuremath{\rangle} \astaccion{\{expressionNodeR} \astaccion{=} \astaccion{ExpAd}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExpCompuesta}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{new} \astaccion{BinaryExpressionNode}\astaccion{(}\allowbreak{}\astaccion{OpCompuesto}\astaccion{.}\allowbreak{}\astaccion{getToken}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExpCompuestaF}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{expressionNodeR}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\lambda} \astaccion{\{\ensuremath{\langle}ExpCompuestaF\ensuremath{\rangle}}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{null}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}ExpAd\ensuremath{\rangle} ::= \ensuremath{\langle}ExpMul\ensuremath{\rangle} \astaccion{\{expressionNode} \astaccion{=} \astaccion{ExpMul}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExpAdR}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{expressionNode}\astaccion{)}\allowbreak{}\astaccion{\}} \ensuremath{\langle}ExpAdR\ensuremath{\rangle} \astaccion{\{ExpAd}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{ExpAdR}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{!=} \astaccion{null} \astaccion{=} \astaccion{ExpAdR}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{:} \astaccion{expressionNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}ExpAdR1\ensuremath{\rangle} ::= \ensuremath{\langle}OpAd\ensuremath{\rangle} \ensuremath{\langle}ExpMul\ensuremath{\rangle} \astaccion{\{expressionNodeR} \astaccion{=} \astaccion{ExpMul}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{binaryExpressionNode} \astaccion{=} \astaccion{new} \astaccion{BinaryExpressionNode}\astaccion{(}\allowbreak{}\astaccion{OpAd}\astaccion{.}\allowbreak{}\astaccion{getToken}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExAdR1}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{expressionNodeR}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExpAdR2}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{binaryExpressionNode}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}} \ensuremath{\langle}ExpAdR2\ensuremath{\rangle} \astaccion{\{ExpAdR1}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{ExpAdR2}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{!=} \astaccion{null} \astaccion{?} \astaccion{ExpAdR2}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{:} \astaccion{binaryExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\lambda} \astaccion{\{ExpAdR1}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{null}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}ExpMul\ensuremath{\rangle} ::= \ensuremath{\langle}ExpUn\ensuremath{\rangle} \astaccion{\{expressionNode} \astaccion{=} \astaccion{ExpUn}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExpMulR}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{expressionNode}\astaccion{)}\allowbreak{} \astaccion{\}} \ensuremath{\langle}ExpMulR\ensuremath{\rangle} \astaccion{\{ExpMul}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{ExpMulR}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{!=} \astaccion{null} \astaccion{?} \astaccion{ExpMulR}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{:} \astaccion{expressionNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}ExpMulR1\ensuremath{\rangle} ::= \ensuremath{\langle}OpMul\ensuremath{\rangle} \ensuremath{\langle}ExpUn\ensuremath{\rangle} \astaccion{\{expressionNodeR} \astaccion{=} \astaccion{ExpUn}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{binaryExpressionNode} \astaccion{=} \astaccion{new} \astaccion{BinaryExpressionNode}\astaccion{(}\allowbreak{}\astaccion{OpMul}\astaccion{.}\allowbreak{}\astaccion{getToken}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExpMulR1}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{expressionNodeR}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExpMulR2}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{binaryExpressionNode}\astaccion{)}\allowbreak{}\astaccion{\}} \ensuremath{\langle}ExpMulR2\ensuremath{\rangle} \astaccion{\{} \astaccion{ExpMulR1}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{ExpMulR2}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{!=} \astaccion{null} \astaccion{?} \astaccion{ExpMulR2}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{:} \astaccion{binaryExpressionNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\lambda} \astaccion{\{ExpMulR1}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{null}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}ExpUn\ensuremath{\rangle} ::= \ensuremath{\langle}OpUnario\ensuremath{\rangle} \ensuremath{\langle}ExpUn\ensuremath{\rangle} \astaccion{\{ExpUn}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{new} \astaccion{UnaryExpressionNode}\astaccion{(}\allowbreak{}\astaccion{ExpUn}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{OpUnario}\astaccion{.}\allowbreak{}\astaccion{getToken}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Operando\ensuremath{\rangle} \astaccion{\{ExpUn}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{Operando}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}OpIgual\ensuremath{\rangle} ::= ==}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} !=}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}OpCompuesto\ensuremath{\rangle} ::= \textless{}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \textgreater{}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \textless{}=}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \textgreater{}=}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}OpAd\ensuremath{\rangle} ::= +}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} -{}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}OpUnario\ensuremath{\rangle} ::= +}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} -{}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} !}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} ++}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} -{}-{}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}OpMul\ensuremath{\rangle} ::= *}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} /}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Operando\ensuremath{\rangle} ::= \ensuremath{\langle}Literal\ensuremath{\rangle} \astaccion{\{} \astaccion{Operando}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{Literal}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Primario\ensuremath{\rangle} \astaccion{\{} \astaccion{Operando}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{Primario}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Literal\ensuremath{\rangle} ::= nil \astaccion{\{} \astaccion{Literal}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{new} \astaccion{LiteralNode}\astaccion{(}\allowbreak{}\astaccion{nilToken}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} true \astaccion{\{Literal}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{new} \astaccion{LiteralNode}\astaccion{(}\allowbreak{}\astaccion{trueToken}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} false \astaccion{\{Literal}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{new} \astaccion{LiteralNode}\astaccion{(}\allowbreak{}\astaccion{falseToken}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} intLiteral \astaccion{\{Literal}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{new} \astaccion{LiteralNode}\astaccion{(}\allowbreak{}\astaccion{intLiteralToken}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} StrLiteral \astaccion{\{Literal}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{new} \astaccion{LiteralNode}\astaccion{(}\allowbreak{}\astaccion{StrLiteralToken}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Primario\ensuremath{\rangle} ::= \ensuremath{\langle}ExpresionParentizada\ensuremath{\rangle} \astaccion{\{Primario}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{ExpresionParentizada}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}AccesoSelf\ensuremath{\rangle} \astaccion{\{Primario}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{AccesoSelf}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Llamada-{}Método-{}Estático\ensuremath{\rangle} \astaccion{\{Primario}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{LlamadaMetodoEstatico}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Llamada-{}Conclassor\ensuremath{\rangle} \astaccion{\{Primario}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{LlamadaConclassor}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} id \ensuremath{\langle}VarOMetodo\ensuremath{\rangle} \astaccion{\{Primario}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{VarOMetodo}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}VarOMetodo\ensuremath{\rangle} ::= \ensuremath{\langle}AccesoVar\ensuremath{\rangle} \astaccion{\{VarOMetodo}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{AccesoVar}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Llamada-{}Método\ensuremath{\rangle} \astaccion{\{VarOMetodo}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{LlamadaMetodo}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}ExpresionParentizada\ensuremath{\rangle} ::= ( \ensuremath{\langle}Expresión\ensuremath{\rangle} ) \ensuremath{\langle}ExpresionParentizadaF\ensuremath{\rangle} \astaccion{\{ExpresionParentizada}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{Expresion}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ExpresionParentizadaF}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}ExpresionParentizadaF\ensuremath{\rangle} ::= \ensuremath{\lambda} \astaccion{\{ExpresionParentizadaF}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{null}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Encadenado\ensuremath{\rangle} \astaccion{\{ExpressionParentizadaF}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{Encadenado}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}AccesoSelf\ensuremath{\rangle} ::= self \ensuremath{\langle}AccesoSelfF\ensuremath{\rangle} \astaccion{\{AccesoSelf}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{new} \astaccion{SelfNode}\astaccion{(}\allowbreak{}\astaccion{selfToken}\astaccion{,}\allowbreak{} \astaccion{AccesoSelfF}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}AccesoSelfF\ensuremath{\rangle} ::= \ensuremath{\lambda} \astaccion{\{AccesoSelfF}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{null}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Encadenado\ensuremath{\rangle} \astaccion{\{AccesoSelfF}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{Encadenado}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}AccesoVar\ensuremath{\rangle} ::= \ensuremath{\lambda} \astaccion{\{AccesoVar}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{null}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Encadenado\ensuremath{\rangle} \astaccion{\{chainedNode} \astaccion{=} \astaccion{new} \astaccion{VariableNode}\astaccion{(}\allowbreak{}\astaccion{AccesoVar}\astaccion{.}\allowbreak{}\astaccion{getToken}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{null}\astaccion{,}\allowbreak{} \astaccion{TS}\astaccion{.}\allowbreak{}\astaccion{getCurrentClass}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{TS}\astaccion{.}\allowbreak{}\astaccion{getCurrentMethod}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{chainedNode}\astaccion{.}\allowbreak{}\astaccion{setChainedNode}\astaccion{(}\allowbreak{}\astaccion{Encadenado}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{AccesoVar}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{chainedNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} [ \ensuremath{\langle}Expresión\ensuremath{\rangle} \astaccion{\{chainedNode} \astaccion{=} \astaccion{new} \astaccion{ArrayNode}\astaccion{(}\allowbreak{}\astaccion{AccesoVar}\astaccion{.}\allowbreak{}\astaccion{getToken}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{null}\astaccion{,}\allowbreak{} \astaccion{TS}\astaccion{.}\allowbreak{}\astaccion{getCurrentClass}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{TS}\astaccion{.}\allowbreak{}\astaccion{getCurrentMethod}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}} ] \ensuremath{\langle}AccesoVarF\ensuremath{\rangle} \astaccion{\{chainedNode}\astaccion{.}\allowbreak{}\astaccion{setChainedNode}\astaccion{(}\allowbreak{}\astaccion{AccesoVarF}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{AccesoVar}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{chainedNode}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}AccesoVarF\ensuremath{\rangle} ::= \ensuremath{\lambda} \astaccion{\{AccesoVarF}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{null}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Encadenado\ensuremath{\rangle} \astaccion{\{AccesoVarF}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{Encadenado}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Llamada-{}Método\ensuremath{\rangle} ::= \ensuremath{\langle}Argumentos-{}Actuales\ensuremath{\rangle} \astaccion{\{expressionNodes} \astaccion{=} \astaccion{ArgumentosActuales}\astaccion{.}\allowbreak{}\astaccion{getExpressionNodes}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}} \ensuremath{\langle}Llamada-{}MétodoF\ensuremath{\rangle} \astaccion{\{chainedNode} \astaccion{=} \astaccion{LlamadaMetodoF}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{LlamadaMetodo}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{new} \astaccion{ChainedCallNode}\astaccion{(}\allowbreak{}\astaccion{LlamadaMetodo}\astaccion{.}\allowbreak{}\astaccion{getToken}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{chainedNode}\astaccion{,}\allowbreak{} \astaccion{expressionNodes}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Llamada-{}MétodoF\ensuremath{\rangle} ::= \ensuremath{\lambda} \astaccion{\{LlamadaMetodoF}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{null}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Encadenado\ensuremath{\rangle} \astaccion{\{LlamadaMetodoF}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{Encadenado}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Llamada-{}Método-{}Estático\ensuremath{\rangle} ::= idclass . id \ensuremath{\langle}Llamada-{}Método\ensuremath{\rangle} \astaccion{\{} \astaccion{LlamadaMetodoEstatico}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{inew} \astaccion{ChainedCallNode}\astaccion{(}\allowbreak{}\astaccion{dClassToken}\astaccion{,}\allowbreak{} \astaccion{LlamadaMetodo}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{null}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{} \astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Llamada-{}Conclassor\ensuremath{\rangle} ::= new \ensuremath{\langle}Llamada-{}ConclassorF1\ensuremath{\rangle} \astaccion{\{LlamadaConclassor}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{LlamadaConclassorF1}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Llamada-{}ConclassorF1\ensuremath{\rangle} ::= idclass \ensuremath{\langle}Argumentos-{}Actuales\ensuremath{\rangle} \astaccion{\{expressionNodes} \astaccion{=} \astaccion{ArgumentosActuales}\astaccion{.}\allowbreak{}\astaccion{getExpressionNodes}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}} \ensuremath{\langle}Llamada-{}ConclassorF2\ensuremath{\rangle} \astaccion{\{LlamadaConclassorF1}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{new} \astaccion{ClassConstructorNode}\astaccion{(}\allowbreak{}\astaccion{idClassToken}\astaccion{,}\allowbreak{} \astaccion{type}\astaccion{,}\allowbreak{} \astaccion{expressionNodes}\astaccion{,}\allowbreak{} \astaccion{LlamadaConclassorF2}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Tipo-{}Primitivo\ensuremath{\rangle} [ \ensuremath{\langle}Expresión\ensuremath{\rangle} ] \ensuremath{\langle}Llamada-{}ConclassorF2\ensuremath{\rangle} \astaccion{\{LlamadaConclassorF1}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{new} \astaccion{ArrayConstructorNode}\astaccion{(}\allowbreak{}\astaccion{idclassToken}\astaccion{,}\allowbreak{} \astaccion{type}\astaccion{,}\allowbreak{} \astaccion{LlamadaConclassorF2}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{Expresion}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Llamada-{}ConclassorF2\ensuremath{\rangle} ::= \ensuremath{\lambda} \astaccion{\{LlamadaConclassorF2}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{null}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}Encadenado\ensuremath{\rangle} \astaccion{\{LlamadaConclassorF2}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{Encadenado}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Argumentos-{}Actuales\ensuremath{\rangle} ::= ( \ensuremath{\langle}Argumentos-{}ActualesF\ensuremath{\rangle} \astaccion{\{ArgumentosActuales}\astaccion{.}\allowbreak{}\astaccion{setExpressionNodes}\astaccion{(}\allowbreak{}\astaccion{ArgumentosActualesF}\astaccion{.}\allowbreak{}\astaccion{getExpressionNodes}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Argumentos-{}ActualesF\ensuremath{\rangle} ::= ) \astaccion{\{ArgumentosActualesF}\astaccion{.}\allowbreak{}\astaccion{setExpressionNodes}\astaccion{(}\allowbreak{}\astaccion{null}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \astaccion{\{ListaExpresiones}\astaccion{.}\allowbreak{}\astaccion{setExpressionNodes}\astaccion{(}\allowbreak{}\astaccion{null}\astaccion{)}\allowbreak{} \ensuremath{\langle}Lista-{}Expresiones\ensuremath{\rangle} \astaccion{\{ArgumentosActualesF}\astaccion{.}\allowbreak{}\astaccion{setExpressionNodes}\astaccion{(}\allowbreak{}\astaccion{ListaExpresiones}\astaccion{.}\allowbreak{}\astaccion{getExpressionNodes}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}} )}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Lista-{}Expresiones\ensuremath{\rangle} ::= \ensuremath{\langle}Expresión\ensuremath{\rangle} \astaccion{\{ListaExpressiones}\astaccion{.}\allowbreak{}\astaccion{getExpressionNodes}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{.}\allowbreak{}\astaccion{add}\astaccion{(}\allowbreak{}\astaccion{Expresion}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{,}\allowbreak{} \astaccion{ListaExpresionesF}\astaccion{.}\allowbreak{}\astaccion{setExpressionNodes}\astaccion{(}\allowbreak{}\astaccion{ListaExpresiones}\astaccion{.}\allowbreak{}\astaccion{getExpressionNodes}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}} \ensuremath{\langle}Lista-{}ExpresionesF\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Lista-{}ExpresionesF\ensuremath{\rangle} ::= \ensuremath{\lambda} \astaccion{\{ListaExpresionesF}\astaccion{.}\allowbreak{}\astaccion{setExpressionNodes}\astaccion{(}\allowbreak{}\astaccion{null}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} , \astaccion{\{ListaExpresiones}\astaccion{.}\allowbreak{}\astaccion{setExpressionNodes}\astaccion{(}\allowbreak{}\astaccion{ListaExpresionesF}\astaccion{.}\allowbreak{}\astaccion{getExpressionNodes}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}} \ensuremath{\langle}Lista-{}Expresiones\ensuremath{\rangle}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}Encadenado\ensuremath{\rangle} ::= . id \ensuremath{\langle}EncadenadoF\ensuremath{\rangle} \astaccion{\{Encadenado}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{EncadenadoF}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\par\addvspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\ensuremath{\langle}EncadenadoF\ensuremath{\rangle} ::= \ensuremath{\langle}Llamada-{}Método\ensuremath{\rangle} \astaccion{\{EncadenadoF}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{LlamadaMetodo}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\noindent\begin{minipage}{\linewidth}
+\ttfamily\small\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\astlinea{\hspace*{1.6em}\textbar{} \ensuremath{\langle}AccesoVar\ensuremath{\rangle} \astaccion{\{EncadenadoF}\astaccion{.}\allowbreak{}\astaccion{setExpressionNode}\astaccion{(}\allowbreak{}\astaccion{AccesoVar}\astaccion{.}\allowbreak{}\astaccion{getExpressionNode}\astaccion{(}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{)}\allowbreak{}\astaccion{\}}}
+\end{minipage}\par
+\end{tcolorbox}
+\endgroup

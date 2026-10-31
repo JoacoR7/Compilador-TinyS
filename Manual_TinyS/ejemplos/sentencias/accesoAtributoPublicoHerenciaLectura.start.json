@@ -1,0 +1,37 @@
+{
+  "name": "start", "returnType": "void", "static": false,
+  "parameters": [],
+  "variables": [
+    {"name": "derivada", "type": "Derivada", "position": 0}
+  ],
+  "body": {
+    "nodeType": "BlockNode", "className": null, "methodName": "start", "method": true,
+    "sentences": [
+      {
+        "nodeType": "AssignmentNode",
+        "left": {
+          "nodeType": "SimpleVariableNode", "lexeme": "derivada", "row": 20, "column": 5,
+          "type": "Derivada", "chained": null
+        },
+        "right": {
+          "nodeType": "ClassConstructorNode", "lexeme": "Derivada", "row": 20,
+          "column": 20, "type": "Derivada",
+          "arguments": [],
+          "chained": null
+        }
+      },
+      {
+        "nodeType": "SimpleSentenceNode",
+        "expression": {
+          "nodeType": "VariableNode", "lexeme": "derivada", "row": 21, "column": 6,
+          "type": "Int", "className": "Derivada", "methodName": "start",
+          "chained": {
+            "nodeType": "ChainedCallNode", "lexeme": "leer", "row": 21, "column": 15,
+            "arguments": [],
+            "chained": null
+          }
+        }
+      }
+    ]
+  }
+}

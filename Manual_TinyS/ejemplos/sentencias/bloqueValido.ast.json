@@ -1,0 +1,414 @@
+{
+	"classes": [
+		{
+			"name": "A",
+			"parent": "Object",
+			"predefined": false,
+			"attributes": [],
+			"constructor": {
+				"name": ".",
+				"returnType": "A",
+				"static": false,
+				"parameters": [],
+				"variables": [],
+				"body": {
+					"nodeType": "BlockNode",
+					"className": "A",
+					"methodName": ".",
+					"method": true,
+					"sentences": []
+				}
+			},
+			"methods": [
+				{
+					"name": "doble",
+					"returnType": "Int",
+					"static": false,
+					"parameters": [
+						{
+							"name": "x",
+							"type": "Int",
+							"position": 0
+						}
+					],
+					"variables": [
+						{
+							"name": "resultado",
+							"type": "Int",
+							"position": 0
+						}
+					],
+					"body": {
+						"nodeType": "BlockNode",
+						"className": "A",
+						"methodName": "doble",
+						"method": true,
+						"sentences": [
+							{
+								"nodeType": "AssignmentNode",
+								"left": {
+									"nodeType": "SimpleVariableNode",
+									"lexeme": "resultado",
+									"row": 6,
+									"column": 9,
+									"type": "Int",
+									"chained": null
+								},
+								"right": {
+									"nodeType": "BinaryExpressionNode",
+									"lexeme": "*",
+									"row": 6,
+									"column": 23,
+									"type": "Int",
+									"operator": "*",
+									"left": {
+										"nodeType": "VariableNode",
+										"lexeme": "x",
+										"row": 6,
+										"column": 21,
+										"type": "Int",
+										"className": "A",
+										"methodName": "doble",
+										"chained": null
+									},
+									"right": {
+										"nodeType": "LiteralNode",
+										"lexeme": "2",
+										"row": 6,
+										"column": 25,
+										"type": "Int",
+										"tokenType": "INT_CONSTANT"
+									}
+								}
+							},
+							{
+								"nodeType": "ReturnNode",
+								"lexeme": "ret",
+								"row": 7,
+								"column": 9,
+								"expression": {
+									"nodeType": "VariableNode",
+									"lexeme": "resultado",
+									"row": 7,
+									"column": 13,
+									"type": "Int",
+									"className": "A",
+									"methodName": "doble",
+									"chained": null
+								}
+							}
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Object",
+			"parent": null,
+			"predefined": true,
+			"attributes": [],
+			"constructor": null,
+			"methods": []
+		},
+		{
+			"name": "IO",
+			"parent": "Object",
+			"predefined": true,
+			"attributes": [],
+			"constructor": null,
+			"methods": [
+				{
+					"name": "out_str",
+					"returnType": "void",
+					"static": true,
+					"parameters": [
+						{
+							"name": "s",
+							"type": "Str",
+							"position": 0
+						}
+					],
+					"variables": [],
+					"body": null
+				},
+				{
+					"name": "out_int",
+					"returnType": "void",
+					"static": true,
+					"parameters": [
+						{
+							"name": "i",
+							"type": "Int",
+							"position": 0
+						}
+					],
+					"variables": [],
+					"body": null
+				},
+				{
+					"name": "out_bool",
+					"returnType": "void",
+					"static": true,
+					"parameters": [
+						{
+							"name": "b",
+							"type": "Bool",
+							"position": 0
+						}
+					],
+					"variables": [],
+					"body": null
+				},
+				{
+					"name": "out_array_int",
+					"returnType": "void",
+					"static": true,
+					"parameters": [
+						{
+							"name": "a",
+							"type": "Array Int",
+							"position": 0
+						}
+					],
+					"variables": [],
+					"body": null
+				},
+				{
+					"name": "out_array_str",
+					"returnType": "void",
+					"static": true,
+					"parameters": [
+						{
+							"name": "a",
+							"type": "Array Str",
+							"position": 0
+						}
+					],
+					"variables": [],
+					"body": null
+				},
+				{
+					"name": "out_array_bool",
+					"returnType": "void",
+					"static": true,
+					"parameters": [
+						{
+							"name": "a",
+							"type": "Array Bool",
+							"position": 0
+						}
+					],
+					"variables": [],
+					"body": null
+				},
+				{
+					"name": "in_str",
+					"returnType": "Str",
+					"static": true,
+					"parameters": [],
+					"variables": [],
+					"body": null
+				},
+				{
+					"name": "in_int",
+					"returnType": "Int",
+					"static": true,
+					"parameters": [],
+					"variables": [],
+					"body": null
+				},
+				{
+					"name": "in_bool",
+					"returnType": "Bool",
+					"static": true,
+					"parameters": [],
+					"variables": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "Int",
+			"parent": "Object",
+			"predefined": true,
+			"attributes": [],
+			"constructor": null,
+			"methods": []
+		},
+		{
+			"name": "Str",
+			"parent": "Object",
+			"predefined": true,
+			"attributes": [],
+			"constructor": null,
+			"methods": [
+				{
+					"name": "length",
+					"returnType": "Int",
+					"static": false,
+					"parameters": [],
+					"variables": [],
+					"body": null
+				},
+				{
+					"name": "concat",
+					"returnType": "Str",
+					"static": false,
+					"parameters": [
+						{
+							"name": "s",
+							"type": "Str",
+							"position": 0
+						}
+					],
+					"variables": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "Bool",
+			"parent": "Object",
+			"predefined": true,
+			"attributes": [],
+			"constructor": null,
+			"methods": []
+		},
+		{
+			"name": "Array",
+			"parent": "Object",
+			"predefined": true,
+			"attributes": [],
+			"constructor": null,
+			"methods": [
+				{
+					"name": "length",
+					"returnType": "Int",
+					"static": false,
+					"parameters": [],
+					"variables": [],
+					"body": null
+				},
+				{
+					"name": "hasNext",
+					"returnType": "Bool",
+					"static": false,
+					"parameters": [],
+					"variables": [],
+					"body": null
+				},
+				{
+					"name": "next_int",
+					"returnType": "Int",
+					"static": false,
+					"parameters": [],
+					"variables": [],
+					"body": null
+				},
+				{
+					"name": "next_bool",
+					"returnType": "Bool",
+					"static": false,
+					"parameters": [],
+					"variables": [],
+					"body": null
+				},
+				{
+					"name": "next_str",
+					"returnType": "Str",
+					"static": false,
+					"parameters": [],
+					"variables": [],
+					"body": null
+				}
+			]
+		}
+	],
+	"startMethod": {
+		"name": "start",
+		"returnType": "void",
+		"static": false,
+		"parameters": [],
+		"variables": [
+			{
+				"name": "a",
+				"type": "A",
+				"position": 0
+			}
+		],
+		"body": {
+			"nodeType": "BlockNode",
+			"className": null,
+			"methodName": "start",
+			"method": true,
+			"sentences": [
+				{
+					"nodeType": "AssignmentNode",
+					"left": {
+						"nodeType": "SimpleVariableNode",
+						"lexeme": "a",
+						"row": 12,
+						"column": 5,
+						"type": "A",
+						"chained": null
+					},
+					"right": {
+						"nodeType": "ClassConstructorNode",
+						"lexeme": "A",
+						"row": 12,
+						"column": 13,
+						"type": "A",
+						"arguments": [],
+						"chained": null
+					}
+				},
+				{
+					"nodeType": "SimpleSentenceNode",
+					"expression": {
+						"nodeType": "ChainedCallNode",
+						"lexeme": "IO",
+						"row": 13,
+						"column": 6,
+						"type": "void",
+						"arguments": [],
+						"chained": {
+							"nodeType": "ChainedCallNode",
+							"lexeme": "out_int",
+							"row": 13,
+							"column": 9,
+							"arguments": [
+								{
+									"nodeType": "VariableNode",
+									"lexeme": "a",
+									"row": 13,
+									"column": 17,
+									"type": "Int",
+									"className": "A",
+									"methodName": "start",
+									"chained": {
+										"nodeType": "ChainedCallNode",
+										"lexeme": "doble",
+										"row": 13,
+										"column": 19,
+										"arguments": [
+											{
+												"nodeType": "LiteralNode",
+												"lexeme": "5",
+												"row": 13,
+												"column": 25,
+												"type": "Int",
+												"tokenType": "INT_CONSTANT"
+											}
+										],
+										"chained": null
+									}
+								}
+							],
+							"chained": null
+						}
+					}
+				}
+			]
+		}
+	}
+}

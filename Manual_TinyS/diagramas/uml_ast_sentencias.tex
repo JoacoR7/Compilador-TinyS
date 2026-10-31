@@ -1,0 +1,106 @@
+% Diagramas vectoriales: las flechas con triangulo apuntan a la superclase.
+\begin{figure}[H]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  box/.style={draw,rectangle,align=center,font=\footnotesize\ttfamily,text width=5.2cm,inner sep=6pt},
+  inh/.style={-{Triangle[open,length=6pt,width=7pt]}},
+  dep/.style={dashed,-{Stealth[length=5pt]}}]
+\node[box] (ast) at (-3,0) {\textbf{AST}\\\rule{4.4cm}{0.3pt}\\
+blockNodes:\\LinkedList<BlockNode>\\startBlockNode: BlockNode\\symbolTable (static):\\SymbolTable\\\rule{4.4cm}{0.3pt}\\
+consolidate()\\toJson(indent): String};
+\node[box] (node) at (3,0) {\textit{Node}\\\rule{4.4cm}{0.3pt}\\
+accept(visitor): T\\toJson(indent): String};
+\node[box,below=1.1cm of ast] (block) {\textbf{BlockNode}\\\rule{4.4cm}{0.3pt}\\
+sentences:\\LinkedList<SentenceNode>\\className: String\\methodName: String\\isMethod: boolean};
+\node[box,right=0.8cm of block] (sentence) {\textit{SentenceNode}\\\rule{4.4cm}{0.3pt}\\
+hasReturn: boolean};
+\node[box,below=0.8cm of sentence] (expression) {\textit{ExpressionNode}\\\rule{4.4cm}{0.3pt}\\ type: Type};
+\node[box,below=0.9cm of block] (visitor) {\textit{Visitor<T>}\\\rule{4.4cm}{0.3pt}\\ visit(tipoDeNodo): T};
+\node[box,below=1cm of visitor,xshift=-3.1cm] (types) {\textbf{TypeVisitor}\\\rule{4.4cm}{0.3pt}\\ Visitor<Type>\\chequeo semántico};
+\node[box,below=1cm of visitor,xshift=3.1cm] (json) {\textbf{AstJsonVisitor}\\\rule{4.4cm}{0.3pt}\\ Visitor<Object>\\export(indent): String};
+\draw[inh] (sentence) -- (node);
+\draw[inh] (expression.east) -- ++(0.5,0) |- (node.east);
+\draw[inh] (block.east) -- (sentence.west);
+\draw[-{Diamond[open,length=8pt,width=6pt]}] (block.north) -- node[left,font=\small] { } (ast.south);
+\draw[dep] (node.west) -- ++(-0.3,0) |- (visitor.east);
+\draw[inh,dashed] (types.north) -- (visitor.south);
+\draw[inh,dashed] (json.north) -- (visitor.south);
+\end{tikzpicture}}
+\caption{AST, nodos base y visitantes.}
+\label{fig:ast-base}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\resizebox{0.95\linewidth}{!}{%
+\begin{tikzpicture}[
+  box/.style={draw,rectangle,align=center,font=\small,text width=5.8cm,inner sep=5pt},
+  inh/.style={-{Triangle[open,length=6pt,width=7pt]}}]
+\node[box,text width=3.5cm] (root) at (-3.8,-5.4) {\textit{SentenceNode}\\hasReturn: boolean};
+\node[box] (b) at (3.8,0) {\textbf{BlockNode}\\lista ordenada, contexto, isMethod};
+\node[box] (a) at (3.8,-1.8) {\textbf{AssignmentNode}\\acceso de destino, expresión de origen};
+\node[box] (s) at (3.8,-3.6) {\textbf{SimpleSentenceNode}\\expresión};
+\node[box] (i) at (3.8,-5.4) {\textbf{IfElseNode}\\token, condición, rama if, rama else};
+\node[box] (w) at (3.8,-7.2) {\textbf{WhileNode}\\token, condición, cuerpo};
+\node[box] (f) at (3.8,-9) {\textbf{ForNode}\\tipo, variable, iterable, cuerpo};
+\node[box] (r) at (3.8,-10.8) {\textbf{ReturnNode}\\token, expresión opcional};
+\draw (0,0) -- (0,-10.8);
+\draw[inh] (0,-5.4) -- (root.east);
+\foreach \n in {b,a,s,i,w,f,r} {\draw (\n.west) -- (0,0 |- \n.west);}
+\end{tikzpicture}}
+\caption{Jerarquía de sentencias y referencias que conserva cada nodo.}
+\label{fig:ast-sentencias}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  box/.style={draw,rectangle,align=center,font=\small,text width=4.8cm,inner sep=5pt},
+  inh/.style={-{Triangle[open,length=6pt,width=7pt]}}]
+\node[box,text width=3.7cm] (exp) at (-4.4,-2.5) {\textit{ExpressionNode}\\type: Type};
+\node[box] (bin) at (2,0) {BinaryExpressionNode};
+\node[box] (un) at (2,-1.25) {UnaryExpressionNode};
+\node[box] (par) at (2,-2.5) {Parenthesized\\ExpressionNode};
+\node[box] (con) at (2,-3.75) {\textit{ConclassorCallNode}};
+\node[box] (op) at (2,-5) {\textit{OperandNode}};
+\draw (-1.2,0) -- (-1.2,-5);
+\draw[inh] (-1.2,-2.5) -- (exp.east);
+\foreach \n in {bin,un,par,con,op} {\draw (\n.west) -- (-1.2,0 |- \n.west);}
+\node[box] (obj) at (8,-3.15) {ClassConstructorNode};
+\node[box] (arr) at (8,-4.4) {ArrayConstructorNode};
+\draw[inh] (obj.west) -- (con.east);
+\draw[inh] (arr.west) -- (con.east);
+\end{tikzpicture}}
+\caption{Expresiones, operadores y nodos de construcción de objetos y arreglos.}
+\label{fig:ast-expresiones}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  box/.style={draw,rectangle,align=center,font=\small,text width=4.6cm,inner sep=5pt},
+  inh/.style={-{Triangle[open,length=6pt,width=7pt]}}]
+\node[box,text width=3cm] (op) at (-5,-3) {\textit{OperandNode}};
+\node[box] (lit) at (0,0) {LiteralNode};
+\node[box] (self) at (0,-1.4) {SelfNode};
+\node[box] (simplechain) at (0,-2.8) {SimpleChainedNode};
+\node[box] (simple) at (0,-4.2) {\textit{SimpleAccessNode}};
+\node[box] (chain) at (0,-8.2) {\textit{ChainedNode}};
+\draw (-3,0) -- (-3,-8.2);
+\draw[inh] (-3,-3) -- (op.east);
+\foreach \n in {lit,self,simplechain,simple,chain} {\draw (\n.west) -- (-3,0 |- \n.west);}
+\node[box] (sv) at (6,-3.2) {SimpleVariableNode};
+\node[box] (ss) at (6,-4.6) {SimpleSelfNode};
+\node[box] (sa) at (6,-6) {SimpleArrayNode};
+\foreach \n in {sv,ss,sa} {\draw[inh] (\n.west) -- (simple.east);}
+\node[box] (v) at (6,-7.6) {VariableNode};
+\node[box] (ar) at (6,-9) {ArrayNode};
+\node[box] (call) at (6,-10.4) {ChainedCallNode};
+\foreach \n in {v,ar,call} {\draw[inh] (\n.west) -- (chain.east);}
+\end{tikzpicture}}
+\caption{Jerarquía de operandos, destinos de asignación y accesos encadenados.}
+\label{fig:ast-accesos}
+\end{figure}

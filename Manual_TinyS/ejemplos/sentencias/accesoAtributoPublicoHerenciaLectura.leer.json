@@ -1,0 +1,36 @@
+{
+  "name": "leer", "returnType": "Int", "static": false,
+  "parameters": [],
+  "variables": [
+    {"name": "copia", "type": "Int", "position": 0}
+  ],
+  "body": {
+    "nodeType": "BlockNode", "className": "Derivada", "methodName": "leer",
+    "method": true,
+    "sentences": [
+      {
+        "nodeType": "AssignmentNode",
+        "left": {
+          "nodeType": "SimpleVariableNode", "lexeme": "copia", "row": 14, "column": 9,
+          "type": "Int", "chained": null
+        },
+        "right": {
+          "nodeType": "SelfNode", "lexeme": "self", "row": 14, "column": 17,
+          "type": "Int",
+          "chained": {
+            "nodeType": "VariableNode", "lexeme": "valor", "row": 14, "column": 22,
+            "type": "Int", "className": "Derivada", "methodName": "leer",
+            "chained": null
+          }
+        }
+      },
+      {
+        "nodeType": "ReturnNode", "lexeme": "ret", "row": 15, "column": 9,
+        "expression": {
+          "nodeType": "VariableNode", "lexeme": "copia", "row": 15, "column": 13,
+          "type": "Int", "className": "Derivada", "methodName": "leer", "chained": null
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "doble", "returnType": "Int", "static": false,
+  "parameters": [{"name": "x", "type": "Int", "position": 0}],
+  "variables": [{"name": "resultado", "type": "Int", "position": 0}],
+  "body": {
+    "nodeType": "BlockNode", "className": "A", "methodName": "doble",
+    "method": true,
+    "sentences": [
+      {
+        "nodeType": "AssignmentNode",
+        "left": {
+          "nodeType": "SimpleVariableNode", "lexeme": "resultado", "row": 6,
+          "column": 9, "type": "Int", "chained": null
+        },
+        "right": {
+          "nodeType": "BinaryExpressionNode", "lexeme": "*", "row": 6,
+          "column": 23, "type": "Int", "operator": "*",
+          "left": {
+            "nodeType": "VariableNode", "lexeme": "x", "row": 6, "column": 21,
+            "type": "Int", "className": "A", "methodName": "doble",
+            "chained": null
+          },
+          "right": {
+            "nodeType": "LiteralNode", "lexeme": "2", "row": 6, "column": 25,
+            "type": "Int", "tokenType": "INT_CONSTANT"
+          }
+        }
+      },
+      {
+        "nodeType": "ReturnNode", "lexeme": "ret", "row": 7, "column": 9,
+        "expression": {
+          "nodeType": "VariableNode", "lexeme": "resultado", "row": 7,
+          "column": 13, "type": "Int", "className": "A", "methodName": "doble",
+          "chained": null
+        }
+      }
+    ]
+  }
+}
