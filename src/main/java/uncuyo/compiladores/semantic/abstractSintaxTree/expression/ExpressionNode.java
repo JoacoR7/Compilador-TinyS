@@ -1,11 +1,10 @@
 package uncuyo.compiladores.semantic.abstractSintaxTree.expression;
 
 import uncuyo.compiladores.semantic.abstractSintaxTree.Node;
-import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
 import uncuyo.compiladores.semantic.symbolTable.Type;
 
 /**
- * Base de las expresiones del AST con un tipo semántico mutable.
+ * Base de las expresiones del AST con un tipo semántico.
  * El tipo puede estar disponible desde la construcción o ser asignado
  * durante el chequeo; mientras no esté resuelto puede ser {@code null}.
  */

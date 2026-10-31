@@ -5,14 +5,14 @@ import uncuyo.compiladores.semantic.symbolTable.Type;
 
 /**
  * Base de las expresiones de construcción de objetos y arreglos.
- * Almacena el token de construcción, el tipo creado y un encadenado opcional.
+ * Almacena el token, el tipo creado y un encadenado opcional.
  */
 public abstract class ConclassorCallNode extends ExpressionNode{
     private Token token;
     private ChainedNode chainedNode;
 
     /**
-     * Crea el nodo para una expresión de construcción.
+     * Crea el nodo para una expresión de constructor.
      *
      * @param token el token que identifica el acceso o la sentencia y su ubicación
      * @param type el tipo de la instancia o arreglo que se crea
