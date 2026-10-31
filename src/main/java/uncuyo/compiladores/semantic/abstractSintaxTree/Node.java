@@ -5,8 +5,7 @@ import uncuyo.compiladores.semantic.JsonSerializable;
 /**
  * Base de los nodos del árbol sintáctico abstracto.
  * Permite aplicar operaciones mediante {@link Visitor} sin incorporarlas
- * a cada nodo. La exportación completa del programa utiliza
- * {@link AstJsonVisitor}, independientemente de los serializadores locales.
+ * a cada nodo.
  */
 public abstract class Node implements JsonSerializable {
 
@@ -21,9 +20,6 @@ public abstract class Node implements JsonSerializable {
 
     /**
      * Obtiene la representación JSON local definida por el nodo concreto.
-     * Algunas subclases todavía no implementan este serializador y devuelven
-     * una cadena vacía. Para exportar el programa completo se utiliza
-     * {@link AST#toJson(String)}.
      *
      * @param indent sangría inicial que se utiliza al construir el texto
      * @return texto producido por el serializador local del nodo
