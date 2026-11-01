@@ -11,7 +11,7 @@ import uncuyo.compiladores.semantic.symbolTable.SymbolTable;
 
 public class Pruebas {
     public static void main(String[] args) throws IOException, LexicalException, SyntacticException {
-        String inputPath = "testFiles\\codeGenFiles\\success\\prueba.s";
+        String inputPath = "tc\\tinyS\\success\\suma.s";
         Lexer lexer = new Lexer(inputPath);
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(lexer, lexer.getNextToken());
         semanticAnalyzer.program();
@@ -26,7 +26,7 @@ public class Pruebas {
         System.out.println(ast.toJson(""));
         System.out.println("###### CODIGO GENERADO ######");
 
-        String outputPath = "testFiles\\codeGenFiles\\pruebas\\prueba.asm";
+        String outputPath = "tc\\tinyS\\pruebas\\prueba.asm";
 
         ast.getCodeGenerator().writeOutput(outputPath);
     }

@@ -1,9 +1,5 @@
 package uncuyo.compiladores.codeGen;
 
-import uncuyo.compiladores.lexer.TokenType;
-import uncuyo.compiladores.semantic.symbolTable.*;
-import uncuyo.compiladores.semantic.symbolTable.Class;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -12,6 +8,13 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import uncuyo.compiladores.lexer.TokenType;
+import uncuyo.compiladores.semantic.symbolTable.Attribute;
+import uncuyo.compiladores.semantic.symbolTable.Class;
+import uncuyo.compiladores.semantic.symbolTable.Method;
+import uncuyo.compiladores.semantic.symbolTable.Parameter;
+import uncuyo.compiladores.semantic.symbolTable.Variable;
 
 public class CodeGenerator {
 

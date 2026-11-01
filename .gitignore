@@ -44,7 +44,7 @@ mips_book.pdf
 Mars4_5.jar
 abrir_entorno.cmd
 abrir_entorno.ps1
-testFiles/codeGenFiles/pruebas
+tc/tinyS/pruebas
 texput.log
 Manual_TinyS/**/*.aux
 Manual_TinyS/**/*.log

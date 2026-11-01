@@ -191,30 +191,22 @@ Los códigos numéricos son valores de byte decimales emitidos mediante
 \texttt{.ascii}. El indicador de fin de texto \texttt{.byte 0}
 se agrega una sola vez al final de cada cadena.
 
-\begin{comment}
-\section{Convención de llamadas y marcos de activación}
+\section{Convención de llamadas y Registro de activación}
 \label{sec:convencion-llamadas}
 
 Los prólogos y epílogos se generan a partir de la cantidad y posición de
-parámetros y variables locales de cada método. El marco de activación
-usa \texttt{\$fp} como referencia estable: allí se guarda la dirección
+parámetros y variables locales de cada método. El registro de activación
+usa \texttt{\$fp} como referencia dentro del registro: allí se guarda la dirección
 de retorno; los parámetros, el resultado, el \texttt{self} y el
 \texttt{\$fp} del llamador ocupan posiciones positivas, mientras que
 las variables locales ocupan posiciones negativas.
 
-\begin{center}
-\small
-\begin{tabular}{|l|l|}
-\hline
-\textbf{Dato} & \textbf{Desplazamiento desde \texttt{\$fp}} \\ \hline
-Dirección de retorno \texttt{\$ra} & \texttt{0} \\ \hline
-Parámetro de posición \texttt{i} & \texttt{4 * i} \\ \hline
-Resultado & \texttt{4 * (cantidad de parámetros + 1)} \\ \hline
-\texttt{\$fp} del llamador & \texttt{4 * (cantidad de parámetros + 2)} \\ \hline
-\texttt{self} & \texttt{4 * (cantidad de parámetros + 3)} \\ \hline
-Variable local de posición \texttt{i} & \texttt{-4 * i} \\ \hline
-\end{tabular}
-\end{center}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.4\linewidth]{img/registro_activacion.png}
+  \caption{Representación de un registro de activación.}
+  \label{fig:registro-activacion}
+\end{figure}
 
 Antes de una llamada, \lexcode{generateMethodPreCall()} reserva el área
 correspondiente y guarda el contexto, el \texttt{\$fp} del llamador y el
@@ -258,7 +250,7 @@ saltos. Una condición falsa dirige el flujo a la etiqueta que corresponde
 a la rama alternativa o a la salida del ciclo. Los cuerpos anidados
 generan sus propias etiquetas. El contador \lexcode{forDepth} del
 generador permite mantener el nivel de anidamiento de los recorridos.
-Las sentencias de retorno escriben el resultado en el marco actual y
+Las sentencias de retorno escriben el resultado en el registro actual y
 transfieren la ejecución al epílogo del método.
 
 \subsection{Entrada y salida}
@@ -267,7 +259,7 @@ Las operaciones de entrada y salida utilizan rutinas incluidas en
 booleanos; impresión de esos tipos y de arreglos; y operaciones de
 cadenas y arreglos como longitud, concatenación e iteración. Los
 argumentos y resultados de estas rutinas respetan la misma convención de
-marcos de activación que los métodos generados.
+registros de activación que los métodos generados.
 
 \section{Controles durante la ejecución}
 \label{sec:controles-runtime}
@@ -314,18 +306,6 @@ comentarios facilitan relacionar instrucciones con el nodo o la
 operación TinyS que las originó. Las etiquetas de control se construyen
 para distinguir los distintos puntos de salto generados.
 
-\subsection{Ejemplo de traducción de una expresión}
-Para la expresión \texttt{2 + 3}, la visita genera los literales,
-construye sus CIR, recupera sus valores y aplica la suma. De forma
-esquemática, el núcleo de la operación es:
-\begin{verbatim}
-lw   $a0, 4($a0)      # valor del operando derecho
-lw   $t0, 4($t0)      # valor del operando izquierdo
-add  $a0, $t0, $a0   # resultado
-\end{verbatim}
-El resultado de la operación queda en \texttt{\$a0}; al tratarse de una
-expresión primitiva, la generación que consume el resultado lo representa
-mediante el CIR correspondiente.
 
 \section{Errores de compilación}
 \label{sec:errores-generacion}
@@ -343,10 +323,10 @@ JSON y el archivo ensamblador con el nombre base del fuente.
 
 Las pruebas de generación están implementadas en
 \lexcode{CodeGenTest}. El conjunto recorre los programas de
-\lexcode{testFiles/codeGenFiles/success} y
-\lexcode{testFiles/codeGenFiles/error}; para cada fuente ejecuta el
+\lexcode{tc/tinyS/success} y
+\lexcode{tc/tinyS/error}; para cada fuente ejecuta el
 analizador y escribe el ensamblador en
-\lexcode{testFiles/codeGenFiles/mipsFiles}.
+\lexcode{tc/tinyS/mipsFiles}.
 
 \subsection{Casos que deben generarse}
 Los ejemplos de \texttt{success} cubren literales y expresiones,
@@ -365,4 +345,3 @@ el MIPS, por lo que estos casos no deben confundirse con fuentes que el
 compilador rechaza.
 
 \endgroup
-\end{comment}

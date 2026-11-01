@@ -22,8 +22,8 @@ public class CodeGenTest {
     }
 
     private void generateCases(String category) throws IOException {
-        Path sourceDirectory = Path.of("testFiles", "codeGenFiles", category);
-        Path outputDirectory = Path.of("testFiles", "codeGenFiles", "mipsFiles", category);
+        Path sourceDirectory = Path.of("tc", "tinyS", category);
+        Path outputDirectory = Path.of("tc", "tinyS", "mipsFiles", category);
         Files.createDirectories(outputDirectory);
 
         TestCaseRunner.run("CODEGEN", category, sourceDirectory, source -> {
