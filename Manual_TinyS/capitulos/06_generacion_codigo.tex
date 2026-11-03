@@ -217,6 +217,53 @@ contexto y retorna con \texttt{jr \$ra}. Los constructores retornan la
 referencia de \texttt{self}; \texttt{start} finaliza el proceso mediante
 el servicio de salida de MIPS.
 
+\section{Decisiones de diseño}
+\label{sec:decisiones-diseno}
+
+\subsection{Representación de nil}
+Se decidió representar \texttt{nil} con el valor \texttt{0}, que indica
+la ausencia de una referencia válida. Este valor se carga directamente
+en \texttt{\$a0}, sin reservar un CIR, y permite comprobar las
+referencias nulas comparándolas con cero.
+
+\subsection{Representación uniforme de literales mediante CIR}
+Los literales de \texttt{Int}, \texttt{Bool} y \texttt{Str} también se
+representan mediante un CIR, al igual que los demás valores de esos
+tipos. Así, todas las expresiones primitivas respetan una estructura
+uniforme: dejan en \texttt{\$a0} la dirección del CIR y almacenan el
+valor o la dirección del contenido en su segunda palabra. Esto permite
+usar las mismas convenciones en operaciones, asignaciones y llamadas,
+sin distinguir si el valor proviene de un literal o de otra expresión.
+
+\subsection{Iteradores para recorridos for}
+Para recorrer arreglos con \texttt{for}, el generador utiliza un objeto
+iterador que conserva la referencia al arreglo y la posición del elemento actual.
+En cada vuelta se consulta si queda un elemento y se obtiene el siguiente;
+el valor obtenido se asigna a la variable de control del ciclo. Esta
+representación mantiene separado el estado del recorrido del contenido del
+arreglo.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.34\linewidth]{img/object_iterator.png}
+  \caption{Información que conserva el iterador del arreglo.}
+  \label{fig:object-iterator}
+\end{figure}
+
+El registro de activación reserva espacio para la variable que representa
+el elemento actual y para el contexto del iterador. Se asigna un par de
+posiciones por nivel de anidamiento: \texttt{VarC} guarda el valor del
+elemento de la vuelta actual y \texttt{Iter} (el iterador que contiene el CIR del Array) conserva el estado necesario
+para avanzar en el arreglo. Así, un \texttt{for} interno puede recorrer
+otro arreglo sin perder el elemento ni la posición del ciclo externo.
+El generador usa \lexcode{forDepth} para distinguir esos niveles.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.34\linewidth]{img/registro_activacion_for.png}
+  \caption{Registro de activación extendido para recorridos \texttt{for} anidados.}
+  \label{fig:registro-activacion-for}
+\end{figure}
 \section{Estrategias de traducción}
 \label{sec:estrategias-generacion}
 
@@ -336,6 +383,8 @@ de instancia, herencia, condicionales, ciclos y retornos en ramas. Las
 salidas \texttt{.asm} permiten inspeccionar el código que produce cada
 caso.
 
+\input{tablas/15_casos_codegen_validos}
+
 \subsection{Casos con error en tiempo de ejecución}
 Los ejemplos de \texttt{error} también deben superar la compilación y
 generar ensamblador. Comprueban que se emitan las verificaciones para
@@ -343,5 +392,7 @@ división por cero, referencias nulas e índices negativos o fuera del
 rango. La clase de pruebas aclara que el error se produce al ejecutar
 el MIPS, por lo que estos casos no deben confundirse con fuentes que el
 compilador rechaza.
+
+\input{tablas/16_casos_codegen_error}
 
 \endgroup

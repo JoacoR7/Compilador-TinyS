@@ -1,0 +1,31 @@
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{5pt}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.40\textwidth}|>{\raggedright\arraybackslash}p{0.28\textwidth}|>{\raggedright\arraybackslash}p{\dimexpr0.32\textwidth-6\tabcolsep-4\arrayrulewidth\relax}|}
+\caption{Casos con error en tiempo de ejecución de generación de código}\label{tab:codegen-error}\\
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\ \hline
+\endfirsthead
+\hline
+\textbf{Archivo} & \textbf{Propósito} & \textbf{Resultado esperado} \\ \hline
+\endhead
+\texttt{atributoPublicoSobreNil\allowbreak .s} & Acceder a un atributo público mediante una referencia nula. & Generar código que detecte la referencia nula en ejecución. \\ \hline
+\texttt{atributoReferenciaNulo\allowbreak .s} & Acceder a un atributo de un objeto nulo. & Generar código que detecte la referencia nula en ejecución. \\ \hline
+\texttt{divisionPorCero\allowbreak .s} & Dividir un literal por cero. & Generar código que detecte la división por cero en ejecución. \\ \hline
+\texttt{divisionPorCeroEnMetodo\allowbreak .s} & Dividir por cero dentro de un método. & Generar código que detecte la división por cero en ejecución. \\ \hline
+\texttt{divisionPorExpresionCero\allowbreak .s} & Dividir por una expresión cuyo resultado es cero. & Generar código que detecte la división por cero en ejecución. \\ \hline
+\texttt{divisionPorVariableCero\allowbreak .s} & Dividir por una variable que contiene cero. & Generar código que detecte la división por cero en ejecución. \\ \hline
+\texttt{indiceFueraDeRango\allowbreak .s} & Acceder a un arreglo con un índice mayor que su límite. & Generar código que detecte el índice fuera de rango en ejecución. \\ \hline
+\texttt{indiceNegativo\allowbreak .s} & Acceder a un arreglo con un índice negativo. & Generar código que detecte el índice negativo en ejecución. \\ \hline
+\texttt{referenciaNula\allowbreak .s} & Invocar un método sobre una referencia nula. & Generar código que detecte la referencia nula en ejecución. \\ \hline
+\texttt{referenciaNulaArrayEscritura\allowbreak .s} & Escribir en un arreglo mediante una referencia nula. & Generar código que detecte la referencia nula en ejecución. \\ \hline
+\texttt{referenciaNulaArrayLectura\allowbreak .s} & Leer un elemento mediante una referencia nula a arreglo. & Generar código que detecte la referencia nula en ejecución. \\ \hline
+\texttt{referenciaNulaConParametro\allowbreak .s} & Pasar una referencia nula a un método y usarla. & Generar código que detecte la referencia nula en ejecución. \\ \hline
+\texttt{referenciaNulaConRetorno\allowbreak .s} & Usar el resultado nulo de una llamada a método. & Generar código que detecte la referencia nula en ejecución. \\ \hline
+\texttt{referenciaNulaEnConstructor\allowbreak .s} & Usar una referencia nula desde un constructor. & Generar código que detecte la referencia nula en ejecución. \\ \hline
+\texttt{referenciaNulaExplicita\allowbreak .s} & Desreferenciar el literal nil explícito. & Generar código que detecte la referencia nula en ejecución. \\ \hline
+\end{longtable}
+\endgroup
