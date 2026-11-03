@@ -2,6 +2,7 @@ package uncuyo.compiladores.codeGen;
 
 import java.util.List;
 
+import uncuyo.compiladores.exceptions.semantic.abstractSyntaxTreeException.VariableRedeclarationInForLoopException;
 import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.lexer.TokenType;
 import uncuyo.compiladores.semantic.abstractSintaxTree.AST;
@@ -192,6 +193,8 @@ public class CodeGenVisitor implements Visitor<Void> {
         // El valor del nodo derecho queda en $a0
         codeGenerator.emitComment("Obtengo el valor del nodo derecho");
         binaryExpressionNode.getRightNode().accept(this);
+
+        // Solo obtengo el valor del CIR si es de tipo primitivo
         if(primitiveClasses.contains(binaryExpressionNode.getRightNode().getType().getTokenType())) {
             codeGenerator.emitComment("Obtengo el valor del CIR");
             codeGenerator.emitText("lw $a0 4($a0)");
@@ -200,6 +203,7 @@ public class CodeGenVisitor implements Visitor<Void> {
         // Cargo el valor del nodo izquierdo en $t0 y recupero la pila
         codeGenerator.emitComment("Recupero el valor del nodo izquierdo");
         codeGenerator.pop();
+        // Solo obtengo el valor del CIR si es de tipo primitivo
         if(primitiveClasses.contains(binaryExpressionNode.getLeftNode().getType().getTokenType())) {
             codeGenerator.emitComment("Obtengo el valor del CIR");
             codeGenerator.emitText("lw $t0 4($t0)");
@@ -837,6 +841,14 @@ public class CodeGenVisitor implements Visitor<Void> {
         Class arrayClass = AST.getSymbolTable().getClasses().get("Array");
         // Obtengo el método actual
         Method currentMethod = AST.getSymbolTable().getCurrentMethod();
+        if (currentMethod.getVariables().containsKey(forNode.getVarNode1().getToken().getLexeme())) {
+            throw new VariableRedeclarationInForLoopException(
+                    forNode.getVarNode1().getToken().getRowIndex(),
+                    forNode.getVarNode1().getToken().getColumnIndex(),
+                    forNode.getVarNode1().getToken().getLexeme(),
+                    currentMethod.getName()
+            );
+        }
         // Obtengo el método hasNext de array
         Method hasNext = arrayClass.getMethods().get("hasNext");
         // Obtengo el metodo next correspondiente
@@ -859,7 +871,6 @@ public class CodeGenVisitor implements Visitor<Void> {
 
         int offsetVariable = offsetBase - (codeGenerator.getForDepth() * 8);
          */
-
 
         Variable currentVariable = new Variable(forNode.getVarNode1().getToken(), forNode.getVarNode1().getType());
         currentVariable.setPosition(currentMethod.getVariables().size() + codeGenerator.getForDepth());
