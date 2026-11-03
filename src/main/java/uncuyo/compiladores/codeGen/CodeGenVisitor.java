@@ -1,16 +1,44 @@
 package uncuyo.compiladores.codeGen;
 
-import org.w3c.dom.Attr;
+import java.util.List;
+
 import uncuyo.compiladores.lexer.Token;
 import uncuyo.compiladores.lexer.TokenType;
 import uncuyo.compiladores.semantic.abstractSintaxTree.AST;
 import uncuyo.compiladores.semantic.abstractSintaxTree.Visitor;
-import uncuyo.compiladores.semantic.abstractSintaxTree.expression.*;
-import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.*;
-import uncuyo.compiladores.semantic.symbolTable.*;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ArrayConstructorNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ArrayNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.BinaryExpressionNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ChainedCallNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ChainedNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ClassConstructorNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ConclassorCallNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ExpressionNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.LiteralNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.OperandNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.ParenthesizedExpressionNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SelfNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleAccessNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleArrayNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleChainedNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleSelfNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.SimpleVariableNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.UnaryExpressionNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.expression.VariableNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.AssignmentNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.BlockNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.ForNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.IfElseNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.ReturnNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.SentenceNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.SimpleSentenceNode;
+import uncuyo.compiladores.semantic.abstractSintaxTree.sentence.WhileNode;
+import uncuyo.compiladores.semantic.symbolTable.ArrayType;
+import uncuyo.compiladores.semantic.symbolTable.Attribute;
 import uncuyo.compiladores.semantic.symbolTable.Class;
-
-import java.util.List;
+import uncuyo.compiladores.semantic.symbolTable.Method;
+import uncuyo.compiladores.semantic.symbolTable.Parameter;
+import uncuyo.compiladores.semantic.symbolTable.Variable;
 
 public class CodeGenVisitor implements Visitor<Void> {
 
@@ -148,6 +176,9 @@ public class CodeGenVisitor implements Visitor<Void> {
     @Override
     public Void visit(BinaryExpressionNode binaryExpressionNode) {
 
+        List<TokenType> primitiveClasses = List.of(TokenType.INT_CLASS, TokenType.INT_CONSTANT, TokenType.BOOL_CLASS, 
+        TokenType.BOOLEAN_CONSTANT,TokenType.STR_CLASS, TokenType.STRING_CONSTANT);
+
         codeGenerator.emitComment("Comienzo expresion binaria " + binaryExpressionNode.getBinaryOperatorToken().getLexeme() +
                 " en " + binaryExpressionNode.getBinaryOperatorToken().getRowIndex() + "_" + binaryExpressionNode.getBinaryOperatorToken().getColumnIndex());
 
@@ -161,15 +192,19 @@ public class CodeGenVisitor implements Visitor<Void> {
         // El valor del nodo derecho queda en $a0
         codeGenerator.emitComment("Obtengo el valor del nodo derecho");
         binaryExpressionNode.getRightNode().accept(this);
-        codeGenerator.emitComment("Obtengo el valor del CIR");
-        codeGenerator.emitText("lw $a0 4($a0)");
-
+        if(primitiveClasses.contains(binaryExpressionNode.getRightNode().getType().getTokenType())) {
+            codeGenerator.emitComment("Obtengo el valor del CIR");
+            codeGenerator.emitText("lw $a0 4($a0)");
+        }
+        
         // Cargo el valor del nodo izquierdo en $t0 y recupero la pila
         codeGenerator.emitComment("Recupero el valor del nodo izquierdo");
         codeGenerator.pop();
-        codeGenerator.emitComment("Obtengo el valor del CIR");
-        codeGenerator.emitText("lw $t0 4($t0)");
-
+        if(primitiveClasses.contains(binaryExpressionNode.getLeftNode().getType().getTokenType())) {
+            codeGenerator.emitComment("Obtengo el valor del CIR");
+            codeGenerator.emitText("lw $t0 4($t0)");
+        }
+        
         // Guardo en $a0 el valor de la operación
         switch (binaryExpressionNode.getBinaryOperatorToken().getTokenType()) {
 
