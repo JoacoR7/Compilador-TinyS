@@ -41,13 +41,37 @@ import uncuyo.compiladores.semantic.symbolTable.Method;
 import uncuyo.compiladores.semantic.symbolTable.Parameter;
 import uncuyo.compiladores.semantic.symbolTable.Variable;
 
+/**
+ * Recorre el AST de TinyS y emite código MIPS mediante {@link CodeGenerator}.
+ * Requiere un árbol chequeado semánticamente y la tabla de símbolos asociada
+ * a {@link AST}, con los tipos y las posiciones de sus entradas resueltos.
+ *
+ * <p>Las expresiones dejan en {@code $a0} la referencia a su CIR (registro de
+ * instancia de clase), o cero para {@code nil}. Los accesos utilizados como
+ * destino de una asignación dejan en ese registro la dirección donde se debe
+ * guardar la referencia. Los métodos de visita devuelven {@code null}; el
+ * resultado del recorrido se acumula en el generador.</p>
+ *
+ * <p>El recorrido actualiza la clase y el método actuales de la tabla de
+ * símbolos, y marca los nodos encadenados que procesa.</p>
+ */
 public class CodeGenVisitor implements Visitor<Void> {
 
     private CodeGenerator codeGenerator;
+    /**
+     * Crea un visitante con un generador de código vacío y sus recursos predefinidos.
+     *
+     * @throws RuntimeException si no se pueden cargar los recursos de ensamblador
+     */
     public CodeGenVisitor() {
         this.codeGenerator = new CodeGenerator();
     }
 
+    /**
+     * Obtiene el generador que acumula las instrucciones emitidas durante el recorrido.
+     *
+     * @return generador asociado a este visitante
+     */
     public CodeGenerator getCodeGenerator() {
         return codeGenerator;
     }
@@ -56,6 +80,15 @@ public class CodeGenVisitor implements Visitor<Void> {
     // #               Visitor codeGen de expresiones                  #
     // #################################################################
 
+    /**
+     * Emite la reserva de un arreglo y la inicialización de sus elementos.
+     * Guarda la virtual table y la longitud en sus dos primeras palabras,
+     * seguidas por las referencias a los CIR de los elementos. Deja la
+     * referencia del arreglo en {@code $a0}.
+     *
+     * @param arrayConstructorNode construcción con el tipo de elemento y la expresión de longitud
+     * @return {@code null}
+     */
     @Override
     public Void visit(ArrayConstructorNode arrayConstructorNode) {
         codeGenerator.emitSubsection("Constructor array linea " + arrayConstructorNode.getToken().getRowIndex() +
@@ -88,7 +121,7 @@ public class CodeGenVisitor implements Visitor<Void> {
         codeGenerator.emitComment("Inicializacion de elementos del array");
         codeGenerator.emitComment("$t1 va a ser el contador");
         codeGenerator.emitText("li $t1 0");
-        codeGenerator.emitComment("$t2 contendra la direccion a la vtable correspondiente");
+        codeGenerator.emitComment("$t2 contendra la direccion a la virtual table correspondiente");
         if (arrayType.equals("Str")) {
             codeGenerator.emitText("la $t2 vtable_" + arrayType.toLowerCase());
         } else {
@@ -134,13 +167,19 @@ public class CodeGenVisitor implements Visitor<Void> {
 
         codeGenerator.emitText("move $a0 $t0");
 
-        // TODO: Generar el codigo MIPS para la construccion de un arreglo.
         return null;
     }
 
+    /**
+     * Emite la lectura de un elemento de un arreglo local.
+     * Evalúa el índice, comprueba la referencia y sus límites, y carga en
+     * {@code $a0} la referencia almacenada en la posición seleccionada.
+     *
+     * @param arrayNode acceso con el identificador del arreglo y la expresión del índice
+     * @return {@code null}
+     */
     @Override
     public Void visit(ArrayNode arrayNode) {
-        // TODO: Generar el codigo MIPS para el acceso a un arreglo.
         Token currentToken = arrayNode.getToken();
         codeGenerator.emitComment("Evaluo la expresion de acceso a arreglo");
         arrayNode.getExpression().accept(this);
@@ -174,6 +213,15 @@ public class CodeGenVisitor implements Visitor<Void> {
         return null;
     }
 
+    /**
+     * Emite la evaluación de ambos operandos, de izquierda a derecha, y la
+     * operación binaria. Procesa los valores primitivos y construye un
+     * CIR para el resultado, cuya referencia queda en {@code $a0}.
+     * La división incluye un salto de error si el divisor es cero.
+     *
+     * @param binaryExpressionNode expresión con sus operandos, operador y tipo resueltos
+     * @return {@code null}
+     */
     @Override
     public Void visit(BinaryExpressionNode binaryExpressionNode) {
 
@@ -298,6 +346,15 @@ public class CodeGenVisitor implements Visitor<Void> {
         return null;
     }
 
+    /**
+     * Emite una llamada estática o de instancia y continúa su encadenamiento.
+     * Prepara el registro de activación, evalúa los argumentos y obtiene la
+     * dirección del método desde la tabla virtual correspondiente. Actualiza
+     * la clase actual para resolver los accesos siguientes.
+     *
+     * @param chainedCallNode llamada con el receptor, los argumentos y el encadenamiento
+     * @return {@code null}
+     */
     @Override
     public Void visit(ChainedCallNode chainedCallNode) {
         // ExpressionNodes son los argumentos
@@ -415,19 +472,29 @@ public class CodeGenVisitor implements Visitor<Void> {
         return null;
     }
 
+    /**
+     * @param chainedNode nodo genérico de acceso encadenado
+     * @return {@code null}
+     */
     @Override
     public Void visit(ChainedNode chainedNode) {
-        // TODO: Generar el codigo MIPS para un acceso encadenado generico.
         return null;
     }
 
+    /**
+     * Emite la reserva del CIR de un objeto, inicializa sus atributos y su
+     * virtual table, y llama a su constructor con los argumentos evaluados.
+     * La llamada deja en {@code $a0} la referencia a la instancia creada.
+     *
+     * @param classConstructorNode construcción con la clase y los argumentos del constructor
+     * @return {@code null}
+     */
     @Override
     public Void visit(ClassConstructorNode classConstructorNode) {
-        // TODO: Generar el codigo MIPS para la construccion de un objeto.
         Class currentClass = AST.getSymbolTable().getClasses().get(classConstructorNode.getToken().getLexeme());
         codeGenerator.emitSection("Generacion de CIR de " + currentClass.getName());
         int cirSpace = currentClass.getAttributes().size() + 1;
-        codeGenerator.emitComment("Necesita " + cirSpace + " espacios para sus atributos y la vtable" );
+        codeGenerator.emitComment("Necesita " + cirSpace + " espacios para sus atributos y la virtual table" );
         codeGenerator.emitText("li $a0 " + cirSpace * 4);
         codeGenerator.emitText("li $v0 9");
         codeGenerator.emitText("syscall");
@@ -449,18 +516,33 @@ public class CodeGenVisitor implements Visitor<Void> {
         return null;
     }
 
+    /**
+     * @param conclassorCallNode nodo genérico de llamada a constructor o clase
+     * @return {@code null}
+     */
     @Override
     public Void visit(ConclassorCallNode conclassorCallNode) {
-        // TODO: Generar el codigo MIPS para una llamada a constructor o clase.
         return null;
     }
 
+    /**
+     * @param expressionNode nodo genérico de expresión
+     * @return {@code null}
+     */
     @Override
     public Void visit(ExpressionNode expressionNode) {
-        // TODO: Generar el codigo MIPS para una expresion generica.
         return null;
     }
 
+    /**
+     * Emite un literal entero, booleano, de cadena o {@code nil}.
+     * Los valores primitivos se guardan en un nuevo CIR; las cadenas
+     * reutilizan sus bytes en {@code .data}. Deja la referencia o el valor
+     * nulo en {@code $a0}.
+     *
+     * @param literalNode literal con su token y tipo resueltos
+     * @return {@code null}
+     */
     @Override
     public Void visit(LiteralNode literalNode) {
 
@@ -495,25 +577,40 @@ public class CodeGenVisitor implements Visitor<Void> {
         return null;
     }
 
+    /**
+     * @param operandNode nodo genérico de operando
+     * @return {@code null}
+     */
     @Override
     public Void visit(OperandNode operandNode) {
-        // TODO: Generar el codigo MIPS para un operando generico.
         return null;
     }
 
+    /**
+     * Recorre la expresión entre paréntesis y, si existe, su encadenamiento.
+     *
+     * @param parenthesizedExpressionNode expresión agrupada que se desea evaluar
+     * @return {@code null}
+     */
     @Override
     public Void visit(ParenthesizedExpressionNode parenthesizedExpressionNode) {
         parenthesizedExpressionNode.getExpresion().accept(this);
         if (parenthesizedExpressionNode.getChainedNode() != null) {
             parenthesizedExpressionNode.getChainedNode().accept(this);
         }
-        // TODO: Contemplar caso en que expresion parentizada tiene chained node
         return null;
     }
 
+    /**
+     * Emite la carga de {@code self} desde el registro de activación y recorre
+     * el acceso encadenado que lo acompaña. Ajusta la clase actual cuando el
+     * siguiente nodo es un acceso a variable.
+     *
+     * @param selfNode acceso a {@code self} con un nodo encadenado presente
+     * @return {@code null}
+     */
     @Override
     public Void visit(SelfNode selfNode) {
-        // TODO: Generar el codigo MIPS para el acceso a self.
         if (selfNode.getChainedNode() instanceof VariableNode) {
             AST.getSymbolTable().setCurrentClass(AST.getSymbolTable().getClasses().get(((VariableNode) selfNode.getChainedNode()).getClassName()));
         }
@@ -525,12 +622,23 @@ public class CodeGenVisitor implements Visitor<Void> {
         return null;
     }
 
+    /**
+     * @param simpleAccessNode nodo genérico de acceso asignable
+     * @return {@code null}
+     */
     @Override
     public Void visit(SimpleAccessNode simpleAccessNode) {
-        // TODO: Generar el codigo MIPS para un acceso simple generico.
         return null;
     }
 
+    /**
+     * Emite el cálculo de la dirección de una posición de un arreglo local.
+     * Comprueba la referencia y los límites del índice y deja en {@code $a0}
+     * la dirección donde se debe guardar la referencia al elemento.
+     *
+     * @param simpleArrayNode acceso indexado utilizado como destino de asignación
+     * @return {@code null}
+     */
     @Override
     public Void visit(SimpleArrayNode simpleArrayNode) {
         codeGenerator.emitComment("Evaluo la expresion de acceso a array");
@@ -560,9 +668,16 @@ public class CodeGenVisitor implements Visitor<Void> {
         return null;
     }
 
+    /**
+     * Emite el desplazamiento hasta un atributo asignable cuando es el último
+     * nodo del encadenamiento. Requiere la instancia en {@code $a0} y su clase
+     * en el contexto actual; deja la dirección del atributo en {@code $a0}.
+     *
+     * @param simpleChainedNode acceso encadenado a un atributo asignable
+     * @return {@code null}
+     */
     @Override
     public Void visit(SimpleChainedNode simpleChainedNode) {
-        // TODO: Generar el codigo MIPS para un acceso simple encadenado.
         if (simpleChainedNode.getSimpleChainedNode() == null) {
             Attribute currentAttribute = AST.getSymbolTable().getCurrentClass().getAttributes().get(simpleChainedNode.getToken().getLexeme());
             codeGenerator.emitComment("Obtengo el atributo del self");
@@ -571,15 +686,29 @@ public class CodeGenVisitor implements Visitor<Void> {
         return null;
     }
 
+    /**
+     * Emite la carga de {@code self} y recorre el acceso asignable que lo sigue.
+     *
+     * @param simpleSelfNode destino mediante {@code self} con un encadenamiento presente
+     * @return {@code null}
+     */
     @Override
     public Void visit(SimpleSelfNode simpleSelfNode) {
-        // TODO: Generar el codigo MIPS para un acceso simple mediante self.
         codeGenerator.emitComment("Obtengo el CIR del self " + AST.getSymbolTable().getCurrentClass().getName());
         codeGenerator.emitText("lw $a0 " + codeGenerator.getSelfOffset(AST.getSymbolTable().getCurrentMethod()) + "($fp)");
         simpleSelfNode.getSimpleChainedNode().accept(this);
         return null;
     }
 
+    /**
+     * Emite el cálculo de la dirección de una variable local, atributo o
+     * parámetro utilizado como destino de asignación. Para atributos
+     * encadenados carga la referencia del receptor y comprueba que no sea nula.
+     * Deja la dirección de destino en {@code $a0}.
+     *
+     * @param simpleVariableNode acceso asignable con sus identificadores resueltos
+     * @return {@code null}
+     */
     @Override
     public Void visit(SimpleVariableNode simpleVariableNode) {
         Token currentToken = simpleVariableNode.getToken();
@@ -645,6 +774,14 @@ public class CodeGenVisitor implements Visitor<Void> {
         return null;
     }
 
+    /**
+     * Emite la evaluación del operando y la aplicación del operador unario.
+     * El signo positivo conserva el valor; los demás operadores modifican el
+     * valor almacenado en el CIR del operando, cuya referencia queda en {@code $a0}.
+     *
+     * @param unaryExpressionNode expresión con el operando y el operador unario
+     * @return {@code null}
+     */
     @Override
     public Void visit(UnaryExpressionNode unaryExpressionNode) {
 
@@ -696,9 +833,17 @@ public class CodeGenVisitor implements Visitor<Void> {
         return null;
     }
 
+    /**
+     * Emite la lectura de una variable local, parámetro o atributo y continúa
+     * los accesos o llamadas encadenados. Usa la tabla de símbolos para
+     * resolver las posiciones y actualiza la clase actual al cambiar de receptor.
+     * La referencia leída queda en {@code $a0}.
+     *
+     * @param variableNode acceso con sus datos de clase, método y tipo resueltos
+     * @return {@code null}
+     */
     @Override
     public Void visit(VariableNode variableNode) {
-        // TODO: Generar el codigo MIPS para el acceso a una variable.
         // Acceso a variable sin encadenamiento
         Variable currentVariable = AST.getSymbolTable().getCurrentMethod().getVariables().get(variableNode.getToken().getLexeme());
         Parameter currentParameter = AST.getSymbolTable().getCurrentMethod().getParameters().get(variableNode.getToken().getLexeme());
@@ -769,6 +914,14 @@ public class CodeGenVisitor implements Visitor<Void> {
     // #               Visitor codeGen de sentencias                   #
     // #################################################################
 
+    /**
+     * Emite la evaluación del lado derecho y guarda su referencia en la
+     * dirección calculada por el acceso del lado izquierdo. Conserva el
+     * resultado temporalmente en la pila mientras calcula el destino.
+     *
+     * @param assignmentNode asignación con su expresión y acceso de destino
+     * @return {@code null}
+     */
     @Override
     public Void visit(AssignmentNode assignmentNode) {
 
@@ -797,6 +950,15 @@ public class CodeGenVisitor implements Visitor<Void> {
         return null;
     }
 
+    /**
+     * Recorre las sentencias no nulas de un bloque en su orden de aparición.
+     * Si representa un método, selecciona el bloque de salida, actualiza el
+     * contexto de la tabla de símbolos y emite su prólogo y epílogo. El
+     * método {@code start} se genera dentro de {@code main}.
+     *
+     * @param blockNode bloque de sentencias o cuerpo de método o constructor
+     * @return {@code null}
+     */
     @Override
     public Void visit(BlockNode blockNode) {
         Method currentMethod = null;
@@ -835,6 +997,17 @@ public class CodeGenVisitor implements Visitor<Void> {
         return null;
     }
 
+    /**
+     * Emite un recorrido de arreglo mediante un iterador y las rutinas
+     * {@code hasNext} y {@code next} del tipo de elemento correspondiente.
+     * Agrega temporalmente la variable de iteración al método actual y
+     * administra su espacio de pila y la profundidad de bucles activos.
+     *
+     * @param forNode bucle con la variable de iteración, el arreglo y el cuerpo
+     * @return {@code null}
+     * @throws VariableRedeclarationInForLoopException si la variable de iteración ya existe
+     *         entre las variables del método actual
+     */
     @Override
     public Void visit(ForNode forNode) {
         // Obtengo la clase array
@@ -951,6 +1124,14 @@ public class CodeGenVisitor implements Visitor<Void> {
         return null;
     }
 
+    /**
+     * Emite la evaluación de una condición y los saltos entre las ramas
+     * {@code if} y {@code else}, cuando esta última está presente.
+     * Identifica las etiquetas mediante la fila y columna del nodo.
+     *
+     * @param ifElseNode sentencia condicional con su expresión y sus ramas
+     * @return {@code null}
+     */
     @Override
     public Void visit(IfElseNode ifElseNode) {
         String rowColumnLabel = ifElseNode.getToken().getRowIndex() + "_" + ifElseNode.getToken().getColumnIndex();
@@ -980,6 +1161,13 @@ public class CodeGenVisitor implements Visitor<Void> {
         return null;
     }
 
+    /**
+     * Emite la evaluación de la expresión de retorno, guarda su referencia en
+     * el registro de activación y salta al epílogo del método actual.
+     *
+     * @param returnNode retorno con una expresión presente
+     * @return {@code null}
+     */
     @Override
     public Void visit(ReturnNode returnNode) {
         returnNode.getExpression().accept(this);
@@ -992,18 +1180,35 @@ public class CodeGenVisitor implements Visitor<Void> {
         return null;
     }
 
+    /**
+     * @param sentenceNode nodo genérico de sentencia
+     * @return {@code null}
+     */
     @Override
     public Void visit(SentenceNode sentenceNode) {
-        // TODO: Generar el codigo MIPS para una sentencia generica.
         return null;
     }
 
+    /**
+     * Recorre la expresión utilizada como sentencia
+     *
+     * @param simpleSentenceNode sentencia formada por una expresión
+     * @return {@code null}
+     */
     @Override
     public Void visit(SimpleSentenceNode simpleSentenceNode) {
         simpleSentenceNode.getExpressionNode().accept(this);
         return null;
     }
 
+    /**
+     * Emite un bucle que evalúa su condición antes de cada ejecución del cuerpo.
+     * Extrae el valor del CIR booleano y salta al final cuando es falso.
+     * Identifica las etiquetas mediante la fila y columna del nodo.
+     *
+     * @param whileNode bucle con su condición y cuerpo
+     * @return {@code null}
+     */
     @Override
     public Void visit(WhileNode whileNode) {
         String rowColumnLabel = whileNode.getToken().getRowIndex() + "_" + whileNode.getToken().getColumnIndex();
