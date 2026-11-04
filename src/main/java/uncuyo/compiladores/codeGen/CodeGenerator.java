@@ -16,6 +16,18 @@ import uncuyo.compiladores.semantic.symbolTable.Method;
 import uncuyo.compiladores.semantic.symbolTable.Parameter;
 import uncuyo.compiladores.semantic.symbolTable.Variable;
 
+/**
+ * Construye el ensamblador MIPS de un programa TinyS para su ejecución en MARS.
+ * Acumula por separado los literales, las virtual tables, el cuerpo de
+ * {@code main} y el código de los métodos, e incorpora las rutinas predefinidas
+ * de {@code codeGen/data.asm} y {@code codeGen/text.asm}.
+ *
+ * <p>El código emitido utiliza palabras de cuatro bytes. Los registros de
+ * activación se referencian mediante {@code $fp}; {@code $sp} apunta a la
+ * siguiente palabra libre de la pila. Los valores primitivos se representan
+ * mediante un CIR (registro de instancia de clase) de ocho bytes, con la
+ * virtual table en el primer campo y el valor en el segundo.</p>
+ */
 public class CodeGenerator {
 
     private StringBuilder strings;
@@ -31,6 +43,12 @@ public class CodeGenerator {
     private Map<String, String> stringLabels = new LinkedHashMap<>();
     private int strCount = 0;
 
+    /**
+     * Inicializa los bloques de salida y carga las rutinas predefinidas.
+     * Las instrucciones se emiten inicialmente en el bloque de métodos.
+     *
+     * @throws RuntimeException si un recurso de ensamblador no existe o no se puede leer
+     */
     public CodeGenerator() {
         this.strings = new StringBuilder();
         this.vtables = new StringBuilder();
@@ -44,16 +62,30 @@ public class CodeGenerator {
         this.baseText = loadResource("codeGen/text.asm");
     }
 
+    /**
+     * Obtiene la cantidad de bucles {@code for} activos durante el recorrido.
+     *
+     * @return profundidad de anidamiento utilizada para ubicar las variables de iteración
+     */
     public int getForDepth() {
         return forDepth;
     }
 
+    /**
+     * Actualiza la profundidad usada al generar variables de iteración.
+     *
+     * @param forDepth cantidad de bucles {@code for} activos
+     */
     public void setForDepth(int forDepth) {
         this.forDepth = forDepth;
     }
 
     /**
-     * Carga un archivo desde resources.
+     * Lee un recurso del path.
+     *
+     * @param path ruta del recurso relativa a la raíz del classpath
+     * @return contenido del recurso
+     * @throws RuntimeException si el recurso no existe o falla su lectura
      */
     private String loadResource(String path) {
         try {
@@ -80,17 +112,11 @@ public class CodeGenerator {
     }
 
     /**
-     * Agrega una indentación adicional a todo un bloque.
+     * Agrega espacios al inicio de cada línea no vacía de un bloque.
      *
-     * Por ejemplo:
-     *
-     * vtable_str:
-     *     .word length_str
-     *
-     * pasa a:
-     *
-     *     vtable_str:
-     *         .word length_str
+     * @param block texto que se desea indentar
+     * @param spaces cantidad de espacios de sangría adicional
+     * @return bloque indentado, con un salto de línea por cada línea de entrada
      */
     private String indentBlock(String block, int spaces) {
         String indent = " ".repeat(spaces);
@@ -111,13 +137,9 @@ public class CodeGenerator {
     }
 
     /**
-     * Emite una directiva/dato dentro de .data.
+     * Emite un {@code .asciiz} en el bloque de literales.
      *
-     * Tiene 8 espacios porque:
-     *
-     * .data
-     *     label:
-     *         contenido
+     * @param line valor con las comillas y escapes de ensamblador necesarios
      */
     public void emitAsciiz(String line) {
         strings.append("        ")
@@ -126,6 +148,11 @@ public class CodeGenerator {
                 .append("\n");
     }
 
+    /**
+     * Agrega una dirección de método a la virtual table en construcción.
+     *
+     * @param line etiqueta del método que se guarda mediante {@code .word}
+     */
     public void emitVtableFunction(String line) {
         vtables.append("        ")
                 .append(".word ")
@@ -134,7 +161,9 @@ public class CodeGenerator {
     }
 
     /**
-     * Emite una etiqueta para string dentro de .data.
+     * Emite una etiqueta en el bloque de literales de {@code .data}.
+     *
+     * @param label nombre de la etiqueta sin los dos puntos finales
      */
     public void emitSringDataLabel(String label) {
         strings.append("    ")
@@ -143,7 +172,9 @@ public class CodeGenerator {
     }
 
     /**
-     * Emite una etiqueta para vtable dentro de .data.
+     * Emite una etiqueta en el bloque de tablas virtuales de {@code .data}.
+     *
+     * @param label nombre de la tabla virtual sin los dos puntos finales
      */
     public void emitVtableDataLabel(String label) {
         vtables.append("    ")
@@ -152,11 +183,9 @@ public class CodeGenerator {
     }
 
     /**
-     * Emite una instrucción dentro del bloque de código actual.
+     * Emite una línea indentada en el bloque de código seleccionado.
      *
-     * current puede ser:
-     * - main
-     * - text
+     * @param line instrucción o texto de ensamblador que se agrega al bloque
      */
     public void emitText(String line) {
         current.append("        ")
@@ -165,11 +194,9 @@ public class CodeGenerator {
     }
 
     /**
-     * Emite una etiqueta de código.
+     * Emite una etiqueta de código precedida por una línea en blanco.
      *
-     * Ejemplo:
-     *
-     *     Persona_getEdad:
+     * @param label nombre de la etiqueta sin los dos puntos finales
      */
     public void emitLabel(String label) {
         current.append("\n")
@@ -178,6 +205,11 @@ public class CodeGenerator {
                 .append(":\n");
     }
 
+    /**
+     * Emite una etiqueta interna con la misma sangría que las instrucciones.
+     *
+     * @param label nombre de la etiqueta sin los dos puntos finales
+     */
     public void emitSubLabel(String label) {
         current.append("        ")
                 .append(label)
@@ -185,13 +217,20 @@ public class CodeGenerator {
     }
 
     /**
-     * Decide si las próximas instrucciones se generan
-     * dentro de main o dentro del text general.
+     * Selecciona el bloque que recibirá las próximas instrucciones y etiquetas.
+     *
+     * @param inMain {@code true} para emitir en {@code main}; {@code false} para emitir en métodos
      */
     public void setInMain(boolean inMain) {
         this.current = inMain ? main : text;
     }
 
+    /**
+     * Emite como {@code .ascii} el fragmento acumulado y vacía su contenido.
+     * Si el fragmento está vacío, no emite bada.
+     *
+     * @param fragment caracteres ASCII ya preparados para el literal de ensamblador
+     */
     private void emitAsciiFragment(StringBuilder fragment) {
         if (fragment.length() == 0) {
             return;
@@ -204,12 +243,25 @@ public class CodeGenerator {
         fragment.setLength(0);
     }
 
+    /**
+     * Emite un valor mediante {@code .byte} en el bloque de literales.
+     *
+     * @param value valor numérico del byte que se desea almacenar
+     */
     private void emitByte(int value) {
         strings.append("        .byte ")
                 .append(value)
                 .append("\n");
     }
 
+    /**
+     * Emite el contenido de un literal mediante directivas {@code .ascii} y
+     * {@code .byte}, seguidas de un único fin de cadena. Interpreta los
+     * escapes de TinyS y codifica en UTF-8 los caracteres que requieren bytes.
+     *
+     * @param lexeme lexema del literal, incluidas sus comillas exteriores
+     * @throws IllegalArgumentException si un escape está incompleto o no es reconocido
+     */
     private void emitStringContent(String lexeme) {
 
         StringBuilder fragment = new StringBuilder();
@@ -273,15 +325,18 @@ public class CodeGenerator {
         // Último fragmento de texto.
         emitAsciiFragment(fragment);
 
-        // Único terminador nulo del string.
+        // Finalizador de string.
         emitByte(0);
     }
 
     /**
-     * Genera/agrega un literal String en .data.
+     * Agrega un literal de cadena a {@code .data}, reutilizando su etiqueta
+     * cuando ya se emitió el mismo lexema. La cadena vacía utiliza
+     * {@code empty_str}, definida en los recursos predefinidos.
      *
-     * Si el String ya fue generado anteriormente,
-     * reutiliza su label.
+     * @param lexeme lexema del literal, incluidas sus comillas exteriores
+     * @return etiqueta de los bytes de la cadena terminada en cero
+     * @throws IllegalArgumentException si el literal contiene un escape inválido
      */
     public String emitString(String lexeme) {
 
@@ -307,7 +362,9 @@ public class CodeGenerator {
     }
 
     /**
-     * Construye el archivo ASM final.
+     * Ensambla las secciones de datos y código junto con las rutinas predefinidas.
+     *
+     * @return programa MIPS completo con el punto de entrada {@code main}
      */
     public String generate() {
 
@@ -333,7 +390,10 @@ public class CodeGenerator {
     }
 
     /**
-     * Escribe el ASM generado a un archivo.
+     * Escribe el programa generado, creando o reemplazando el archivo.
+     *
+     * @param path ruta del archivo de salida
+     * @throws IOException si no se puede crear o escribir el archivo
      */
     public void writeOutput(String path) throws IOException {
         Files.writeString(
@@ -342,6 +402,14 @@ public class CodeGenerator {
         );
     }
 
+    /**
+     * Emite la preparación del registro de activación de una llamada.
+     * Reserva espacio para parámetros, retorno, {@code $fp} del llamador y
+     * contexto; guarda como contexto el valor de {@code $a0} e inicializa el
+     * retorno en cero. Los argumentos se deben emitir después de esta preparación.
+     *
+     * @param method método o constructor que se va a invocar
+     */
     public void generateMethodPreCall(Method method) {
 
         int parameterCount = method.getParameters().size();
@@ -381,6 +449,12 @@ public class CodeGenerator {
         emitBlankLine();
     }
 
+    /**
+     * Emite la tabla virtual de una clase respetando el orden de sus métodos.
+     * Cada entrada referencia la etiqueta de la clase que define el método.
+     *
+     * @param currentClass clase con sus métodos consolidados y ordenados
+     */
     public void generateVTable(Class currentClass) {
 
         emitVtableDataLabel("vtable_" + currentClass.getName());
@@ -392,6 +466,12 @@ public class CodeGenerator {
 
     }
 
+    /**
+     * Emite el prólogo que fija {@code $fp}, guarda {@code $ra}, reserva el
+     * espacio de variables locales y las inicializa con sus valores por defecto.
+     *
+     * @param method método cuyo registro de activación se está construyendo
+     */
     public void generateMethodPrologue(Method method) {
 
         int variableCount = method.getVariables().size();
@@ -445,13 +525,14 @@ public class CodeGenerator {
         emitBlankLine();
     }
 
-    /*
-        Según el tipo:
-            Int  -> referencia a CIR Int(0)
-            Bool -> referencia a CIR Bool(false)
-            Str  -> referencia a CIR Str("")
-            Clase -> nil
-            Array -> nil
+    /**
+     * Emite la inicialización de las variables locales del método.
+     * Los tipos {@code Int}, {@code Bool} y {@code Str} reciben un CIR con
+     * cero, falso y cadena vacía, respectivamente; las demás referencias
+     * reciben {@code nil}. Los resultados se guardan en posiciones relativas
+     * a {@code $fp}.
+     *
+     * @param method método cuyas variables locales se inicializan
      */
     public void initializeLocalVariables(Method method) {
         emitText("# Inicializacion variables locales de " + method.getName());
@@ -483,18 +564,14 @@ public class CodeGenerator {
         }
     }
 
-    /*
-    Inicialización de atributos de una instancia.
-
-    Según el tipo:
-        Int   -> referencia a CIR Int(0)
-        Bool  -> referencia a CIR Bool(false)
-        Str   -> referencia a CIR Str("")
-        Clase -> nil
-        Array -> nil
-
-    $s0 -> dirección base del CIR de self
-*/
+    /**
+     * Emite la inicialización de los atributos y de la virtual table de una instancia.
+     * Los atributos primitivos reciben un CIR con su valor por defecto y las
+     * demás referencias reciben {@code nil}. Requiere la dirección de la
+     * instancia en {@code 4($sp)}; si no hay atributos, la toma de {@code $v0}.
+     *
+     * @param classEntry clase de la instancia que se está inicializando
+     */
     public void initializeAttributes(Class classEntry) {
         emitSubsection("Inicializacion atributos de " + classEntry.getName());
 
@@ -523,10 +600,24 @@ public class CodeGenerator {
         emitText("sw $a0 0($t0)");
     }
 
+    /**
+     * Calcula el desplazamiento de un atributo, después de la virtual table del CIR.
+     *
+     * @param attribute atributo con posición asignada en la clase consolidada
+     * @return desplazamiento en bytes respecto del inicio de la instancia
+     */
     public int getAttributeOffset(Attribute attribute) {
         return (attribute.getPosition() + 1) * 4;
     }
 
+    /**
+     * Emite la salida del método y libera su registro de activación.
+     * Recupera {@code $ra} y el {@code $fp} del llamador; para métodos con
+     * resultado deja el retorno en {@code $a0}. Un constructor devuelve
+     * {@code self} y {@code start} finaliza la ejecución mediante un syscall.
+     *
+     * @param method método cuyo cuerpo acaba de generarse
+     */
     public void generateMethodEpilogue(Method method) {
         if (method.getName().equals("start")) {
             emitText("li $v0 10");
@@ -560,46 +651,99 @@ public class CodeGenerator {
 
     }
 
+    /**
+     * Calcula la posición de una variable local debajo del {@code $fp}.
+     *
+     * @param variable variable con posición asignada en el método
+     * @return desplazamiento negativo en bytes respecto de {@code $fp}
+     */
     public int getVariableOffset(Variable variable) {
         return -((variable.getPosition() + 1) * 4);
     }
 
+    /**
+     * Calcula la posición de un parámetro después del {@code $ra} guardado.
+     *
+     * @param parameter parámetro con posición asignada en el método
+     * @return desplazamiento en bytes respecto de la base del registro de activación
+     */
     public int getParameterOffset(Parameter parameter) {
         return (parameter.getPosition() + 1) * 4;
     }
 
+    /**
+     * Calcula la posición del resultado, a continuación de los parámetros.
+     *
+     * @param method método cuyo registro de activación se consulta
+     * @return desplazamiento en bytes respecto de la base del registro de activación
+     */
     public int getReturnOffset(Method method) {
         return (method.getParameters().size() + 1) * 4;
     }
 
+    /**
+     * Calcula la posición donde se conserva el {@code $fp} del llamador.
+     *
+     * @param method método cuyo registro de activación se consulta
+     * @return desplazamiento en bytes respecto de la base del registro de activación
+     */
     public int getCallerFpOffset(Method method) {
         return (method.getParameters().size() + 2) * 4;
     }
 
+    /**
+     * Calcula la posición del contexto de la llamada: instancia o virtual table.
+     *
+     * @param method método cuyo registro de activación se consulta
+     * @return desplazamiento en bytes respecto de la base del registro de activación
+     */
     public int getSelfOffset(Method method) {
         return (method.getParameters().size() + 3) * 4;
     }
 
+    /**
+     * Emite el guardado de un registro en {@code 0($sp)} y decrementa
+     * {@code $sp} en cuatro bytes para dejarlo en la siguiente posición libre.
+     *
+     * @param register nombre del registro MIPS que se desea apilar, incluido {@code $}
+     */
     public void push(String register) {
         emitText("sw " + register + " 0($sp)");
         emitText("addiu $sp $sp -4");
     }
 
+    /**
+     * Emite la recuperación del último valor apilado en {@code $t0} e
+     * incrementa {@code $sp} en cuatro bytes.
+     */
     public void pop() {
         emitText("lw $t0 4($sp)");
         emitText("addiu $sp $sp 4");
     }
 
+    /**
+     * Agrega un comentario de ensamblador al bloque de código seleccionado.
+     *
+     * @param comment texto del comentario sin el prefijo {@code #}
+     */
     public void emitComment(String comment) {
         current.append("        # ")
                 .append(comment)
                 .append("\n");
     }
 
+    /**
+     * Agrega una línea en blanco al bloque de código seleccionado.
+     */
     public void emitBlankLine() {
         current.append("\n");
     }
 
+    /**
+     * Agrega un título de sección entre separadores de comentarios.
+     *
+     * @param title texto del título
+     */
     public void emitSection(String title) {
         current.append("\n");
         current.append("        # ========================================\n");
@@ -607,11 +751,24 @@ public class CodeGenerator {
         current.append("        # ========================================\n");
     }
 
+    /**
+     * Agrega un título de subsección como comentario de ensamblador.
+     *
+     * @param title texto del título
+     */
     public void emitSubsection(String title) {
         current.append("\n");
         current.append("        # --- ").append(title).append(" ---\n");
     }
 
+    /**
+     * Emite la reserva de un CIR primitivo de ocho bytes y deja su dirección
+     * en {@code $v0}. Para {@code Int} y {@code Bool} inicializa ambos campos
+     * en cero; para {@code Str} guarda {@code vtable_str} y {@code empty_str}.
+     * Otros tipos de token no generan instrucciones.
+     *
+     * @param tokenType tipo de clase primitiva o de su literal correspondiente
+     */
     public void generatePrimitiveCIR(TokenType tokenType) {
         switch (tokenType) {
             case INT_CLASS:
@@ -645,6 +802,14 @@ public class CodeGenerator {
         }
     }
 
+    /**
+     * Emite un salto a {@code runtime_null} si la referencia indicada es cero.
+     * Carga la ubicación del acceso en {@code $a2} y {@code $a3} para el diagnóstico.
+     *
+     * @param register registro MIPS que contiene la referencia
+     * @param rowIndex fila del acceso en el código fuente
+     * @param columnIndex columna del acceso en el código fuente
+     */
     public void checkNullAccess(String register, int rowIndex, int columnIndex) {
         emitComment("Checkeo acceso nulo");
         emitText("li $a2 " + rowIndex);
@@ -652,17 +817,35 @@ public class CodeGenerator {
         emitText("beqz " + register + " runtime_null");
     }
 
+    /**
+     * Emite un salto a {@code runtime_negative_index} si el índice es negativo.
+     *
+     * @param index registro MIPS que contiene el valor del índice
+     */
     public void checkNegativeArrayIndex(String index) {
         emitComment("Checkeo indice negativo");
         emitText("bltz " + index + " runtime_negative_index");
     }
 
+    /**
+     * Emite un salto a {@code runtime_out_of_range} si el índice es mayor o
+     * igual que la longitud. Usa {@code $t2} para almacenar la comparación.
+     *
+     * @param index registro MIPS que contiene el valor del índice
+     * @param length registro MIPS que contiene la longitud del arreglo
+     */
     public void checkIndexOutOfBounds(String index, String length) {
         emitComment("Checkeo indice fuera de rango");
         emitText("slt $t2 " + index + " " + length);
         emitText("beqz $t2 runtime_out_of_range");
     }
 
+    /**
+     * Emite las comprobaciones de índice negativo y de límite superior del arreglo.
+     *
+     * @param index registro MIPS que contiene el valor del índice
+     * @param length registro MIPS que contiene la longitud del arreglo
+     */
     public void checkIndex(String index, String length) {
         checkNegativeArrayIndex(index);
         checkIndexOutOfBounds(index, length);
