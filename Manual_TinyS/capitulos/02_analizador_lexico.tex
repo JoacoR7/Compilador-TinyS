@@ -23,7 +23,7 @@ un comentario o una cadena, pero no constituye un token válido por sí solo.
   \item Símbolos: \verb~+-*/=<>!&|;:,.$#%@^¿?¡(){}[]_~
   \item Comillas y barra invertida: \verb~"~ (delimitador de cadenas),
         \verb~'~ (comilla simple) y \verb~\~ (inicio de una secuencia de escape).
-  \item Espacio en blanco: espacio, \verb~\n~, \verb~\r~, \verb~\t~ y \verb~\v~.
+  \item Escapes: espacio, \verb~\n~, \verb~\r~, \verb~\t~ y \verb~\v~.
   \item En los literales \texttt{Str} se admiten además las vocales acentuadas:
         áéíóúÁÉÍÓÚ.
 \end{itemize}
@@ -37,12 +37,6 @@ El fin de archivo (EOF) es una condición de lectura, no un carácter de $\Sigma
 % ############################################################
 
 \section{Tokens reconocidos}
-En las expresiones regulares, el punto indica concatenación, la barra vertical
-indica alternativa, el asterisco indica cero o más repeticiones y el superíndice
-$+$ indica una o más repeticiones. Los corchetes describen clases de caracteres.
-Cuando se enumera un símbolo del lenguaje, este se interpreta literalmente;
-por ejemplo, el punto de la subsección de símbolos representa el carácter
-\verb~.~. Las palabras reservadas se distinguen entre mayúsculas y minúsculas.
 
 % ============================================================
 %                IDENTIFICADOR MET_VAR
@@ -50,13 +44,13 @@ por ejemplo, el punto de la subsección de símbolos representa el carácter
 
 \subsection{Identificador de método o variable}
 \begin{itemize}[leftmargin=*]
-  \item Expresión regular: \verb~[a-zñ] . ([a-zñ] | [A-ZÑ] | [0-9] | [_])*~
+  \item Expresión regular: \verb~[a-z] . ([a-z] | [A-Z] | [0-9] | [_])*~
   \item Tipo de token: \lexcode{IDENTIFIER_VAR_METHOD}.
-  \item Ejemplos: \lexcode{nombre}, \lexcode{numero_1}, \lexcode{año}.
+  \item Ejemplos: \lexcode{nombre}, \lexcode{numero_1}.
 \end{itemize}
 Se consume el identificador completo y luego se consulta la tabla de palabras
 reservadas. Por ello, \lexcode{if} es una palabra reservada, mientras que
-\lexcode{ifElse} es un único identificador.
+\lexcode{ifElse} es un identificador.
 
 % ============================================================
 %                IDENTIFICADOR CLASE
@@ -64,9 +58,9 @@ reservadas. Por ello, \lexcode{if} es una palabra reservada, mientras que
 
 \subsection{Identificador de clase}
 \begin{itemize}[leftmargin=*]
-  \item Expresión regular: \verb~[A-ZÑ] . ([a-zñ] | [A-ZÑ] | [0-9] | [_])*~
+  \item Expresión regular: \verb~[A-Z] . ([a-z] | [A-Z] | [0-9] | [_])*~
   \item Tipo general: \lexcode{IDENTIFIER_CLASS}.
-  \item Ejemplos: \lexcode{Persona}, \lexcode{Clase_1}, \lexcode{Ñandu}.
+  \item Ejemplos: \lexcode{Persona}, \lexcode{Clase_1}.
 \end{itemize}
 Los nombres \lexcode{Int}, \lexcode{Str}, \lexcode{Bool} y \lexcode{Array}
 se reclasifican mediante la tabla de tipos predefinidos.
@@ -171,12 +165,11 @@ terminadores, y descarta los restantes espacios con
 \subsection{Comentarios}
 Sea $U$ el conjunto de caracteres que pueden aparecer en el contenido de un
 comentario. La implementación los omite sin aplicar el filtro de
-\lexcode{Alphabet}. Definimos $L=U-\{\mathrm{LF},\mathrm{CR}\}$,
-$A=U-\{\texttt{*}\}$ y $B=U-\{\texttt{*},\texttt{/}\}$.
+\lexcode{Alphabet}. Definimos $A=U-\{\texttt{*}\}$ y $B=U-\{\texttt{*},\texttt{/}\}$.
 \begin{itemize}[leftmargin=*]
   \item Expresión regular para comentario simple:
   \[
-  \texttt{//}\cdot L^*
+  \texttt{//}\cdot U^*
   \]
   Termina al finalizar la línea o el archivo; no necesita un salto de línea
   final para ser válido.

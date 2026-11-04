@@ -63,7 +63,7 @@ chequeo de declaraciones. La cuarta etapa agrega la construcción del AST y
 el chequeo de sentencias, sin generar código ensamblador. El ejecutador
 \texttt{TinyS} realiza todas las etapas y genera el código MIPS.
 
-Por ejemplo, para compilar las etapas disponibles:
+Para compilar las etapas disponibles:
 \begin{verbatim}
 mvn -Petapa1 -DskipTests package
 mvn -Petapa2 -DskipTests package
@@ -71,9 +71,6 @@ mvn -Petapa3 -DskipTests package
 mvn -Petapa4 -DskipTests package
 mvn -PtinyS -DskipTests package
 \end{verbatim}
-Cada comando genera su JAR en \texttt{target}. Para incorporar otra etapa,
-se agrega su ejecutador y un perfil en \texttt{pom.xml} con la propiedad
-\texttt{app.mainClass} y el nombre de salida \texttt{finalName}.
 
 \subsection{Ejecución}
 Una vez generado el JAR, se ejecuta con el siguiente esquema, reemplazando
@@ -101,7 +98,7 @@ Los ejecutadores \texttt{Etapa2}, \texttt{Etapa3}, \texttt{Etapa4} y
 \texttt{TinyS} utilizan solamente el archivo fuente.
 
 \subsection{Archivos generados y separación de fases}
-Si el análisis es exitoso, las salidas se guardan en el mismo directorio
+En las últimas 3 etapas, si el análisis es exitoso, las salidas se guardan en el mismo directorio
 que el archivo fuente, conservando su nombre base. Para \texttt{fuente.s}:
 \begin{center}
 \begin{tabular}{lp{0.68\textwidth}}
