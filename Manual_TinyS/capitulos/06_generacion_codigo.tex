@@ -226,6 +226,15 @@ la ausencia de una referencia válida. Este valor se carga directamente
 en \texttt{\$a0}, sin reservar un CIR, y permite comprobar las
 referencias nulas comparándolas con cero.
 
+\subsection{Contexto de las llamadas estáticas}
+Se decidió que el campo \texttt{self} del registro de activación pueda
+guardar también la dirección de la virtual table de una clase.
+En una llamada de instancia, este campo contiene la referencia al CIR
+del objeto; en una llamada estática, contiene directamente la dirección
+de la vtable de la clase. Así se mantiene el mismo formato de registro
+de activación para ambos tipos de llamada y se puede obtener la dirección
+del método estático desde la virtual table sin disponer de una instancia.
+
 \subsection{Representación uniforme de literales mediante CIR}
 Los literales de \texttt{Int}, \texttt{Bool} y \texttt{Str} también se
 representan mediante un CIR, al igual que los demás valores de esos
@@ -280,7 +289,8 @@ y transfieren el control al método o rutina predefinida. El resultado,
 cuando corresponde, se recupera desde el espacio de retorno. Los
 accesos encadenados actualizan el receptor durante el recorrido. En las
 llamadas de instancia, la resolución dinámica utiliza la tabla virtual
-del objeto; los métodos estáticos se llaman según su etiqueta.
+del objeto; en las llamadas estáticas, se utiliza directamente la tabla
+virtual de la clase guardada en el campo \texttt{self}.
 
 \subsection{Asignaciones y accesos}
 El lado izquierdo de una asignación determina la ubicación que recibirá
