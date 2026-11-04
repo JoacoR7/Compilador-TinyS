@@ -448,6 +448,7 @@ public class TypeVisitor implements Visitor<Type> {
             type = parenthesizedExpressionNode.getChainedNode().accept(this);
             parenthesizedExpressionNode.setType(type);
         }
+        parenthesizedExpressionNode.setType(type);
         return type;
     }
 
